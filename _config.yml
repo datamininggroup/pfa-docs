@@ -1,0 +1,22 @@
+# Dependencies
+markdown:         kramdown
+pygments:         true
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            PFA
+tagline:          Portable Format for Analytics
+url:              http://scoringengine.org
+
+author:
+  name:           'Jim Pivarski'
+
+paginate:         5
+
+# Custom vars
+version:          0.1-SNAPSHOT
+
+github:
+  repo:           https://github.com/scoringengine/pfa
