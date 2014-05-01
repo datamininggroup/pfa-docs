@@ -91,8 +91,9 @@ html {
     text-align: left;
     unicode-bidi: bidi-override;
     direction: rtl;
-    overflow: auto;
+    overflow: scroll;
     overflow-x: hidden;
+    margin-left: -15px;
   }
 }
 
