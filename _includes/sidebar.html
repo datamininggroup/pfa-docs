@@ -1,5 +1,5 @@
-<div class="sidebar">
-  <div class="container">
+<div class="sidebar" {% if page.title != 'Home' %}style="background-color: #116c91;"{% endif %}>
+  <div class="container" style="{% if page.title != 'Home' %}background-color: #116c91;{% endif %} direction: ltr;">
     <div class="sidebar-about">
       <a href="/"><h1>pfa</h1></a>
       <a href="/"><p>Portable Format<br>for Analytics</p></a>
@@ -35,6 +35,11 @@
           {% endif %}
         {% endif %}
       {% endsorted_for %}
+    </ul>
+
+    <h2>Specification:</h2>
+    <ul class="sidebar-nav" style="line-height: 1.1;">
+      <li class="sidebar-nav-item"><a href="https://github.com/scoringengine/pfa/blob/master/doc/spec/PFA.pdf?raw=true">Version 0.1</a></li>
     </ul>
 
     <h2>GitHub projects:</h2>

@@ -79,7 +79,7 @@ html {
   text-align: center;
   padding: 1rem 1rem;
   color: rgba(255,255,255,.5);
-  background-color: #202020;
+  /* background-color: #202020; */
 }
 @media (min-width: 48rem) {
   .sidebar {
@@ -89,7 +89,10 @@ html {
     bottom: 0;
     width: 15rem;
     text-align: left;
-    overflow-y: auto;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    overflow: auto;
+    overflow-x: hidden;
   }
 }
 
@@ -285,9 +288,6 @@ a.sidebar-nav-item:focus {
 }
 
 /* Bluer */
-.theme-base-bluer .sidebar {
-  background-color: #116c91;
-}
 .theme-base-bluer .content a,
 .theme-base-bluer .related-posts li a:hover {
   color: #116c91;

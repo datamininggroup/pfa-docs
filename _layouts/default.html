@@ -3,13 +3,12 @@
 
   {% include head.html %}
 
-  <body class="theme-base-bluer" {% if page.title == 'Home' %}style="background: #116c91;"{% endif %}>
+  <body class="theme-base-bluer" {% if page.title == 'Home' %}style="background-color: #116c91; background-image: url(/public/retweets.jpg); background-repeat: no-repeat; background-position: 300px 120px;"{% endif %}>
 
     {% include sidebar.html %}
 
-    <div class="content container">
+    <div class="content container" style="padding-bottom: 100px;">
       {{ content }}
     </div>
-
   </body>
 </html>
