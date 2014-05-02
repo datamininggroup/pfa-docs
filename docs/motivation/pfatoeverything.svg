@@ -27,13 +27,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1019"
+     inkscape:window-width="875"
      inkscape:window-height="858"
      id="namedview3618"
      showgrid="false"
-     inkscape:zoom="0.38645836"
-     inkscape:cx="482.98065"
-     inkscape:cy="322.23714"
+     inkscape:zoom="0.77291671"
+     inkscape:cx="467.89904"
+     inkscape:cy="268.08035"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -589,7 +589,7 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:25.60000038px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:104.99999523%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
+       style="font-size:25.60000038000000089px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:104.99999522999999613%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#116c91;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
        x="-128.30188"
        y="-171.37799"
        id="text6290"
@@ -598,10 +598,10 @@
          id="tspan6292"
          x="-128.30188"
          y="-171.37799"
-         style="font-style:italic">Developer Tools</tspan></text>
+         style="font-style:italic;fill:#116c91;fill-opacity:1">Developer Tools</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:25.60000038px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:104.99999523%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
+       style="font-size:25.60000038000000089px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:104.99999522999999613%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#116c91;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
        x="342.08084"
        y="242.63815"
        id="text6294"
@@ -610,7 +610,7 @@
          id="tspan6296"
          x="342.08084"
          y="242.63815"
-         style="font-style:italic">Production Environments</tspan></text>
+         style="font-style:italic;fill:#116c91;fill-opacity:1">Production Environments</tspan></text>
   </g>
   <text
      xml:space="preserve"

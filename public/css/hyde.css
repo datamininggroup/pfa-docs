@@ -56,12 +56,12 @@
 html {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
-@media (min-width: 48rem) {
+@media (min-width: 800px) {
   html {
     font-size: 16px;
   }
 }
-@media (min-width: 58rem) {
+@media (min-width: 1160px) {
   html {
     font-size: 20px;
   }
@@ -77,23 +77,24 @@ html {
 
 .sidebar {
   text-align: center;
-  padding: 1rem 0.5rem;
+  padding: 20px 10px;
   color: rgba(255,255,255,.5);
   /* background-color: #202020; */
+  margin-left: -15px;
+  padding-left: 15px;
 }
-@media (min-width: 48rem) {
+@media (min-width: 800px) {
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    width: 16rem;
+    width: 320px;
     text-align: left;
     unicode-bidi: bidi-override;
     direction: rtl;
     overflow: scroll;
     overflow-x: hidden;
-    margin-left: -15px;
   }
 }
 
@@ -109,12 +110,12 @@ html {
   margin-bottom: 5px;
   font-family: "Cardo", serif;
   font-style: italic;
-  font-size: 4rem;
+  font-size: 80px;
 }
 
 .sidebar-about p {
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 24px;
     color: white;
     line-height: 1.0;
 }
@@ -127,8 +128,8 @@ html {
   color: #fff;
   margin-top: 0;
   margin-bottom: 5px;
-  margin-left: -1rem;
-  font-size: 1.2rem;
+  margin-left: -20px;
+  font-size: 24px;
 }
 
 .toc {
@@ -162,12 +163,12 @@ a.sidebar-nav-item:focus {
  * contents to the bottom of the sidebar in tablets and up.
  */
 
-@media (min-width: 48rem) {
+@media (min-width: 800px) {
   .sidebar-sticky {
     position: absolute;
-    right:  1rem;
-    bottom: 1rem;
-    left:   1rem;
+    right:  20px;
+    bottom: 20px;
+    left:   20px;
   }
 }
 
@@ -179,22 +180,22 @@ a.sidebar-nav-item:focus {
  */
 
 .content {
-  padding-top:    3rem;
-  padding-bottom: 4rem;
+  padding-top:    60px;
+  padding-bottom: 80px;
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 800px) {
   .content {
-    max-width: 38rem;
-    margin-left: 18rem;
-    margin-right: 2rem;
+    max-width: 760px;
+    margin-left: 360px;
+    margin-right: 40px;
   }
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 1280px) {
   .content {
-    margin-left: 22rem;
-    margin-right: 4rem;
+    margin-left: 440px;
+    margin-right: 80px;
   }
 }
 
@@ -205,21 +206,21 @@ a.sidebar-nav-item:focus {
  * Flip the orientation of the page by placing the `.sidebar` on the right.
  */
 
-@media (min-width: 48rem) {
+@media (min-width: 800px) {
   .layout-reverse .sidebar {
     left: auto;
     right: 0;
   }
   .layout-reverse .content {
-    margin-left: 2rem;
-    margin-right: 20rem;
+    margin-left: 40px;
+    margin-right: 400px;
   }
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 1280px) {
   .layout-reverse .content {
-    margin-left: 4rem;
-    margin-right: 22rem;
+    margin-left: 80px;
+    margin-right: 440px;
   }
 }
 
