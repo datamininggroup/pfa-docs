@@ -31,7 +31,7 @@
     settings = $.extend(defaults, options);
     
     var headers = $('.content h1, .content h2, .content h3, .content h4, .content h5, .content h6').not('.page-title'), output = $(this);
-    if (!headers.length || headers.length < 3 || !output.length) {
+    if (!headers.length || headers.length < 1 || !output.length) {
       return;
     }
     
@@ -54,11 +54,11 @@
         $(header).addClass('top-level-header').after(return_to_top);
       }
       if (this_level === level) // same level as before; same indenting
-        html += "<li><a href='#" + header.id + "'>" + header.innerHTML + "</a>";
+        html += "<li style='font-weight: normal'><a href='#" + header.id + "'>" + header.innerHTML + "</a>";
       else if (this_level < level) // higher level than before; end parent ol
-        html += "</li></"+settings.listType+"></li><li><a href='#" + header.id + "'>" + header.innerHTML + "</a>";
+        html += "</li></"+settings.listType+"></li><li style='font-weight: normal'><a href='#" + header.id + "'>" + header.innerHTML + "</a>";
       else if (this_level > level) // lower level than before; expand the previous to contain a ol
-        html += "<"+settings.listType+"><li><a href='#" + header.id + "'>" + header.innerHTML + "</a>";
+        html += "<"+settings.listType+"><li style='font-weight: normal'><a href='#" + header.id + "'>" + header.innerHTML + "</a>";
       level = this_level; // update for the next one
     });
     html += "</"+settings.listType+">";

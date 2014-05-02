@@ -77,7 +77,7 @@ html {
 
 .sidebar {
   text-align: center;
-  padding: 1rem 1rem;
+  padding: 1rem 0.5rem;
   color: rgba(255,255,255,.5);
   /* background-color: #202020; */
 }
@@ -87,7 +87,7 @@ html {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 15rem;
+    width: 16rem;
     text-align: left;
     unicode-bidi: bidi-override;
     direction: rtl;
@@ -127,7 +127,7 @@ html {
   color: #fff;
   margin-top: 0;
   margin-bottom: 5px;
-  margin-left: -10px;
+  margin-left: -1rem;
   font-size: 1.2rem;
 }
 
@@ -179,7 +179,7 @@ a.sidebar-nav-item:focus {
  */
 
 .content {
-  padding-top:    4rem;
+  padding-top:    3rem;
   padding-bottom: 4rem;
 }
 

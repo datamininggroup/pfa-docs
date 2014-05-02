@@ -311,6 +311,9 @@ tbody tr:nth-child(odd) th {
 .post-title,
 .post-title a {
   color: #303030;
+  font-family: Cardo, serif;
+  font-style: italic;
+  font-size: 3rem;
 }
 .page-title,
 .post-title {

@@ -13,7 +13,7 @@
           {% if node.layout == "page" %}
             {% if node.type == "tutorial" %}
               <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
-                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <span style="font-weight: bold; color: white; padding-left: 5px;" onclick="$('.toc').toggle('slow')">+</span><div class="toc"></div>{% endif %}
+                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a><br style="margin: none; padding: none; line-height: 0px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div>{% endif %}
               </li>
             {% endif %}
           {% endif %}
@@ -29,7 +29,7 @@
           {% if node.layout == "page" %}
             {% if node.type == "reference" %}
               <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
-                <a href="{{ node.url }}">{{ node.title }}</a>
+                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a><br style="margin: none; padding: none; line-height: 0px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div>{% endif %}
               </li>
             {% endif %}
           {% endif %}
@@ -51,6 +51,6 @@
 
     </ul>
 
-    <p style="font-size: 0.8rem;">&copy; {{ site.time | date: '%Y' }}. All rights reserved.</p>
+    <p style="margin-left: -1rem; font-size: 0.8rem; line-height: 120%;">&copy; {{ site.time | date: '%Y' }} Jim Pivarski. All rights reserved.</p>
   </div>
 </div>
