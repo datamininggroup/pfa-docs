@@ -47,6 +47,8 @@ On a scale from the most rigid to the most flexible, PFA is the most flexible op
 
 In a typical development process, the data analysts produce PFA documents, test them, and then send them to the production system.  The production system checks the consistency of the documents and decides whether to execute them.
 
+FIXME: limited enough that it can be implemented in restricted settings: FPGAs, GPUs, and web browsers.
+
 {% include figure.html url="pfatoeverything.png" caption="" %}
 
 The remaining sections (see left sidebar) explain how to use PFA with executable code exampples.
