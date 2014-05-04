@@ -98,6 +98,15 @@ html {
   }
 }
 
+.subtitle {
+    margin-left: 0px;
+}
+@media (min-width: 800px) {
+    .subtitle {
+        margin-left: -20px;
+    }
+}
+
 /* Sidebar links */
 .sidebar a {
   color: #fff;

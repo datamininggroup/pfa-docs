@@ -1,8 +1,8 @@
 <div class="sidebar" {% if page.title != 'Home' %}style="background-color: #116c91;"{% endif %}>
-  <div class="container" style="{% if page.title != 'Home' %}background-color: #116c91;{% endif %} direction: ltr;">
+  <div class="container" style="{% if page.title != 'Home' %}background-color: #116c91;{% endif %} direction: ltr; font-size: 16px;">
     <div class="sidebar-about">
-      <a href="/"><h1>pfa</h1></a>
-      <a href="/"><p>Portable Format<br>for Analytics</p></a>
+      <h1><a href="/">pfa</a></h1>
+      <div style="display: inline-block; margin-left: auto; margin-right: auto;"><p class="subtitle"><a href="/">Portable Format<br>for Analytics</a></p></div>
     </div>
 
     <h2>Tutorials:</h2>
@@ -13,8 +13,9 @@
           {% if node.layout == "page" %}
             {% if node.type == "tutorial" %}
               <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
-                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a><br style="margin: none; padding: none; line-height: 0px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div>{% endif %}
+                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a> {% endif %}
               </li>
+              {% if page.url == node.url %} <li style="margin-left: 20px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div></li> {% endif %}
             {% endif %}
           {% endif %}
         {% endif %}
@@ -51,6 +52,6 @@
 
     </ul>
 
-    <p style="margin-left: -20px; font-size: 12px; line-height: 120%;">&copy; {{ site.time | date: '%Y' }} Jim Pivarski. All rights reserved.</p>
+    <div style="display: inline-block; margin-left: auto; margin-right: auto; font-size: 12px; line-height: 120%;"><p class="subtitle">&copy; {{ site.time | date: '%Y' }} Jim Pivarski. All rights reserved.</p></div>
   </div>
 </div>

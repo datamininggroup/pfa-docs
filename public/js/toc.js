@@ -25,7 +25,7 @@
     var defaults = {
       noBackToTopLinks: false,
       title: '',
-      listType: 'ul', // values: [ol|ul]
+      listType: 'ul style="list-style-type: disc; margin-bottom: 0px;"', // values: [ol|ul]
       showSpeed: 'slow'
     },
     settings = $.extend(defaults, options);

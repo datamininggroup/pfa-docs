@@ -7,48 +7,64 @@ order: 10
 
 ## Hardening a data analysis
 
-Data analysis is not software development.  A different set of best practices apply: when starting a large software project, one should design a maintainable architecture, but when analyzing a dataset, one should begin by examining the data with as many tools as possible.  Sometimes, a simple observation in this exploratory phase dramatically changes one's analysis strategy.
+Data analysis is not software development: a different set of best practices apply.  For a large software project, one should start by designing a maintainable architecture, but for data analysis, one should start by examining the dataset in as many ways as possible.  Sometimes, a simple observation in this exploratory phase dramatically changes one's analysis strategy.
 
-The worlds of data analysis and software development clash when a poorly structured analytic procedure must be scaled up to a large production workflow.  The “try anything, get feedback quickly” mindset that was an asset in the development phase leads to failures in production.  As data analyses mature, they must be hardened— they must have fewer dependencies, a more maintainable structure, and they must be more robust against errors.
+The worlds of data analysis and software development clash when a poorly structured analytic procedure must be scaled up to a large production workflow.  The “try anything, get feedback quickly” mindset that was an asset in the development phase leads to failures in production.  As data analyses mature, they must be hardened— they must have fewer dependencies, a more maintainable structure, and they must be robust against errors.
 
 {% include two-figure.html url1="messy_desk_contest_winner.jpg" caption1="Development: insight comes from exploratory tinkering." url2="BalticServers_data_center.jpg" caption2="Production: scalability comes from good design." %}
 
-The Portable Format for Analytics (PFA) is a common language to help smooth the transition between development and production.  PFA-enabled analysis tools produce results as JSON documents with structure specified by PFA.  For instance, a machine learning algorithm produces a classifier function that we wish to evaluate over a large cluster-bound dataset.  If it produces the classifier in PFA format, a PFA-enabled host running on the cluster can analyze it, check it for security and suitability, and then execute it.
+The Portable Format for Analytics (PFA) is a common language to help smooth the transition from development to production.  PFA-enabled analysis tools produce their results as JSON documents with a structure defined by the PFA specification.  For instance, suppose a machine learning algorithm produces a classifier that we wish to apply to a large cluster-bound dataset.  If it produces that classifier in PFA format, a PFA-enabled host running on the cluster can execute it in a safe, controlled way.
 
-Any complex tangle of specialized tools may have been used to create the PFA document— it could be generated automatically by one statistical package, modified by another, and even tweaked by hand.  However, these tools do not need to run in the production environment.  The PFA document describes an exact numerical procedure that can be executed anywhere.
-
-## Separation of concerns
-
-If a data analysis only needs to be executed once, it does not need to be hardened.  But in the era of Big Data, considerably more analyses crossed the threshold from workstation to cluster farm, making deployment issues more common than ever.
-
-New tools were developed to manage pipelines of data, such as Hadoop map-reduce, Storm real-time processing, Spark for iterative workflows, etc.  PFA itself is not a data pipeline; it describes a function to be inserted in a pipeline, to help you use pipelines more effectively.
-
-{% include figure.html url="pipeline2.png" caption="A topology with one input, three functions, and two outputs.  The functions are PFA scoring engines." %}
-
-For instance, a workflow consisting of three functional steps can be implemented with a pipeline framework, possibly application-specific code to handle custom data formats, and three PFA scoring engines, one for each function.  The pipeline and data formats are unlikely to change.  The mathematical functions, on the other hand, may need to be updated frequently to respond to discoveries about the data or to refresh models with new training samples.
-
-PFA allows these mathematical functions to be versioned and reviewed separately from the pipeline itself.  Since the PFA specification is strictly limited to mathematical operations, faulty PFA documents may result in erroneous calculations, but they cannot jeopardize the stability or security of the production environment.  This sandbox frees the data analysts to focus on the part they know best: data analysis.
-
-## Why not use X?
-
-There are many ways to encode a function; most pipeline frameworks expect the function to be written in Java, Python, or any traditional language that communicates via standard input/standard output.  However, a complete programming language gives the scoring engine powers beyond mathematical processing that could destabilize the production environment.
-
-At the other extreme, many machine learning packages produce classifiers or predictors as tables of parameters.  A file full of numbers is completely safe, but cannot be executed without a special-purpose scoring engine.  One trades flexibility for safety.
-
-{% include figure.html url="spectrum2.png" caption="" %}
-
-The [Predictive Model Markup Language (PMML)](http://www.dmg.org/) was an attempt to standardize these tables of numbers so that the original model-building package is not needed to evaluate the model in production.  Over the past 17 years, new functionality has been included in the PMML specification, but it is still the case that even modest extensions of the models it contains must wait for new versions of the whole language.
-
-PFA serves the same purpose, but far more generally.  New types of statistical processes can be implemented in PFA using primitives and highly factorized model components.  PFA has a suite of common flow control structures (e.g. control structures and loops) and most model functions accept user-specified callbacks.
-
-On a scale from the most rigid to the most flexible, PFA is the most flexible option that also cannot harm the production environment.
-
-## PFA in the development process
-
-In a typical development process, the data analysts produce PFA documents, test them, and then send them to the production system.  The production system checks the consistency of the documents and decides whether to execute them.
-
-FIXME: limited enough that it can be implemented in restricted settings: FPGAs, GPUs, and web browsers.
+Developer tools that speak PFA can deploy their scoring engines (e.g. classifiers, predictors, smoothers, filters) on production environments that understand PFA.  The only connection between the two worlds is the PFA document, a human-readable text file.  In fact, this text file could have contributions from several statistical packages, or it could be modified by JSON-manipulating tools or by hand before it is delivered.
 
 {% include figure.html url="pfatoeverything.png" caption="" %}
 
-The remaining sections (see left sidebar) explain how to use PFA with executable code exampples.
+By contrast, scoring engines in custom formats present the system maintainers with three options: (a) try to install the data analyst's tool across the production environment, including all of its dependencies, (b) port the algorithm and spend weeks chasing small (but compounding) numerical errors, and (c) dumb-down the analytic.  None of these are good options.
+
+## Separation of concerns
+
+Analysis code only needs to be hardened if it will be executed often or at large scale.  A one-time study on an analyst's laptop does not need to adhere to software design principles.  But in this era of Big Data, many analyses are crossing the threshold from laptops to server farms, and so deployment issues are becoming more common than ever.
+
+Tools such as Hadoop and Storm provide automated data pipelines, separating the data flow from the functions that are performed on data (mappers and reducers in Hadoop, spouts and bolts in Storm).  Ordinarily, these functions are written in code that has access to the pipeline internals, the host operating system, the remote filesystem, the network, etc.  However, all they should do is math.
+
+{% include figure.html url="pipeline2.png" caption="" %}
+
+PFA completes the abstraction by encapsulating these functions as PFA documents.  From the point of view of the pipeline system, the documents are configuration files that may be loaded or replaced independently of the pipeline code.
+
+This separation of concerns allows the data analysis to evolve independently of the pipeline.  Since scoring engines written in PFA are not capable of accessing or manipulating their environment, they cannot jeopardize the production system.  Data analysts can focus on the mathematical correctness of their algorithms and security reviews are only needed when the pipeline itself changes.
+
+This decoupling is important because statistical models usually change more quickly than pipeline frameworks.  Model details are often tweaked in response to discoveries about the data and models frequently need to be refreshed with new training samples.
+
+## Flexibility and safety
+
+Traditionally, scoring engines have been deployed in one of two ways: as a table of model parameters or as custom code.  A table of parameters needs to be interpreted before it can classify or predict anything, so it implicitly comes with a fixed executable, usually the statistical package that produced it.
+
+The problem with a table of parameters is that it is inflexible: its associated executable can only perform the operation it was designed to do.  The problem with custom code is that it is too powerful, as explained in the previous section.
+
+{% include figure.html url="spectrum2.png" caption="" %}
+
+The [Predictive Model Markup Language (PMML)](http://www.dmg.org/){:target="_blank"} was an attempt to bridge this gap by standardizing several of the most common kinds of scoring engines.  Like PFA, PMML documents are intermediate text files (XML) produced by data analysis tools and consumed by an executable in the production environment.  New functionality has been added to PMML over the past 17 years, but it is still based on tables of model parameters.  Even a modest extension of a scoring engine requires a new version of PMML to be adopted, which can take years.
+
+PFA serves this purpose with far more generality.  Unlike PMML, PFA has control structures to direct program flow, a true type system for both model parameters and data, and its statistical functions are much more finely grained and can accept callbacks to modify their behavior.  The author of a PFA document can construct new types of models from building blocks without waiting for the new model to be explicitly added to the specification.
+
+PFA is more flexible than PMML, but safer than custom code.  In the language of optimizations, it is the most flexible way to describe a scoring engine subject to the constraint that it won't break the data pipeline.
+
+## Overview of PFA capabilities
+
+The following contribute to PFA's _flexibility:_
+
+* It has control structures, such as conditionals, loops, and user-defined functions (like a typical programming language).
+* It is entirely expressed within JSON, and can therefore be easily generated and manipulated by other programs.  This is important because PFA documents are usually generated from training data by a statistical package or a machine learning algorithm.
+* Its library of functions is finely grained: multi-step processes are defined by chaining multiple functions.  A user with a new type of model in mind can mix and match these library functions as needed.
+* Many library functions accept callbacks to further modify their behavior.
+* Scoring engines can share data or update external variables, such as entries in a database.
+
+The following contribute to PFA's _safety:_
+
+* It has strict numerical compatibility: the same PFA document and the same input results in the same output, regardless of platform.
+* The specification only defines functions that transform data.  All inputs and outputs are controlled by the host system.
+* It has a type system that can be statically checked.  Specifically, PFA types are [Avro types](http://avro.apache.org/){:target="_blank"} (Avro is a data serialization format used to move data in several popular pipeline frameworks).  This system has a type-safe null and PFA only performs type-safe casting, which ensure that missing data never cause run-time errors.
+* The callbacks that generalize PFA's statistical models are not first-class functions.  This means that the set of functions that a PFA document might call can be predicted before it runs.  A PFA host may choose to only allow certain functions.
+* The semantics of shared data guarantee that data are never corrupted by concurrent access and scoring engines do not enter deadlock.  The host can also statically determine which shared variables may be modified by a scoring engine, rather than at run-time.
+
+To learn more, read the tutorials (which have interactive examples, so that you can see PFA in action) or the complete reference, which are linked in the sidebar or at the <a href="#top-of-page" onclick="$('body').animate({scrollTop: 0}, 1000); return false;">top of this page</a>.
