@@ -30,6 +30,17 @@
 $(document).ready(function() {
     $('.toc').toc();
 });
+
+function run(input, document, output) {
+    var payload = {data: input.html(), format: "yaml", document: document.html()};
+    $.post("http://pfa-gae.appspot.com/run",
+           JSON.stringify(payload),
+           function (data, textStatus, jqXHR) {
+               output.html(data);
+           },
+           "text");
+}
+
   </script>
 
 </head>
