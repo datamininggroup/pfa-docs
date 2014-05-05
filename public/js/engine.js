@@ -1,13 +1,3 @@
-// function run(input, document, output) {
-//     var payload = {data: input.html(), format: "yaml", document: document.html()};
-//     $.post("http://pfa-gae.appspot.com/run",
-//            JSON.stringify(payload),
-//            function (data, textStatus, jqXHR) {
-//                output.html(data);
-//            },
-//            "text");
-// }
-
 function setupEngines() {
     $(".input, .document, .output").each(function (i, x) {
         x.innerHTML = x.innerHTML.trim();
@@ -46,6 +36,22 @@ function setupEngines() {
                                           keyMap: "custom"
                                          });
 
+        if (x.className != "output") {
+            cm.on("change", function(cm, changeObj) {
+                var engine = $(cm.getTextArea().parentNode);
+                if (!engine.running) {
+                    var coverIcon = engine.find(".cover-icon");
+                    var cover = engine.find(".cover");
+                    coverIcon.attr("src", "/public/playbutton.gif");
+                    coverIcon.css("visibility", "visible");
+                    cover.css("visibility", "visible");
+                }
+            });
+        }
+
+        x.parentNode.running = false;
+        x.cm = cm;
+
         if (x.className == "input") {
             x.nextSibling.style.marginTop = "-4px";
         }
@@ -78,19 +84,72 @@ function setupEngines() {
         cover.appendChild(coverIcon);
 
         cover.addEventListener("mouseover", function (evt) {
-            $(evt.currentTarget).find(".cover-icon").attr("src", "/public/playbutton-highlight.gif");
-            $(evt.currentTarget).find(".cover-darkness").css("background", "rgba(0, 0, 0, 0.15)");
-            });
+            if (!evt.currentTarget.parentNode.parentNode.running) {
+                $(evt.currentTarget).find(".cover-icon").attr("src", "/public/playbutton-highlight.gif");
+                $(evt.currentTarget).find(".cover-darkness").css("background", "rgba(0, 0, 0, 0.15)");
+            }
+        });
         cover.addEventListener("mouseout", function (evt) {
-            $(evt.currentTarget).find(".cover-icon").attr("src", "/public/playbutton.gif");
-            $(evt.currentTarget).find(".cover-darkness").css("background", "rgba(0, 0, 0, 0.1)");
+            if (!evt.currentTarget.parentNode.parentNode.running) {
+                $(evt.currentTarget).find(".cover-icon").attr("src", "/public/playbutton.gif");
+                $(evt.currentTarget).find(".cover-darkness").css("background", "rgba(0, 0, 0, 0.1)");
+            }
+        });
+        cover.addEventListener("click", function (evt) {
+            run(evt.currentTarget.parentNode.previousSibling.previousSibling.cm);
             });
 
         x.appendChild(cover);
     });
 }
 
-// CodeMirror.commands["run"] = run
+function run(cm) {
+    var engine = $(cm.getTextArea().parentNode);
+
+    if (!engine[0].running) {
+        engine[0].running = true;
+
+        var coverIcon = engine.find(".cover-icon");
+        var cover = engine.find(".cover");
+
+        coverIcon.attr("src", "/public/icn_loading_animated.gif");
+        coverIcon.css("visibility", "visible");
+        cover.css("visibility", "visible");
+
+        var input = engine.find(".input")[0].cm;
+        var document = engine.find(".document")[0].cm;
+        var output = engine.find(".output")[0].cm;
+
+        var cmdom = output.getTextArea().nextSibling.nextSibling;
+
+        var payload = {data: input.getValue(), format: "yaml", document: document.getValue()};
+        $.post("http://pfa-gae.appspot.com/run",
+               JSON.stringify(payload),
+               function (data, textStatus, jqXHR) {
+                   if (data.slice(0, 14) == "COMPILER-ERROR") {
+                       var lines = data.trim().split("\n");
+                       var errorClass = lines[1];
+                       var errorMessage = lines[2];
+                       coverIcon.attr("src", "/public/playbutton.gif");
+                       coverIcon.css("visibility", "hidden");
+                       cover.css("visibility", "visible");
+                       cmdom.style.color = "red";
+                       output.setValue(errorClass + ":\n" + errorMessage);
+                   }
+                   else {
+                       coverIcon.attr("src", "/public/playbutton.gif");
+                       coverIcon.css("visibility", "hidden");
+                       cover.css("visibility", "hidden");
+                       cmdom.style.color = "black";
+                       output.setValue(data.trim());
+                   }
+                   engine[0].running = false;
+               },
+               "text");
+    }
+}
+
+CodeMirror.commands["run"] = run;
 
 CodeMirror.commands["newlineAndBack"] = function(cm) {
     cm.replaceSelection("\n", "end", "+input");

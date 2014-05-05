@@ -18,7 +18,8 @@ Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here'
 {% include engine2.html %}
 input: double
 output: double
-action: input
+action:
+  - {+: [input, 100]}
 {% include engine3.html %}
 
 Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.  Here's a bunch of text.

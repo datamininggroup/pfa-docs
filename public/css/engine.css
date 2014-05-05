@@ -50,21 +50,27 @@
 }
 
 .cover-icon {
+    visibility: visible;
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
     margin-bottom: auto;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
 }
 
 tt, pre, textarea, div.CodeMirror {
     font-family: "Source Code Pro", Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
-    font-weight: 700;
-    opacity: 0.95;
+    font-weight: bold;
+    opacity: 0.9;
 }
 
 @media (min-width: 0px) {
   tt, pre, textarea, div.CodeMirror, .label {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 @media (min-width: 800px) {
@@ -74,7 +80,7 @@ tt, pre, textarea, div.CodeMirror {
 }
 @media (min-width: 1160px) {
   tt, pre, textarea, div.CodeMirror, .label {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 
