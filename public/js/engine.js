@@ -1,3 +1,8 @@
+function useSpace() {
+    var engines = $(".engine");
+    engines.width($(window).width() - engines.offset().left - 20);
+}
+
 function setupEngines() {
     $(".input, .document, .output").each(function (i, x) {
         x.innerHTML = x.innerHTML.trim();
@@ -101,6 +106,9 @@ function setupEngines() {
 
         x.appendChild(cover);
     });
+
+    useSpace();
+    window.addEventListener("resize", useSpace);
 }
 
 function run(cm) {
