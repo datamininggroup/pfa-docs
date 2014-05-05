@@ -1,0 +1,104 @@
+.engine {
+    margin-top: -10px;
+    margin-bottom: 10px;
+    border: 2px solid #dddddd;
+}
+
+.label {
+    font-family: "PT Sans", Helvetica, Arial, sans-serif;    
+    font-weight: bold;
+    margin-bottom: 0px;
+    width: 100%;
+    height: 0px;
+}
+
+.label-input {
+}
+
+.label-document, .label-output {
+    border-top: 2px solid #dddddd;
+}
+
+.labellabel {
+    margin-top: 4px;
+    margin-left: auto;
+    width: intrinsic;
+    padding-left: 3px;
+    padding-right: 3px;
+    position: relative;
+    top: -3px;
+    z-index: 100;
+}
+
+.cover {
+    visibility: visible;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 100;
+}
+
+.cover-darkness {
+    background: rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.cover-icon {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+tt, pre, textarea, div.CodeMirror {
+    font-family: "Source Code Pro", Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+    font-weight: 700;
+    opacity: 0.95;
+}
+
+@media (min-width: 0px) {
+  tt, pre, textarea, div.CodeMirror, .label {
+    font-size: 14px;
+  }
+}
+@media (min-width: 800px) {
+  tt, pre, textarea, div.CodeMirror, .label {
+    font-size: 12px;
+  }
+}
+@media (min-width: 1160px) {
+  tt, pre, textarea, div.CodeMirror, .label {
+    font-size: 14px;
+  }
+}
+
+div.CodeMirror {
+    line-height: 130%;
+    order: none;
+    border: none;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    resize: none;
+}
+
+div.CodeMirror div.CodeMirror-cursor {
+    width: auto;
+    border: 0;
+    background: transparent;
+    background: rgba(0, 0, 255, 0.25);
+}
+
+div.ui-resizable-handle {
+    height: 15px;
+}
+
+div.ui-resizable-handle:hover {
+    background: #c0c0ff;
+}

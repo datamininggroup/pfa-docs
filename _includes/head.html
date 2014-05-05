@@ -17,7 +17,9 @@
   <link rel="stylesheet" href="/public/css/poole.css">
   <link rel="stylesheet" href="/public/css/syntax.css">
   <link rel="stylesheet" href="/public/css/hyde.css">
-  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Cardo:700italic">
+  <link rel="stylesheet" href="/public/js/codemirror-4.1/lib/codemirror.css"/>
+  <link rel="stylesheet" href="/public/css/engine.css"/>
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Cardo:700italic,Source+Code+Pro:700">
 
   <!-- Icons -->
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
@@ -25,22 +27,15 @@
 
   <!-- JS -->
   <script src="/public/js/jquery-1.11.0.min.js"></script>
+  <script src="/public/js/codemirror-4.1/lib/codemirror.js"></script>
+  <script src="/public/js/codemirror-4.1/mode/yaml/yaml.js"></script>
+  <script src="/public/js/codemirror-4.1/mode/javascript/javascript.js"></script>
+  <script src="/public/js/engine.js"></script>
   <script src="/public/js/toc.js"></script>
   <script>
 $(document).ready(function() {
     $('.toc').toc();
 });
-
-function run(input, document, output) {
-    var payload = {data: input.html(), format: "yaml", document: document.html()};
-    $.post("http://pfa-gae.appspot.com/run",
-           JSON.stringify(payload),
-           function (data, textStatus, jqXHR) {
-               output.html(data);
-           },
-           "text");
-}
-
   </script>
 
 </head>

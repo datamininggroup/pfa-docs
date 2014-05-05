@@ -115,8 +115,9 @@ html {
 /* About section */
 .sidebar-about h1 {
   color: #fff;
-  margin-top: 0;
-  margin-bottom: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-bottom: 25px;
   font-family: "Cardo", serif;
   font-style: italic;
   font-size: 80px;
