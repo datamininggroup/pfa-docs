@@ -1,6 +1,6 @@
 .engine {
-    margin-top: -10px;
-    margin-bottom: 10px;
+    margin-top: 4px;
+    margin-bottom: 24px;
     border: 2px solid #dddddd;
 }
 
@@ -69,17 +69,17 @@ tt, pre, textarea, div.CodeMirror {
 }
 
 @media (min-width: 0px) {
-  tt, pre, textarea, div.CodeMirror, .label {
+  tt, pre, code, textarea, div.CodeMirror, .label {
     font-size: 16px;
   }
 }
 @media (min-width: 800px) {
-  tt, pre, textarea, div.CodeMirror, .label {
+  tt, pre, code, textarea, div.CodeMirror, .label {
     font-size: 12px;
   }
 }
 @media (min-width: 1160px) {
-  tt, pre, textarea, div.CodeMirror, .label {
+  tt, pre, code, textarea, div.CodeMirror, .label {
     font-size: 16px;
   }
 }
