@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="432.44739"
-   height="69.455521"
+   width="393.36591"
+   height="31.3125"
    id="svg3176"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="mapEmitFold.svg"
-   inkscape:export-filename="/home/pivarski/pfa-docs/docs/basic/mapEmitFold.png"
+   sodipodi:docname="map.svg"
+   inkscape:export-filename="/home/pivarski/pfa-docs/docs/basic/map.png"
    inkscape:export-xdpi="179.90643"
    inkscape:export-ydpi="179.90643">
   <defs
@@ -85,20 +85,20 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="197.32342"
-     inkscape:cy="-68.627092"
+     inkscape:cx="238.24194"
+     inkscape:cy="-147.19852"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="986"
-     inkscape:window-height="858"
-     inkscape:window-x="0"
+     inkscape:window-width="646"
+     inkscape:window-height="875"
+     inkscape:window-x="788"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     fit-margin-top="10"
+     fit-margin-top="0"
      fit-margin-left="50"
      fit-margin-right="50"
-     fit-margin-bottom="10" />
+     fit-margin-bottom="0" />
   <metadata
      id="metadata3181">
     <rdf:RDF>
@@ -115,7 +115,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-149.46854,-471.41948)">
+     transform="translate(-188.55001,-499.5625)">
     <rect
        style="color:#000000;fill:#ffeeaa;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect3090"
@@ -168,16 +168,5 @@
        id="path3236"
        d="M 418.85714,515.21933 L 456.71429,515.21933"
        style="color:#000000;fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;marker-end:url(#Arrow1Mend);visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-    <text
-       sodipodi:linespacing="105%"
-       id="text3411"
-       y="491.21948"
-       x="198.62854"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:104.99999523%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#116c91;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
-       xml:space="preserve"><tspan
-         id="tspan3413"
-         y="491.21948"
-         x="198.62854"
-         sodipodi:role="line">Map method:</tspan></text>
   </g>
 </svg>

@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="459.74826"
-   height="125.14821"
+   width="420.66678"
+   height="87.005196"
    id="svg3176"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="emit.svg"
-   inkscape:export-filename="/home/pivarski/pfa-docs/docs/basic/emit.png"
+   sodipodi:docname="fold.svg"
+   inkscape:export-filename="/home/pivarski/pfa-docs/docs/basic/fold.png"
    inkscape:export-xdpi="179.90643"
    inkscape:export-ydpi="179.90643">
   <defs
@@ -85,20 +85,20 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="254.46627"
-     inkscape:cy="139.88167"
+     inkscape:cx="261.09908"
+     inkscape:cy="15.59596"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="986"
-     inkscape:window-height="858"
-     inkscape:window-x="0"
+     inkscape:window-width="646"
+     inkscape:window-height="875"
+     inkscape:window-x="788"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     fit-margin-top="10"
+     fit-margin-top="0"
      fit-margin-left="50"
      fit-margin-right="50"
-     fit-margin-bottom="10" />
+     fit-margin-bottom="0" />
   <metadata
      id="metadata3181">
     <rdf:RDF>
@@ -115,7 +115,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-149.46854,-631.41948)">
+     transform="translate(-188.55001,-659.5625)">
     <path
        style="color:#000000;fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0;marker:none;marker-end:url(#Arrow1Mend);visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="M 403.81604,687.15284 C 412.89147,694.1587 421.51792,699.25234 391.82225,710.72076"
@@ -200,16 +200,5 @@
          id="tspan5501"
          x="379.9126"
          y="743.69769">tally</tspan></text>
-    <text
-       sodipodi:linespacing="105%"
-       id="text3403"
-       y="651.21948"
-       x="198.62854"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:104.99999523%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#116c91;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
-       xml:space="preserve"><tspan
-         id="tspan3405"
-         y="651.21948"
-         x="198.62854"
-         sodipodi:role="line">Fold method:</tspan></text>
   </g>
 </svg>

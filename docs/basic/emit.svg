@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="442.56589"
-   height="70.95385"
+   width="425.55081"
+   height="34"
    id="svg3176"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="map.svg"
-   inkscape:export-filename="/home/pivarski/pfa-docs/docs/basic/map.png"
+   sodipodi:docname="emit.svg"
+   inkscape:export-filename="/home/pivarski/pfa-docs/docs/basic/emit.png"
    inkscape:export-xdpi="179.90643"
    inkscape:export-ydpi="179.90643">
   <defs
@@ -85,20 +85,20 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="197.32342"
-     inkscape:cy="-88.689749"
+     inkscape:cx="-25.405934"
+     inkscape:cy="-110.11832"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="986"
-     inkscape:window-height="858"
-     inkscape:window-x="0"
+     inkscape:window-width="646"
+     inkscape:window-height="875"
+     inkscape:window-x="788"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     fit-margin-top="10"
+     fit-margin-top="0"
      fit-margin-left="50"
      fit-margin-right="50"
-     fit-margin-bottom="10" />
+     fit-margin-bottom="0" />
   <metadata
      id="metadata3181">
     <rdf:RDF>
@@ -115,7 +115,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-149.46854,-551.26548)">
+     transform="translate(-166.48361,-578.21933)">
     <rect
        ry="5"
        rx="5"
@@ -170,17 +170,6 @@
          d="M 418.85714,618.34048 L 456.71429,618.34048"
          style="color:#000000;fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;marker-end:url(#Arrow1Mend);visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:104.99999523%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#116c91;fill-opacity:1;stroke:none;font-family:PT Sans;-inkscape-font-specification:Sans Bold"
-       x="198.62854"
-       y="571.21948"
-       id="text3407"
-       sodipodi:linespacing="105%"><tspan
-         sodipodi:role="line"
-         x="198.62854"
-         y="571.21948"
-         id="tspan3409">Emit method:</tspan></text>
     <g
        id="g4213"
        transform="translate(0,-7.4231478)">
