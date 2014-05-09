@@ -26,20 +26,22 @@ function setupEngines() {
             var labelClass = "label label-output";
         }
 
-        var cm = CodeMirror.fromTextArea(x,
-                                         {mode: mode,
-                                          lineNumbers: true,
-                                          smartIndent: true,
-                                          tabSize: 2,
-                                          indentUnit: 2,
-                                          indentWithTabs: false,
-                                          electricChars: false,
-                                          lineWrapping: true,
-                                          readOnly: readOnly,
-                                          showCursorWhenSelecting: true,
-                                          viewPortMargin: Infinity,
-                                          keyMap: "custom"
-                                         });
+        if (x.tagName == "TEXTAREA") {
+            var cm = CodeMirror.fromTextArea(x,
+                                             {mode: mode,
+                                              lineNumbers: true,
+                                              smartIndent: true,
+                                              tabSize: 2,
+                                              indentUnit: 2,
+                                              indentWithTabs: false,
+                                              electricChars: false,
+                                              lineWrapping: true,
+                                              readOnly: readOnly,
+                                              showCursorWhenSelecting: true,
+                                              viewPortMargin: Infinity,
+                                              keyMap: "custom"
+                                             });
+        }
 
         if (x.className != "output") {
             cm.on("change", function(cm, changeObj) {
@@ -71,8 +73,7 @@ function setupEngines() {
         label.className = labelClass;
         label.appendChild(labellabel);
         x.parentNode.insertBefore(label, x.nextSibling);
-
-        });
+    });
 
     $(".output-cm").each(function (i, x) {
         var coverDarkness = document.createElement("div");
@@ -101,8 +102,8 @@ function setupEngines() {
             }
         });
         cover.addEventListener("click", function (evt) {
-            run(evt.currentTarget.parentNode.previousSibling.previousSibling.cm);
-            });
+            run($(evt.currentTarget.parentNode.parentNode).find(".document")[0].cm);
+        });
 
         x.appendChild(cover);
     });
@@ -124,13 +125,39 @@ function run(cm) {
         coverIcon.css("visibility", "visible");
         cover.css("visibility", "visible");
 
-        var input = engine.find(".input")[0].cm;
+        var input = (function () {
+            var test = engine.find(".input");
+            if (test.size() == 0) {
+                return null;
+            }
+            else {
+                return test[0].cm;
+            }
+        })();
         var document = engine.find(".document")[0].cm;
         var output = engine.find(".output")[0].cm;
 
-        var cmdom = output.getTextArea().nextSibling.nextSibling;
+        var cmdom;
+        var outputError;
+        var outputPlot;
+        var outputThePlot;
+        if (output != undefined) {
+            cmdom = output.getTextArea().nextSibling.nextSibling;
+        }
+        else {
+            outputError = engine.find(".output-error")[0];
+            outputPlot = engine.find(".output-plot")[0];
+            outputThePlot = engine.find(".theplot")[0];
+        }
 
-        var payload = {data: input.getValue(), format: "yaml", document: document.getValue()};
+        var payload;
+        if (input == null) {
+            payload = {dataset: engine.attr("dataset"), format: "yaml", document: document.getValue()};
+        }
+        else {
+            payload = {data: input.getValue(), format: "yaml", document: document.getValue()};
+        }
+
         $.post("http://pfa-gae.appspot.com/run",
                JSON.stringify(payload),
                function (data, textStatus, jqXHR) {
@@ -141,15 +168,28 @@ function run(cm) {
                        coverIcon.attr("src", "/public/playbutton.gif");
                        coverIcon.css("visibility", "hidden");
                        cover.css("visibility", "visible");
-                       cmdom.style.color = "red";
-                       output.setValue(errorClass + ":\n" + errorMessage);
+                       if (output != undefined) {
+                           cmdom.style.color = "red";
+                           output.setValue(errorClass + ":\n" + errorMessage);
+                       }
+                       else {
+                           outputError.innerHTML = errorClass + ":\n" + errorMessage;
+                           outputThePlot.innerHTML = "";
+                       }
                    }
                    else {
                        coverIcon.attr("src", "/public/playbutton.gif");
                        coverIcon.css("visibility", "hidden");
                        cover.css("visibility", "hidden");
-                       cmdom.style.color = "black";
-                       output.setValue(data.trim());
+                       if (output != undefined) {
+                           cmdom.style.color = "black";
+                           output.setValue(data.trim());
+                       }
+                       else {
+                           outputError.innerHTML = "";
+                           outputThePlot.innerHTML = "";
+                           makePlot(data, outputThePlot);
+                       }
                    }
                    engine[0].running = false;
                },
@@ -202,3 +242,29 @@ CodeMirror.keyMap.custom = {
     "Ctrl-]": "indentMore",
     "Shift-Enter": "run",
 };
+
+function makePlot(text, div) {
+    data = [];
+    $(text.split("\n")).each(function (i, x) {
+        try {
+            var y = JSON.parse(x);
+            data.push(y);
+        }
+        catch (err) {}
+    });
+
+    var margin = {top: 20, right: 20, bottom: 30, left: 40};
+    var width = 600 - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
+    var x = d3.scale.linear().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+    var yAxis = d3.svg.axis().scale(y).orient("left");
+    var svg = d3.select(div).append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+    x.domain(d3.extent(data, function (d) { return d.x; })).nice();
+    y.domain(d3.extent(data, function (d) { return d.y; })).nice();
+    svg.append("g").attr("class", "x axis").attr("transform", "translate(0, " + height + ")").call(xAxis);
+    svg.append("g").attr("class", "y axis").call(yAxis);
+    svg.selectAll(".dot").data(data).enter().append("circle").attr("class", "dot").attr("r", function (d) { return d.radius; }).attr("cx", function (d) { return x(d.x); }).attr("cy", function (d) { return y(d.y); }).style("fill", function (d) { return "hsla(" + d.color*360.0 + ", 100%, 50%, " + d.opacity + ")" });
+
+}

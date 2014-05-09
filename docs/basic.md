@@ -11,7 +11,7 @@ In the previous section, I explained why you might want to use PFA to deploy you
 
 A PFA document is a JSON-based serialization of a scoring engine.  A scoring engine is an executable that has a well-defined input, a well-defined output, and performs a purely mathematical task.  That is, the calculation does not depend on the environment in which it is running--- it would produce the same result anywhere.
 
-Since input must be collected from somewhere and output must be distributed somewhere, a part of the workflow must be aware of its environment.  This part, called the "pipeline framework," interprets data files or network protocols and funnels the data into and out of the scoring engine.  PFA must always be used in conjuction with such a system, which is also known as the "PFA host" because PFA runs within it as a virtual machine.
+Since input must be collected from somewhere and output must be distributed somewhere, a part of your workflow must be aware of its environment.  This part, called the "pipeline framework," interprets data files or network protocols and funnels the data into and out of the scoring engine.  PFA must always be used in conjuction with such a system, which is also known as the "PFA host" because PFA runs within it as a virtual machine.
 
 To illustrate this with a concrete example, a PFA-enabled [Hadoop](http://hadoop.apache.org/){:target="_blank"} job would look like this:
 
@@ -21,7 +21,7 @@ Hadoop defines the map-reduce topology of the workflow, reads data from its dist
 
 In a traditional Hadoop job, the mechanics of data handling and the logic of the data analysis are compiled together in an executable jar file.  In the PFA-enabled Hadoop job, the executable jar file only manages data and interprets PFA.  The logic of the data analysis is expressed in a PFA document, which is provided as a configuration file and may be changed without modifying the executable jar.
 
-A similar story could be told for a PFA-enabled Storm application, or a PFA-enabled Spark application, or any other.  The point of PFA is that it has many ports, not a single executable.  You may even build one yourself, starting from a [generic PFA library](https://github.com/scoringengine/pfa){:target="_blank"} or from scratch, following the [language specification](https://github.com/scoringengine/pfa/blob/master/doc/spec/PFA.pdf?raw=true).
+A similar story could be told for a PFA-enabled Storm application, or a PFA-enabled Spark application, or any other.  The point of PFA is that it is embedded into many different environments, so it has no single executable.  You may even build one yourself, starting from a [generic PFA library](https://github.com/scoringengine/pfa){:target="_blank"} or from scratch, following the [language specification](https://github.com/scoringengine/pfa/blob/master/doc/spec/PFA.pdf?raw=true).
 
 For these examples, we will use a PFA-enabled servlet running in [Google App Engine](https://developers.google.com/appengine/){:target="_blank"} (see the [pfa-gae](https://github.com/scoringengine/pfa-gae){:target="_blank"} GitHub project).  Most examples respond quickly; if it's taking several seconds, Google App Engine is probably launching a new servlet instance for you.  Subsequent calls will be faster.
 
@@ -40,7 +40,7 @@ action:
   - {+: [input, 100]}
 {% include engine3.html %}
 
-In this web applet, the input is represented as a stream of JSON data (one JSON object or value per line) and the PFA document is presented in [YAML](http://yaml.org/){:target="_blank"}.  YAML is like JSON but is easier to read--- nesting is indicated by indentation and quotes are only needed in cases of ambiguity.  The document above could have been written as pure JSON:
+In this web applet, the input is represented as a stream of JSON data (one JSON object or value per line) and the PFA document is presented in [YAML](http://yaml.org/){:target="_blank"}.  YAML is like JSON but is easier to read--- nesting is indicated by indentation and quotes are only needed in cases of ambiguity.  The document above could have been written as pure JSON like this:
 
     {"input": "double",
      "output": "double",
@@ -48,11 +48,11 @@ In this web applet, the input is represented as a stream of JSON data (one JSON 
        {"+": ["input", 100]}
      ]}
 
-but this gets difficult to read as we consider more complex examples.  The YAML is always converted into JSON before building a PFA scoring engine.
+but it gets more crowded by quotation marks and brackets as we consider more complex examples.  The YAML is always converted into JSON before building a PFA scoring engine.
 
 The above example has three parts: an input type schema, an output type schema, and a list of expressions to compute, returning the last one (or in this case, the only one).  These are the only _required_ top-level fields; I will present others later.
 
-The action routine is called once for every input datum, and a symbol (variable) named `input` references that datum.  This action calls the "`+`" function and passes `input` and `100` as arguments: `{"+": ["input", 100]}`.  Much like [Lisp](http://www.cliki.net/){:target="_blank"}, PFA has no infix operators--- everything is laid out as a syntax tree.  Just as with Lisp, this syntactic simplicity makes it much easier to write programs that generate or analyze PFA documents.
+The action routine is called once for every input datum, and a symbol (variable) named `input` references that datum.  This action calls the "`+`" function and passes `input` and `100` as arguments: `{"+": ["input", 100]}`.  Much like [Lisp](http://www.cliki.net/){:target="_blank"}, PFA has no infix operators--- everything is laid out as a syntax tree in [Polish notation](http://en.wikipedia.org/wiki/Polish_notation){:target="_blank"}.  Just as with Lisp, this syntactic simplicity makes it much easier to write programs that generate or analyze PFA documents.
 
 Here is a slightly more complex example:
 
@@ -69,11 +69,11 @@ action:
 
 Try mixing in one of these two-parameter functions: "`+`" (addition), "`-`" (subtraction), "`*`" (multiplication), "`/`" (floating-point division), "`//`" (integer division), "`u-`" (negation), "`%`" (modulo), "`%%`" (remainder), "`**`" (exponentiation).
 
-Try mixing in one of these one-parameter functions: `m.sqrt`, `m.sin`, `m.cos`, `m.tan`, `m.exp`, `m.ln` (natural logarithm), `m.log10` (logarithm base 10), `m.floor`, `m.ceil`, `m.round`.  One-parameter functions are not required to enclose arguments in square brackets, but they can.
+Try mixing in one of these one-parameter functions: `m.sqrt`, `m.sin`, `m.cos`, `m.tan`, `m.exp`, `m.ln` (natural logarithm), `m.log10` (logarithm base 10), `m.floor`, `m.ceil`, `m.round`.  One-parameter functions do not need to enclose arguments in square brackets (`{m.sin: 3.14}` versus `{m.sin: [3.14]}`), but they may, for consistency.
 
 Try adding one of these zero-parameter functions, which is to say, constants: `{"m.pi": []}` and `{"m.e": []}`.  There are many other functions in the [function library](/docs/library/){:target="_blank"}.
 
-Alternatively, you could write it in YAML-indentation form:
+Alternatively, you could write it in YAML-indentation form to follow the nesting level more easily:
 
 {% include engine1.html %}
 1
@@ -193,13 +193,15 @@ action:
       tally
 {% include engine3.html %}
 
-## Simple types
+## Avro types
 
 PFA's types are equivalent to the types that can be serialized by [Avro](http://avro.apache.org/){:target="_blank"}.  Thus, inputs and outputs of PFA scoring engines can be readily converted to Avro's binary or JSON-based representation (since there is no translation involved), or other formats with some translation.  Avro is widely used in the Hadoop ecosystem, and its [types are specified in JSON](http://avro.apache.org/docs/1.7.6/spec.html){:target="_blank"}, so they can be included in a PFA document without special syntax.
 
+### Input records with multiple fields
+
 Most often, scoring engines receive data as records--- named, heterogeneous product types with named fields--- and occasionally a scoring engine returns output as a record as well.
 
-Here is a realistic example of input records (the 20 closest stars to the sun):
+Here is a semi-realistic example of input records (the 20 closest stars to the sun):
 
 {% include engine1.html %}
 {"name": "Sun", "x": 0.0, "y": 0.0, "z": 0.0, "spec": "G2 V", "planets": true, "mag": {"double": -26.72}}
@@ -240,6 +242,7 @@ input:
 output: double
 
 action:
+  # sum in quadrature
   - m.sqrt:
       a.sum:
         type: {type: array, items: double}
@@ -249,15 +252,17 @@ action:
           - {"**": [input.z, 2]}
 {% include engine3.html %}
 
-Each record has seven fields: `name`, `x`, `y`, `z`, `spec` (spectral type), `planets` (at least one known planet in system), `mag` (the magnitude--- larger numbers are dimmer as seen from Earth).
+Each record has seven fields: `name` (name of star), `x`, `y`, `z` (galactic coordinates, centered on the Sun), `spec` (spectral type), `planets` (at least one known planet in system), `mag` (the magnitude--- larger numbers are dimmer as seen from Earth).
 
-The `x`, `y`, `z` coordinates are numerical, and thus we cadd them in quadrature to compute the distance of the star from Earth (in light years).
+The `x`, `y`, `z` coordinates are numerical, and thus we can add them in quadrature to compute the distance of the star from Earth (in light years).
 
-The type of `mag` is a tagged union of `double` with `null`.  Null values are used to represent missing data, but a symbol cannot have a `null` value unless its type includes `null` as a union option.  Thus, types must be explicitly tagged as nullable.
+### Type-safe null
 
-The union of `double` and `null` is a different type than double, so `mag` cannot be passed to a function that expects a `double`, such as addition.  It must be cast as a `double`, and thus every case in which missing values are possible must be handled.  This is known as a "type-safe null," since the type check verifies that null pointer exceptions will not occur at run-time.
+The type of `mag` is a tagged union of `double` with `null`.  Null values are used to represent missing data, but a symbol cannot have a `null` value unless its type includes `null` as a union option.  Thus, types must be explicitly labeled as nullable.
 
-This filter only selects stars that have a `mag` and returns that value.  Note that the return type is not nullable, since we've already ensured that the value is not null.
+The union of `double` and `null` is a different type than `double`, so `mag` cannot be passed to a function that expects a `double`, such as addition.  It must be type-cast as a `double`, and thus every case in which missing values are possible must be handled.  This is known as a "type-safe null," since the type check verifies that null pointer exceptions will not occur at run-time.
+
+This filter only selects stars that have a non-null `mag` and returns its value.  Note that the return type is simply `double`; it can never be `null` because we have ensured this with the type-cast.
 
 {% include engine1.html %}
 {"name": "Sun", "x": 0.0, "y": 0.0, "z": 0.0, "spec": "G2 V", "planets": true, "mag": {"double": -26.72}}
@@ -285,17 +290,30 @@ method: emit
 action:
   - cast: input.mag
     cases:
+      # case 1: it's a double
       - as: double
         named: magDouble
         do:
           - {emit: magDouble}
+      # case 2: it's null
       - as: "null"
         named: magNull
         do:
-          - {log: {string: "This one is null"}}
+          - null   # do nothing; no emit
 {% include engine3.html %}
 
-Types are important in PFA for safety checks like the one above and for declaring the structure of a statistical model or analytic procedure.  See the [Avro types](/docs/avro_types/) reference for more.
+### Type-safe cast
+
+PFA documents include enough information to check all of their data types before execution, and most PFA engines should take advantage of this fact and actually check the types.  Type errors, especially `null` where a value is expected, are common causes of late-stage failures in a long-running workflow.  (That is, the analytic started up, appeared to be working fine, and then crashed hours later when no one was paying attention anymore.)
+
+In some languages, type-casts are a means of subverting the type check.  For example, `(Cat)animal` in C or Java asserts that the `animal` object is a member of the `Cat` subclass, when the type system only knows that it's a generic `Animal`.  If this is not true at runtime, it can corrupt data (in C) or cause an exception (in Java).
+
+The type-cast of `input.mag` in the example above has the form of an exhaustive pattern match, rather than a single assertion.  Any value that `mag` can take--- a number or `null`--- has an associated action.  This is known as a type-safe cast because there are no cases that corrupt data or raise runtime exceptions.
+
+Try removing the second case or putting in a bogus case (`input.mag` is a `string`).  Also, try adding `"partial": true` at the same nesting level as `cast` and `cases`.  This allows the cast-cases to be non-exhaustive (at the price of the expression not having a return value, though the return value is not used in this example).
+
+
+
 
 
 

@@ -31,6 +31,38 @@
     z-index: 100;
 }
 
+.big-engine .label-document {
+    border-top: none;
+}
+
+.big-engine .labellabel {
+    opacity: 0;
+}
+
+.output-error {
+    color: red;
+    padding-top: 10px;
+}
+
+@media (min-width: 0px) {
+    .big-engine {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+    }
+}
+@media (min-width: 800px) {
+    .big-engine {
+        position: absolute;
+        left: 320px;
+        right: 10px;
+    }
+}
+
+.big-engine div.CodeMirror {
+    font-size: 12px;
+}
+
 .cover {
     visibility: visible;
     position: absolute;
