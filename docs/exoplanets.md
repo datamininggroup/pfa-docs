@@ -2,12 +2,22 @@
 layout: page
 type: tutorial
 title: Exoplanets example
-order: 25
+order: 30
 ---
 
 ## Explanation
 
+This applet is intended as a sandbox for testing PFA functions on a real dataset.  The data are 1783 extrasolar planets, [downloaded](http://exoplanet.eu/catalog/votable/) in April 2014 from [exoplanet.eu](http://exoplanet.eu/){:target="_blank"}.
+
+The dataset has a two-level taxonomy: it is a collection of stars and each star has one or more planets.  All of the numerical data for stars and planets are nullable (missing data is common in planet-hunting).  A few fields are strings (names and spectral type), one is an enumerated category (detection type), and one is an array of strings (molecules discovered in the planet's atmosphere).
+
+Rather than dump thousands of JSON-formatted outputs in your browser, the output is drawn as a scatter plot using [d3](http://d3js.org/){:target="_blank"}.  Don't read too much into the distribution; extrasolar planets have a strong detection bias.
+
+The dataset is hosted on [Google App Engine](https://developers.google.com/appengine/){:target="_blank"} (the same site that executes the PFA) as a binary Avro file.  If Google App Engine has to start a new instance, the calculation will take several seconds.  Otherwise, most runs will be less than a second.
+
 ## Executable
+
+The default executable is a fold-type scoring engine that only produces output for planets when `planet.radius`, `planet.mass`, `star.age`, `star.temp`, and `star.dist` are all non-null.  This is not required for the example to work; any `action` will do, as long as the `input` and `output` types are unchanged.  (The `input` must match the exoplanets dataset and the `output` must be correctly interpreted by your browser.)
 
 <script src="/public/js/d3.min.js"></script>
 <style>
@@ -91,5 +101,6 @@ action:
             new: {x: radius, y: mass, radius: age, color: {/: [temp, 1000]}, opacity: {/: [dist, 1000]}}
             type: Output
 </textarea>
-  <div class="output"></div><div class="output-plot" style="position: relative; height: 400px;"><div class="theplot" style="display: block; margin-left: auto; margin-right: auto; width: intrinsic;"></div><pre class="output-error"></pre></div>
+  <div class="output"></div><div class="output-plot" style="position: relative; height: 400px;"><div class="theplot"></div><pre class="output-error"></pre></div>
 </div>
+

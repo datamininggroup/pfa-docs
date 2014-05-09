@@ -312,12 +312,15 @@ The type-cast of `input.mag` in the example above has the form of an exhaustive 
 
 Try removing the second case or putting in a bogus case (`input.mag` is a `string`).  Also, try adding `"partial": true` at the same nesting level as `cast` and `cases`.  This allows the cast-cases to be non-exhaustive (at the price of the expression not having a return value, though the return value is not used in this example).
 
+For a more realistic example of input types and missing value casting, see the [Exoplanets example](/docs/exoplanets).
 
+## To-do
 
-
-
-
-
+  * begin, action, end and flowTime.png
+  * creating local variables, if statements, while/for loops
+  * user-defined functions and callbacks
+  * persistent storage
+  * errors and logs
 
 
 <!-- The execution of a scoring engine has two or three phases: begin, action, and possibly end.  Some real-time pipelines (such as [Storm](https://storm.incubator.apache.org/){:target="_blank"}) do not have a concept of an end to the data flow.  The begin routine is called once before encountering any data, action is called once for every datum of the same type in the dataset, and end is called after all data (like [awk](http://www.gnu.org/software/gawk/manual/gawk.html){:target="_blank"}). -->
