@@ -327,21 +327,22 @@ However, it does have a suite of standard programming constructs for flexibility
 Bernoulli numbers (the first problem to be solved with a computer program)
 
 {% include engine1.html %}
-10
-20
-30
+5
+25
 {% include engine2.html %}
 input: int
 output: {type: array, items: double}
 action:
   - let:
-      BN: {new: [1, -0.5], type: {type: array, items: double}}
+      BN:
+        new: [1, -0.5]
+        type: {type: array, items: double}}
   - for: {M: 2}
     until: {">": [M, input]}
     step: {M: {+: [M, 1]}}
     do:
       - let:
-          S: {u-: {"-": [{/: [1, {+: [M, 1]}]}, 0.5]}}
+          S: {u-: {-: [{/: [1, {+: [M, 1]}]}, 0.5]}}
       - for: {K: 2}
         until: {==: [K, M]}
         step: {K: {+: [K, 1]}}
@@ -352,9 +353,12 @@ action:
             step: {J: {+: [J, 1]}}
             do:
               - set:
-                  R: {"*": [R, {/: [{"-": [{+: [J, M]}, K]}, J]}]}
+                  R:
+                    "*":
+                      - R
+                      - {/: [{-: [{+: [J, M]}, K]}, J]}
           - set:
-              S: {"-": [S, {"*": [R, {attr: BN, path: [K]}]}]}
+              S: {-: [S, {"*": [R, {attr: BN, path: [K]}]}]}
       - set:
           BN: {a.append: [BN, S]}
   - for: {M: 3}
