@@ -132,6 +132,11 @@ div.CodeMirror {
     resize: none;
 }
 
+.CodeMirror-hscrollbar, .CodeMirror-vscrollbar {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 div.CodeMirror div.CodeMirror-cursor {
     width: auto;
     border: 0;

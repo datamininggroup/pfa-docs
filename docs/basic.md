@@ -48,7 +48,7 @@ In this web applet, the input is represented as a stream of JSON data (one JSON 
        {"+": ["input", 100]}
      ]}
 
-but it gets more crowded by quotation marks and brackets as we consider more complex examples.  The YAML is always converted into JSON before building a PFA scoring engine.
+but JSON strings get more crowded by quotation marks and brackets as we consider more complex examples.  The YAML version is always converted into JSON before building a PFA scoring engine.
 
 The above example has three parts: an input type schema, an output type schema, and a list of expressions to compute, returning the last one (or in this case, the only one).  These are the only _required_ top-level fields; I will present others later.
 
@@ -69,7 +69,7 @@ action:
 
 Try mixing in one of these two-parameter functions: "`+`" (addition), "`-`" (subtraction), "`*`" (multiplication), "`/`" (floating-point division), "`//`" (integer division), "`u-`" (negation), "`%`" (modulo), "`%%`" (remainder), "`**`" (exponentiation).
 
-Try mixing in one of these one-parameter functions: `m.sqrt`, `m.sin`, `m.cos`, `m.tan`, `m.exp`, `m.ln` (natural logarithm), `m.log10` (logarithm base 10), `m.floor`, `m.ceil`, `m.round`.  One-parameter functions do not need to enclose arguments in square brackets (`{m.sin: 3.14}` versus `{m.sin: [3.14]}`), but they may, for consistency.
+Try mixing in one of these one-parameter functions: `m.sqrt`, `m.sin`, `m.cos`, `m.tan`, `m.exp`, `m.ln` (natural logarithm), `m.log10` (logarithm base 10), `m.floor`, `m.ceil`, `m.round`.  One-parameter functions do not need to enclose arguments in square brackets (`{"m.sin": 3.14}` versus `{"m.sin": [3.14]}`), but they may, for consistency.
 
 Try adding one of these zero-parameter functions, which is to say, constants: `{"m.pi": []}` and `{"m.e": []}`.  There are many other functions in the [function library](/docs/library/){:target="_blank"}.
 
@@ -195,11 +195,11 @@ action:
 
 ## Avro types
 
-PFA's types are equivalent to the types that can be serialized by [Avro](http://avro.apache.org/){:target="_blank"}.  Thus, inputs and outputs of PFA scoring engines can be readily converted to Avro's binary or JSON-based representation (since there is no translation involved), or other formats with some translation.  Avro is widely used in the Hadoop ecosystem, and its [types are specified in JSON](http://avro.apache.org/docs/1.7.6/spec.html){:target="_blank"}, so they can be included in a PFA document without special syntax.
+PFA's types are equivalent to the types that can be serialized by [Avro](http://avro.apache.org/){:target="_blank"}.  Thus, inputs and outputs of PFA scoring engines can be readily converted to Avro's binary or JSON-based representation (since no semantics-changing translations are needed), though they may be converted to and from other formats with some translation.  Avro is widely used in the Hadoop ecosystem, and its [types are specified in JSON format](http://avro.apache.org/docs/1.7.6/spec.html){:target="_blank"}, so these type schemae can be included in a PFA document without any special syntax.
 
 ### Input records with multiple fields
 
-Most often, scoring engines receive data as records--- named, heterogeneous product types with named fields--- and occasionally a scoring engine returns output as a record as well.
+Most often, scoring engines receive data as records--- named, heterogeneous product types with named fields--- and occasionally a scoring engine returns output as a record as well.  This subset of Avro can be naturally converted to CSV.
 
 Here is a semi-realistic example of input records (the 20 closest stars to the sun):
 
@@ -242,7 +242,7 @@ input:
 output: double
 
 action:
-  # sum in quadrature
+  # sum in quadrature of x, y, z
   - m.sqrt:
       a.sum:
         type: {type: array, items: double}
@@ -252,17 +252,17 @@ action:
           - {"**": [input.z, 2]}
 {% include engine3.html %}
 
-Each record has seven fields: `name` (name of star), `x`, `y`, `z` (galactic coordinates, centered on the Sun), `spec` (spectral type), `planets` (at least one known planet in system), `mag` (the magnitude--- larger numbers are dimmer as seen from Earth).
+Each record has seven fields: `name` (name of star), `x`, `y`, `z` (galactic coordinates, centered on the Sun), `spec` (spectral type), `planets` (true if there is at least one known planet in the system), `mag` (the magnitude--- larger numbers are dimmer as seen from Earth).
 
 The `x`, `y`, `z` coordinates are numerical, and thus we can add them in quadrature to compute the distance of the star from Earth (in light years).
 
 ### Type-safe null
 
-The type of `mag` is a tagged union of `double` with `null`.  Null values are used to represent missing data, but a symbol cannot have a `null` value unless its type includes `null` as a union option.  Thus, types must be explicitly labeled as nullable.
+In the above example, the type of `mag` is a tagged union of `double` with `null`.  Null values are used to represent missing data, but a symbol cannot have a `null` value unless its type includes `null` as a union option.  Thus, types must be explicitly labeled as nullable.
 
-The union of `double` and `null` is a different type than `double`, so `mag` cannot be passed to a function that expects a `double`, such as addition.  It must be type-cast as a `double`, and thus every case in which missing values are possible must be handled.  This is known as a "type-safe null," since the type check verifies that null pointer exceptions will not occur at run-time.
+The union of `double` and `null` is a different type than `double` by itself, so `mag` cannot be passed to a function that expects a `double`, such as addition.  It must be type-cast as a `double`, and thus every case in which missing values are possible must be handled.  This is known as a "type-safe null," since the type check verifies that null pointer exceptions will not occur at run-time.
 
-This filter only selects stars that have a non-null `mag` and returns its value.  Note that the return type is simply `double`; it can never be `null` because we have ensured this with the type-cast.
+This filter only selects stars that have a non-null `mag` and returns its value.  Note that the return type is simply `double`; return values won't ever be `null` because we have ensured this with the type-cast.
 
 {% include engine1.html %}
 {"name": "Sun", "x": 0.0, "y": 0.0, "z": 0.0, "spec": "G2 V", "planets": true, "mag": {"double": -26.72}}
@@ -304,24 +304,112 @@ action:
 
 ### Type-safe cast
 
-PFA documents include enough information to check all of their data types before execution, and most PFA engines should take advantage of this fact and actually check the types.  Type errors, especially `null` where a value is expected, are common causes of late-stage failures in a long-running workflow.  (That is, the analytic started up, appeared to be working fine, and then crashed hours later when no one was paying attention anymore.)
+PFA documents include enough information to check all of their data types before execution, and most PFA engines should take advantage of this fact and actually check the types.  Type errors, especially `null` where a value is expected, are common causes of late-stage failures in a long-running workflow.  (That is, an analytic that started up, appeared to be working fine, and then crashed hours later when no one was paying attention.)
 
 In some languages, type-casts are a means of subverting the type check.  For example, `(Cat)animal` in C or Java asserts that the `animal` object is a member of the `Cat` subclass, when the type system only knows that it's a generic `Animal`.  If this is not true at runtime, it can corrupt data (in C) or cause an exception (in Java).
 
 The type-cast of `input.mag` in the example above has the form of an exhaustive pattern match, rather than a single assertion.  Any value that `mag` can take--- a number or `null`--- has an associated action.  This is known as a type-safe cast because there are no cases that corrupt data or raise runtime exceptions.
 
-Try removing the second case or putting in a bogus case (`input.mag` is a `string`).  Also, try adding `"partial": true` at the same nesting level as `cast` and `cases`.  This allows the cast-cases to be non-exhaustive (at the price of the expression not having a return value, though the return value is not used in this example).
+Try removing the second case or putting in a bogus case (assert that `input.mag` is a `string`, for instance).  Also, try adding a `"partial": true` key-value pair at the same nesting level as `cast` and `cases` keys.  A partial match can be non-exhaustive (at the price of the expression not returning a value).
 
 For a more realistic example of input types and missing value casting, see the [Exoplanets example](/docs/exoplanets).
 
+## Programming constructs
+
+The PFA documents we seen so far have single-expression actions.  Though these examples were considered for simplicity's sake, it would not be unusual for a complex statistical model to also be a single expression, if it is served by a library function.  For instance, the function `model.tree.simpleWalk` evaluates a conventional decision tree or regression tree in one expression, though the tree may have many nodes and input predictors.  Even workflows with pre-processing and post-processing might be composed of only three expressions.  PFA is not intended for general-purpose programming.
+
+However, it does have a suite of standard programming constructs for flexibility.  If a desired function is not available in the standard library, it can implemented.
+
+
+
+
+
+Bernoulli numbers (the first problem to be solved with a computer program)
+
+{% include engine1.html %}
+10
+20
+30
+{% include engine2.html %}
+input: int
+output: {type: array, items: double}
+action:
+  - let:
+      BN: {new: [1, -0.5], type: {type: array, items: double}}
+  - for: {M: 2}
+    until: {">": [M, input]}
+    step: {M: {+: [M, 1]}}
+    do:
+      - let:
+          S: {u-: {"-": [{/: [1, {+: [M, 1]}]}, 0.5]}}
+      - for: {K: 2}
+        until: {==: [K, M]}
+        step: {K: {+: [K, 1]}}
+        do:
+          - let: {R: 1.0}
+          - for: {J: 2}
+            until: {">": [J, K]}
+            step: {J: {+: [J, 1]}}
+            do:
+              - set:
+                  R: {"*": [R, {/: [{"-": [{+: [J, M]}, K]}, J]}]}
+          - set:
+              S: {"-": [S, {"*": [R, {attr: BN, path: [K]}]}]}
+      - set:
+          BN: {a.append: [BN, S]}
+  - for: {M: 3}
+    until: {">": [M, input]}
+    step:
+      M: {+: [M, 2]}
+    do:
+      - set: {BN: {a.replace: [BN, M, 0]}}
+  - BN
+{% include engine3.html %}
+
+(Normally would be auto-generated, either from a nice-syntax language if written by hand or from an automated tool, such as automated code translation).  This example was translated from the following Fortran code:
+
+~~~~~~
+        SUBROUTINE BERNOA(N,BN)
+        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+        DIMENSION BN(0:N)
+        BN(0)=1.0D0
+        BN(1)=-0.5D0
+        DO 30 M=2,N
+           S=-(1.0D0/(M+1.0D0)-0.5D0)
+           DO 20 K=2,M-1
+              R=1.0D0
+              DO 10 J=2,K
+10               R=R*(J+M-K)/J
+20            S=S-R*BN(K)
+30         BN(M)=S
+        DO 40 M=3,N,2
+40         BN(M)=0.0D0
+        RETURN
+        END
+~~~~~~
+{: .language-fortran}
+
+
+
+
+### Local variable assignment
+
+
+### Flow control
+
+
+### Functions and callbacks
+
+
+
+
 ## To-do
 
-  * begin, action, end and flowTime.png
   * creating local variables, if statements, while/for loops
   * user-defined functions and callbacks
   * persistent storage
+  * begin, action, end and flowTime.png
   * errors and logs
-
 
 <!-- The execution of a scoring engine has two or three phases: begin, action, and possibly end.  Some real-time pipelines (such as [Storm](https://storm.incubator.apache.org/){:target="_blank"}) do not have a concept of an end to the data flow.  The begin routine is called once before encountering any data, action is called once for every datum of the same type in the dataset, and end is called after all data (like [awk](http://www.gnu.org/software/gawk/manual/gawk.html){:target="_blank"}). -->
 

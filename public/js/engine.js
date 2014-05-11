@@ -158,43 +158,46 @@ function run(cm) {
             payload = {data: input.getValue(), format: "yaml", document: doc.getValue()};
         }
 
-        $.post("http://pfa-gae.appspot.com/run",
-               JSON.stringify(payload),
-               function (data, textStatus, jqXHR) {
-                   if (data.slice(0, 14) == "COMPILER-ERROR") {
-                       var lines = data.trim().split("\n");
-                       var errorClass = lines[1];
-                       var errorMessage = lines.splice(2, lines.length).join("\n");
-                       coverIcon.attr("src", "/public/playbutton.gif");
-                       coverIcon.css("visibility", "hidden");
-                       cover.css("visibility", "visible");
-                       if (output != undefined) {
-                           cmdom.style.color = "red";
-                           output.setValue(errorClass + ":\n" + errorMessage);
-                       }
-                       else {
-                           outputError.innerHTML = "";
-                           outputError.appendChild(document.createTextNode(errorClass + ":\n" + errorMessage));
-                           outputThePlot.innerHTML = "";
-                       }
-                   }
-                   else {
-                       coverIcon.attr("src", "/public/playbutton.gif");
-                       coverIcon.css("visibility", "hidden");
-                       cover.css("visibility", "hidden");
-                       if (output != undefined) {
-                           cmdom.style.color = "black";
-                           output.setValue(data.trim());
-                       }
-                       else {
-                           outputError.innerHTML = "";
-                           outputThePlot.innerHTML = "";
-                           makePlot(data, outputThePlot);
-                       }
-                   }
-                   engine[0].running = false;
-               },
-               "text");
+        $.ajax({url: "http://pfa-gae.appspot.com/run",
+                type: "POST",
+                data: JSON.stringify(payload),
+                contentType: "application/json; charset=utf-8",
+                success: function (data, textStatus, jqXHR) {
+                    if (data.slice(0, 14) == "COMPILER-ERROR") {
+                        var lines = data.trim().split("\n");
+                        var errorClass = lines[1];
+                        var errorMessage = lines.splice(2, lines.length).join("\n");
+                        coverIcon.attr("src", "/public/playbutton.gif");
+                        coverIcon.css("visibility", "hidden");
+                        cover.css("visibility", "visible");
+                        if (output != undefined) {
+                            cmdom.style.color = "red";
+                            output.setValue(errorClass + ":\n" + errorMessage);
+                        }
+                        else {
+                            outputError.innerHTML = "";
+                            outputError.appendChild(document.createTextNode(errorClass + ":\n" + errorMessage));
+                            outputThePlot.innerHTML = "";
+                        }
+                    }
+                    else {
+                        coverIcon.attr("src", "/public/playbutton.gif");
+                        coverIcon.css("visibility", "hidden");
+                        cover.css("visibility", "hidden");
+                        if (output != undefined) {
+                            cmdom.style.color = "black";
+                            output.setValue(data.trim());
+                        }
+                        else {
+                            outputError.innerHTML = "";
+                            outputThePlot.innerHTML = "";
+                            makePlot(data, outputThePlot);
+                        }
+                    }
+                    engine[0].running = false;
+                },
+                dataType: "text"
+                });
     }
 }
 
