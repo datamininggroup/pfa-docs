@@ -36,12 +36,43 @@ function jsAstToLiteralObject(ast) {
         throw new Error("not a literal expression");
 }
 
+function jsAstToFunctionName(ast) {
+    if (ast.type == "Identifier")
+        return ast.name;
+    else if (ast.type == "MemberExpression" && !ast.computed)
+        return jsAstToFunctionName(ast.object) + "." + jsAstToFunctionName(ast.property);
+    else
+        throw new Error("illegal function name");
+}
+
 function jsAstToExpression(ast) {
     if (ast.type == "Literal") {
         if (typeof ast.value == "string")
             return {"@": location(ast.loc), "string": ast.value};
         else
             return ast.value;
+    }
+
+    else if (ast.type == "Identifier")
+        return ast.name;
+
+    else if (ast.type == "MemberExpression") {
+        var reversedPath = [];
+
+        var walk = ast;
+        while (walk.type == "MemberExpression") {
+            if (!walk.computed  &&  walk.property.type == "Identifier")
+                reversedPath.push({"@": location(walk.property.loc), "string": walk.property.name});
+            else if (walk.computed)
+                reversedPath.push(jsAstToExpression(walk.property));
+            else
+                throw new Error("unrecognized member expression");
+            walk = walk.object;
+        }
+
+        var attr = jsAstToExpression(walk);
+
+        return {"@": location(ast.loc), "attr": attr, "path": reversedPath.reverse()};
     }
 
     else if (ast.type == "BinaryExpression") {
@@ -73,6 +104,19 @@ function jsAstToExpression(ast) {
 
         var out = {"@": location(ast.loc)};
         out[fcnName] = [jsAstToExpression(ast.argument)];
+        return out;
+    }
+
+    else if (ast.type == "CallExpression") {
+        var fcnName = jsAstToFunctionName(ast.callee);
+
+        var args = [];
+        for (var i in ast.arguments)
+            args.push(jsAstToExpression(ast.arguments[i]));
+
+        var out = {"@": location(ast.loc)};
+        out[fcnName] = args;
+        return out;
     }
 
     else
