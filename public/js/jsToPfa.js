@@ -45,6 +45,24 @@ function jsAstToFunctionName(ast) {
         throw new Error("illegal function name");
 }
 
+function jsAstToAttrPath(ast) {
+    var reversedPath = [];
+
+    var walk = ast;
+    while (walk.type == "MemberExpression") {
+        if (!walk.computed  &&  walk.property.type == "Identifier")
+            reversedPath.push({"@": location(walk.property.loc), "string": walk.property.name});
+        else if (walk.computed)
+            reversedPath.push(jsAstToExpression(walk.property));
+        else
+            throw new Error("unrecognized member expression");
+        walk = walk.object;
+    }
+
+    return {"attr": jsAstToExpression(walk), "path": reversedPath.reverse()};
+}
+
+
 function jsAstToExpression(ast) {
     if (ast.type == "Literal") {
         if (typeof ast.value == "string")
@@ -57,22 +75,9 @@ function jsAstToExpression(ast) {
         return ast.name;
 
     else if (ast.type == "MemberExpression") {
-        var reversedPath = [];
-
-        var walk = ast;
-        while (walk.type == "MemberExpression") {
-            if (!walk.computed  &&  walk.property.type == "Identifier")
-                reversedPath.push({"@": location(walk.property.loc), "string": walk.property.name});
-            else if (walk.computed)
-                reversedPath.push(jsAstToExpression(walk.property));
-            else
-                throw new Error("unrecognized member expression");
-            walk = walk.object;
-        }
-
-        var attr = jsAstToExpression(walk);
-
-        return {"@": location(ast.loc), "attr": attr, "path": reversedPath.reverse()};
+        var out = jsAstToAttrPath(ast);
+        out["@"] = location(ast.loc);
+        return out;
     }
 
     else if (ast.type == "BinaryExpression") {
@@ -125,8 +130,27 @@ function jsAstToExpression(ast) {
 
 function jsAstToExpressions(ast) {
     var out = [];
-    for (var i in ast.elements) {
-        out.push(jsAstToExpression(ast.elements[i]));
+    for (var i in ast) {
+        if (ast[i].type == "ExpressionStatement")
+            out.push(jsAstToExpression(ast[i].expression));
+
+        else if (ast[i].type == "VariableDeclaration") {
+            var pairs = {};
+
+            for (var j in ast[i].declarations) {
+                if (ast[i].declarations[j].type == "VariableDeclarator"  &&
+                    ast[i].declarations[j].id.type == "Identifier") {
+                    pairs[ast[i].declarations[j].id.name] = jsAstToExpression(ast[i].declarations[j].init);
+                }
+                else
+                    throw new Error("unrecognized variable declaration l-value");
+            }
+
+            out.push({"@": location(ast[i].loc), "let": pairs});
+        }
+
+        else
+            throw new Error("unrecognized statement");
     }
     return out;
 }
@@ -147,12 +171,53 @@ function jsToPfa(doc) {
             else if (ast.body[i].expression.left.name == "output")
                 out["output"] = jsAstToLiteralObject(ast.body[i].expression.right);
 
+            else if (ast.body[i].expression.left.name == "method") {
+                if (ast.body[i].expression.right.type == "Literal"  &&
+                    typeof ast.body[i].expression.right.value == "string")
+                    out["method"] = ast.body[i].expression.right.value;
+                else if (ast.body[i].expression.right.type == "Identifier")
+                    out["method"] = ast.body[i].expression.right.name;
+            }
+
             else if (ast.body[i].expression.left.name == "action") {
-                var subast = ast.body[i].expression.right;
-                if (subast.type == "ArrayExpression")
-                    out["action"] = jsAstToExpressions(subast);
+                if (ast.body[i].expression.right.type == "FunctionExpression"  &&
+                    ast.body[i].expression.right.id == null  &&
+                    ast.body[i].expression.right.rest == null  &&
+                    ast.body[i].expression.right.generator == false  &&
+                    ast.body[i].expression.right.expression == false  &&
+                    ast.body[i].expression.right.defaults.length == 0  &&
+                    ast.body[i].expression.right.body.type == "BlockStatement") {
+                    var hasInput = false;
+                    var hasTally = false;
+                    for (var j in ast.body[i].expression.right.params) {
+                        if (ast.body[i].expression.right.params[j].type == "Identifier") {
+                            var p = ast.body[i].expression.right.params[j].name;
+                            if (p == "input") {
+                                if (hasInput)
+                                    throw new Error("\"input\" appears more than once in the action function's parameter list")
+                                else
+                                    hasInput = true;
+                            }
+                            else if (p == "tally") {
+                                if (hasTally)
+                                    throw new Error("\"tally\" appears more than once in the action function's parameter list")
+                                else
+                                    hasTally = true;
+                            }
+                            else
+                                throw new Error("the only parameters allowed in the action function's parameter list are \"input\" and \"tally\"");
+                        }
+                        else
+                            throw new Error("action parameters must be simple identifiers");
+                    }
+
+                    if (!hasInput)
+                        throw new Error("action parameters must include \"input\"");
+
+                    out["action"] = jsAstToExpressions(ast.body[i].expression.right.body.body);
+                }
                 else
-                    out["action"] = [jsAstToExpression(subast)];
+                    throw new Error("action must be a simple anonymous function");
             }
 
             else
