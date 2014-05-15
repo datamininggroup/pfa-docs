@@ -128,6 +128,21 @@ function jsAstToExpression(ast, allowFcn) {
     else if (ast.type == "MemberExpression")
         return jsAstToAttrPath(ast);
 
+    else if (ast.type == "UnaryExpression") {
+        var fcnName = ast.operator;
+        if (fcnName == "-")
+            fcnName = "u-";
+        else if (fcnName == "!")
+            fcnName = "not";
+
+        if (["u-", "not", "~"].indexOf(fcnName) == -1)
+            throw new Error("Javascript's \"" + fcnName + "\" unary operator has no PFA translation (yet)");
+
+        var out = {"@": location(ast.loc)};
+        out[fcnName] = [jsAstToExpression(ast.argument)];
+        return out;
+    }
+
     else if (ast.type == "BinaryExpression") {
         var fcnName = ast.operator;
         if (fcnName == "%")
@@ -145,19 +160,11 @@ function jsAstToExpression(ast, allowFcn) {
         return out;
     }
 
-    else if (ast.type == "UnaryExpression") {
-        var fcnName = ast.operator;
-        if (fcnName == "-")
-            fcnName = "u-";
-        else if (fcnName == "!")
-            fcnName = "not";
-
-        if (["u-", "not", "~"].indexOf(fcnName) == -1)
-            throw new Error("Javascript's \"" + fcnName + "\" unary operator has no PFA translation (yet)");
-
-        var out = {"@": location(ast.loc)};
-        out[fcnName] = [jsAstToExpression(ast.argument)];
-        return out;
+    else if (ast.type == "ConditionalExpression") {
+        var test = jsAstToExpression(ast.test);
+        var consequent = jsAstToExpression(ast.consequent);
+        var alternate = jsAstToExpression(ast.alternate);
+        return {"@": location(ast.loc), "if": test, "then": consequent, "else": alternate};
     }
 
     else if (ast.type == "CallExpression") {
@@ -297,11 +304,91 @@ function jsAstToExpression(ast, allowFcn) {
         throw new Error("Javascript's \"" + ast.type + "\" construct has no PFA translation (yet)");
 }
 
+function unravelIf(ast) {
+    var test = jsAstToExpression(ast.test);
+    var consequent;
+    if (ast.consequent.type == "BlockStatement")
+        consequent = jsAstToExpressions(ast.consequent.body);
+    else
+        consequent = jsAstToExpressions([ast.consequent]);
+
+    var ifthen = {"@": location(ast.loc), "if": test, "then": consequent};
+
+    if (ast.alternate == null)
+        return [ifthen];
+    else if (ast.alternate.type == "IfStatement")
+        return [ifthen].concat(unravelIf(ast.alternate));
+    else if (ast.alternate.type == "BlockStatement")
+        return [ifthen, {"else": jsAstToExpressions(ast.alternate.body)}];
+    else
+        return [ifthen, {"else": jsAstToExpressions([ast.alternate])}];
+}
+
 function jsAstToExpressions(ast) {
     var out = [];
     for (var i in ast) {
         if (ast[i].type == "ExpressionStatement")
             out.push(jsAstToExpression(ast[i].expression));
+
+        else if (ast[i].type == "IfStatement") {
+            var ifthens = unravelIf(ast[i]);
+
+            var elseClause = null;
+            if (ifthens.length > 1  &&  ifthens[ifthens.length - 1]["else"] != undefined)
+                elseClause = ifthens.splice(-1)[0]["else"];
+
+            if (ifthens.length == 1) {
+                if (elseClause != null)
+                    ifthens[0]["else"] = elseClause;
+                out.push(ifthens[0]);
+            }
+            else if (elseClause != null)
+                out.push({"@": location(ast[i].loc), "cond": ifthens, "else": elseClause});
+            else
+                out.push({"@": location(ast[i].loc), "cond": ifthens});
+        }
+
+        else if (ast[i].type == "WhileStatement") {
+            var test = jsAstToExpression(ast[i].test);
+            var body;
+            if (ast[i].body.type == "BlockStatement")
+                body = jsAstToExpressions(ast[i].body.body);
+            else
+                body = jsAstToExpressions([ast[i].body]);
+
+            out.push({"@": location(ast[i].loc), "while": test, "do": body});
+        }
+
+        else if (ast[i].type == "DoWhileStatement") {
+            var test = jsAstToExpression(ast[i].test);
+            var body;
+            if (ast[i].body.type == "BlockStatement")
+                body = jsAstToExpressions(ast[i].body.body);
+            else
+                body = jsAstToExpressions([ast[i].body]);
+
+            out.push({"@": location(ast[i].loc), "do": body, "until": {"not": test}});
+        }
+
+        else if (ast[i].type == "ForStatement") {
+            var init = jsAstToExpression(ast[i].init);
+            if (init["let"] == undefined)
+                throw new Error("initialization of for loop must be a variable declaration (with \"var\")");
+            
+            var test = jsAstToExpression(ast[i].test);
+
+            var update = jsAstToExpression(ast[i].update);
+            if (update["set"] == undefined)
+                throw new Error("initialization of for loop must be a variable assignment (without \"var\")");
+
+            var body;
+            if (ast[i].body.type == "BlockStatement")
+                body = jsAstToExpressions(ast[i].body.body);
+            else
+                body = jsAstToExpressions([ast[i].body]);
+
+            out.push({"@": location(ast[i].loc), "for": init["let"], "until": {"not": test}, "step": update["set"], "do": body});
+        }
 
         else if (ast[i].type == "VariableDeclaration"  ||
                  ast[i].type == "AssignmentExpression"  ||
@@ -315,6 +402,73 @@ function jsAstToExpressions(ast) {
             throw new Error("unrecognized statement: " + ast[i].type);
     }
     return out;
+}
+
+function jsAstToCellsOrPools(ast, isCell) {
+    if (ast.type == "ObjectExpression") {
+        var out = {"@": location(ast.loc)};
+        for (var k in ast.properties) {
+            var key;
+            if (ast.properties[k].type == "Property"  &&
+                ast.properties[k].key.type == "Literal"  &&
+                typeof ast.properties[k].key.value == "string")
+                key = ast.properties[k].key.value;
+
+            else if (ast.properties[k].type == "Property"  &&
+                     ast.properties[k].key.type == "Identifier")
+                key = ast.properties[k].key.name;
+
+            else
+                throw new Error("object should contain only string-valued properties");
+
+            var hasType = false;
+            var hasInit = false;
+            var value = {"@": location(ast.properties[k].value.loc)};
+            if (ast.properties[k].value.type == "ObjectExpression") {
+                for (var kk in ast.properties[k].value.properties) {
+                    var keykey;
+                    if (ast.properties[k].value.properties[kk].type == "Property"  &&
+                        ast.properties[k].value.properties[kk].key.type == "Literal"  &&
+                        typeof ast.properties[k].value.properties[kk].key.value == "string")
+                        keykey = ast.properties[k].value.properties[kk].key.value;
+
+                    else if (ast.properties[k].value.properties[kk].type == "Property"  &&
+                        ast.properties[k].value.properties[kk].key.type == "Identifier")
+                        keykey = ast.properties[k].value.properties[kk].key.name;
+
+                    else
+                        throw new Error("object should contain only string-valued properties");
+
+                    var valuevalue = jsAstToLiteralObject(ast.properties[k].value.properties[kk].value);
+                    if (keykey == "type") {
+                        hasType = true;
+                        value["type"] = valuevalue;
+                    }
+                    else if (keykey == "init") {
+                        hasInit = true;
+                        value["init"] = valuevalue;
+                    }
+                    else if (keykey == "shared"  ||  keykey == "rollback") {
+                        if (typeof valuevalue != "boolean")
+                            throw new Error(keykey + " must be boolean");
+                        value[keykey] = valuevalue;
+                    }
+                    else
+                        throw new Error("cell/pool keys must be \"type\", \"init\", \"shared\", \"rollback\"");
+                }
+
+                if (!hasType  ||  (isCell && !hasInit))
+                    throw new Error("missing \"type\" or \"init\" in " + (isCell ? "cell" : "pool"));
+            }
+            else
+                throw new Error("cell/pool must be an object");
+
+            out[key] = value;
+        }
+        return out;
+    }
+    else
+        throw new Error("cells/pools must be an object");
 }
 
 function jsToPfa(doc) {
@@ -450,10 +604,10 @@ function jsToPfa(doc) {
                 out["zero"] = jsAstToLiteralObject(ast.body[i].expression.right);
 
             else if (ast.body[i].expression.left.name == "cells")
-                throw new Error("NOT IMPLEMENTED YET");   // FIXME
+                out["cells"] = jsAstToCellsOrPools(ast.body[i].expression.right, true);
 
             else if (ast.body[i].expression.left.name == "pools")
-                throw new Error("NOT IMPLEMENTED YET");   // FIXME
+                out["pools"] = jsAstToCellsOrPools(ast.body[i].expression.right, false);
 
             else if (ast.body[i].expression.left.name == "randseed") {
                 if (ast.body[i].expression.right.type == "Literal"  &&
