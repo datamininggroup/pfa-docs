@@ -91,7 +91,7 @@ function jsAstToFcnDef(ast) {
 }
 
 function jsAstToExpression(ast, allowFcn) {
-    allowFcn = typeof allowFcn !== 'undefined' ? allowFcn : false;
+    allowFcn = typeof allowFcn !== "undefined" ? allowFcn : false;
 
     if (allowFcn) {
         if (ast.type == "BinaryExpression"  &&
@@ -186,7 +186,7 @@ function jsAstToExpression(ast, allowFcn) {
             if (args.length == 0  ||  args.length > 3)
                 throw new Error("\"cell\" takes 1-3 arguments");
         }
-        if (fcnName == "pool") {
+        else if (fcnName == "pool") {
             if (args.length >= 1)
                 out[fcnName] = args[0];
             if (args.length >= 2)
@@ -197,6 +197,15 @@ function jsAstToExpression(ast, allowFcn) {
                 out["init"] = args[3];
             if (args.length == 0  ||  args.length > 4)
                 throw new Error("\"pool\" takes 1-4 arguments");
+        }
+        else if (fcnName == "console.log") {
+            out["log"] = args;
+        }
+        else if (fcnName == "doc") {
+            if (args.length == 1  &&  args[0]["string"] != undefined)
+                out["doc"] = args[0]["string"];
+            else
+                throw new Error("\"doc\" takes 1 literal string argument");
         }
         else {
             out[fcnName] = args;
@@ -390,6 +399,36 @@ function jsAstToExpressions(ast) {
             out.push({"@": location(ast[i].loc), "for": init["let"], "until": {"not": test}, "step": update["set"], "do": body});
         }
 
+        else if (ast[i].type == "ForInStatement") {
+            if (ast[i].left.type == "VariableDeclaration"  &&
+                ast[i].left.kind == "var"  &&
+                ast[i].left.declarations.length == 1  &&
+                ast[i].left.declarations[0].type == "VariableDeclarator"  &&
+                ast[i].left.declarations[0].init == null  &&
+                ast[i].left.declarations[0].id.type == "Identifier") {
+
+                var varName = ast[i].left.declarations[0].id.name;
+                var obj = jsAstToExpression(ast[i].right);
+                var body;
+                if (ast[i].body.type == "BlockStatement")
+                    body = jsAstToExpressions(ast[i].body.body);
+                else
+                    body = jsAstToExpressions([ast[i].body]);
+
+                out.push({"@": location(ast[i].loc), "foreach": varName, "in": obj, "do": body});
+            }
+            else
+                throw new Error("initialization of for..in loop must be a variable declaration (with \"var\")");
+        }
+
+        else if (ast[i].type == "ThrowStatement") {
+            if (ast[i].argument.type == "Literal"  &&
+                typeof ast[i].argument.value == "string")
+                out.push({"@": location(ast[i].loc), "error": ast[i].argument.value});
+            else
+                throw new Error("error form must be simply throw \"string\"");
+        }
+
         else if (ast[i].type == "VariableDeclaration"  ||
                  ast[i].type == "AssignmentExpression"  ||
                  ast[i].type == "SequenceExpression"  ||
@@ -471,7 +510,19 @@ function jsAstToCellsOrPools(ast, isCell) {
         throw new Error("cells/pools must be an object");
 }
 
-function jsToPfa(doc) {
+function stripAt(pfa) {
+    if (typeof pfa == "object") {
+        if (pfa["@"] != undefined)
+            delete pfa["@"];
+
+        for (i in pfa)
+            stripAt(pfa[i]);
+    }
+}
+
+function jsToPfa(doc, debug) {
+    debug = typeof debug !== "undefined" ? debug : true;
+
     var ast = esprima.parse(doc, {loc: true});
     var out = {};
 
@@ -670,6 +721,9 @@ function jsToPfa(doc) {
 
     if (!("action" in out))
         throw new Error("missing action");
+
+    if (!debug)
+        stripAt(out);
 
     return out;
 }
