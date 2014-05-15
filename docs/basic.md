@@ -336,20 +336,20 @@ action:
   - let:
       BN:
         new: [1, -0.5]
-        type: {type: array, items: double}}
+        type: {type: array, items: double}
   - for: {M: 2}
-    until: {">": [M, input]}
+    while: {"<=": [M, input]}
     step: {M: {+: [M, 1]}}
     do:
       - let:
           S: {u-: {-: [{/: [1, {+: [M, 1]}]}, 0.5]}}
       - for: {K: 2}
-        until: {==: [K, M]}
+        while: {"!=": [K, M]}
         step: {K: {+: [K, 1]}}
         do:
           - let: {R: 1.0}
           - for: {J: 2}
-            until: {">": [J, K]}
+            while: {"<=": [J, K]}
             step: {J: {+: [J, 1]}}
             do:
               - set:
@@ -362,7 +362,7 @@ action:
       - set:
           BN: {a.append: [BN, S]}
   - for: {M: 3}
-    until: {">": [M, input]}
+    while: {"<=": [M, input]}
     step:
       M: {+: [M, 2]}
     do:

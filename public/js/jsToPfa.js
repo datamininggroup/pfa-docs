@@ -396,7 +396,7 @@ function jsAstToExpressions(ast) {
             else
                 body = jsAstToExpressions([ast[i].body]);
 
-            out.push({"@": location(ast[i].loc), "for": init["let"], "until": {"not": test}, "step": update["set"], "do": body});
+            out.push({"@": location(ast[i].loc), "for": init["let"], "while": test, "step": update["set"], "do": body});
         }
 
         else if (ast[i].type == "ForInStatement") {
