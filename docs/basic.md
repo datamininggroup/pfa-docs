@@ -71,9 +71,9 @@ Try mixing in one of these two-parameter functions: "`+`" (addition), "`-`" (sub
 
 Try mixing in one of these one-parameter functions: `m.sqrt`, `m.sin`, `m.cos`, `m.tan`, `m.exp`, `m.ln` (natural logarithm), `m.log10` (logarithm base 10), `m.floor`, `m.ceil`, `m.round`.  One-parameter functions do not need to enclose arguments in square brackets (`{"m.sin": 3.14}` versus `{"m.sin": [3.14]}`), but they may, for consistency.
 
-Try adding one of these zero-parameter functions, which is to say, constants: `{"m.pi": []}` and `{"m.e": []}`.  There are many other functions in the [function library](/docs/library/){:target="_blank"}.
+Try adding one of these zero-parameter functions, which is to say, constants: `{"m.pi": []}` and `{"m.e": []}`.  (A PFA host doesn't have to implement zero-parameter functions as functions--- it could implement them as inline constants or whatever is most appropriate for the environment it runs in.)  There are many other functions in the [function library](/docs/library/){:target="_blank"}.
 
-Alternatively, you could write it in YAML-indentation form to follow the nesting level more easily:
+Alternatively, you could write it in YAML-indentation form to see the nesting level more easily:
 
 {% include engine1.html %}
 1
@@ -143,7 +143,7 @@ action:
 
 ### Fold
 
-The fold method is for aggregation--- use it to reduce a dataset to a single quantity.  Rather than wait for the end of the (potentially infinite) dataset, folding engines return a partial result with each call.  The previous partial result becomes available to the next action as a symbol `tally`.  If you are only interested in the total aggregate, ignore all but the last output.
+The fold method is for aggregation--- use it to reduce a dataset to a single quantity.  Rather than wait for the end of the (potentially infinite) dataset, folding engines return a partial result with each call.  The previous partial result becomes available to the next action as a symbol `tally`.  If you are only interested in the total, ignore all but the last output.
 
 {% include figure.html url="fold.png" caption="" %}
 
@@ -195,11 +195,11 @@ action:
 
 ## Avro types
 
-PFA's types are equivalent to the types that can be serialized by [Avro](http://avro.apache.org/){:target="_blank"}.  Thus, inputs and outputs of PFA scoring engines can be readily converted to Avro's binary or JSON-based representation (since no semantics-changing translations are needed), though they may be converted to and from other formats with some translation.  Avro is widely used in the Hadoop ecosystem, and its [types are specified in JSON format](http://avro.apache.org/docs/1.7.6/spec.html){:target="_blank"}, so these type schemae can be included in a PFA document without any special syntax.
+PFA's types are equivalent to the types that can be serialized by [Avro](http://avro.apache.org/){:target="_blank"}.  Thus, inputs and outputs of PFA scoring engines can be readily converted to Avro's binary or JSON-based representation (since no semantics-changing translations are needed).  PFA values can be converted to and from other formats, but some translation may be required.  Avro is widely used in the Hadoop ecosystem, and its [types are specified in JSON format](http://avro.apache.org/docs/1.7.6/spec.html){:target="_blank"}, so these type schemae can be included in a PFA document without any special syntax.
 
 ### Input records with multiple fields
 
-Most often, scoring engines receive data as records--- named, heterogeneous product types with named fields--- and occasionally a scoring engine returns output as a record as well.  This subset of Avro can be naturally converted to CSV.
+Most often, scoring engines receive data as records--- named, heterogeneous product types with named fields--- and occasionally a scoring engine returns output as a record as well.  This subset of Avro can be naturally converted to and from CSV.
 
 Here is a semi-realistic example of input records (the 20 closest stars to the sun):
 
@@ -308,9 +308,9 @@ PFA documents include enough information to check all of their data types before
 
 In some languages, type-casts are a means of subverting the type check.  For example, `(Cat)animal` in C or Java asserts that the `animal` object is a member of the `Cat` subclass, when the type system only knows that it's a generic `Animal`.  If this is not true at runtime, it can corrupt data (in C) or cause an exception (in Java).
 
-The type-cast of `input.mag` in the example above has the form of an exhaustive pattern match, rather than a single assertion.  Any value that `mag` can take--- a number or `null`--- has an associated action.  This is known as a type-safe cast because there are no cases that corrupt data or raise runtime exceptions.
+The type-cast of `input.mag` in the PFA example above has the form of an exhaustive pattern match, rather than a single assertion.  Any value that `mag` can take--- a number or `null`--- has an associated action.  This is known as a type-safe cast because there are no cases that corrupt data or raise runtime exceptions.
 
-Try removing the second case or putting in a bogus case (assert that `input.mag` is a `string`, for instance).  Also, try adding a `"partial": true` key-value pair at the same nesting level as `cast` and `cases` keys.  A partial match can be non-exhaustive (at the price of the expression not returning a value).
+Try removing the second case or putting in a bogus case (assert that `input.mag` is a `string`, for instance).  Also, try adding a "`"partial": true`" key-value pair at the same nesting level as `cast` and `cases` keys.  A partial match can be non-exhaustive (at the price of the expression not returning a value).
 
 For a more realistic example of input types and missing value casting, see the [Exoplanets example](/docs/exoplanets).
 
@@ -340,7 +340,7 @@ action:
   - {"-": [y, 1]}
 {% include engine3.html %}
 
-Notice that `let` and `set` take JSON objects mapping from names to expressions.  If you have several expressions to assign that don't depend on each other, they can be assigned in the same JSON object.  Since the PFA semantics require that they don't depend on one another (the keys of a JSON object might come in any order), a PFA host that supports parallelization might run them in parallel.
+Notice that `let` and `set` take JSON objects mapping from names to expressions.  If you have several expressions to assign that don't depend on each other, they can be assigned in the same JSON object.  Since the PFA semantics require that they don't depend on one another (because the order of key-value pairs of a JSON object are not guaranteed), a PFA host that supports parallelization might run them in parallel.
 
 {% include figure.html url="letTime.png" caption="" %}
 
@@ -428,6 +428,8 @@ action:
       {string: "high impedance"}
 {% include engine3.html %}
 
+It is easier to pragmatically add or remove cases if the `if-then` pairs are a flat list like this.
+
 ### While loops
 
 PFA has the standard pre-test and post-test loops:
@@ -460,16 +462,16 @@ action:
     until: {==: [i, 10]}
 {% include engine3.html %}
 
-While loops expose the PFA host to the possibility that a user's algorithm won't halt.  This would be bad in production, since a misconfigured PFA document could cause the system to hang.  PFA hosts have several ways to protect themselves:
+While loops expose the PFA host to the possibility that a user's algorithm will enter an infinite loop.  This would be bad in production, since a misconfigured PFA document could cause the system to hang.  PFA hosts have several ways to protect themselves:
 
-  * they can refuse to execute PFA documents containing `while`, `do-until`, `for`, or recursive loops among user functions, or
+  * they can refuse to execute PFA documents containing `while`, `do-until`, a generic `for`, or recursive cycles among user functions, or
   * they can stop a long-running `action` call with a timeout.
 
-The Google App Engine PFA host behind these online examples applies a timeout of 1 second.  This method has the advantage that it also excludes long-running, but finite, calculations.  If you're thinking of testing it by running a `while` loop without incrementing the dummy variable, be forewarned: you'll get thousands of results back and your browser will be swamped trying to display them all.
+The Google App Engine PFA host behind these online examples uses the second option, applying a timeout of 1 second per `action`.  This method has the advantage that it also excludes long-running, but finite, calculations.  If you're thinking of testing it by running a `while` loop without incrementing the dummy variable, be forewarned: you'll get thousands of results back and your browser will be swamped trying to display them all.
 
 ### For loops
 
-There are also three types of `for` loops.  The first is equivalent to a `while` loop (with a dummy variable in encapsulated scope), and the other two loop over arrays and maps.
+There are also three types of `for` loops.  The generic `for` is equivalent to a `while` loop (with a dummy variable in encapsulated scope), and the other two loop over arrays and maps.
 
 {% include engine1.html %}
 ["hello", "my", "ragtime", "gal"]
@@ -524,7 +526,7 @@ fcns:
       - {"*": [x, {u.squared: x}]}
 {% include engine3.html %}
 
-Functions must declare the types of their parameters and their return type.  User-defined functions enter the global function namespace prefixed by "`u.`" so that they can't conflict with any library functions.  Other than that, they can be used in the same way.
+Functions must declare the types of their parameters and their return type.  User-defined functions enter the global function namespace prefixed by "`u.`" so that they can't conflict with any library functions.  Other than that, user functions are used in the same way as library functions.
 
 Some library functions accept functions as arguments.  The two most useful examples of this are sorting and finding extreme values of arrays:
 
@@ -562,62 +564,20 @@ action:
       - params: [{x: int}, {y: int}]
         ret: boolean
         do:
+          # input comes from the enclosing scope
+          # it can be accessed but not modified
           - if: input
             then: {"<": [x, y]}
             else: {">": [x, y]}
 {% include engine3.html %}
 
-FIXME: more about closures
+These features are common in high-level languages, in which functions are first-class citizens that can be passed around as though they were values.  Low-level languages and limited environments (such as GPUs) don't allow first-class functions.  To support these environments, PFA functions are not first-class: they cannot be referred to by symbols or returned from a function, but they can appear in (and only in) function argument lists.  In a low-level environment, this translates to an explicit reference to a function, or even as inlined code.  Free variables in a closure (such as `input` in the anonymous function above) would be implemented as additional parameters passed to the function (which is why `input` can be accessed but not modified in the example above).
 
-### Another section
+### Realistic example
 
-Bernoulli numbers (the first problem to be solved with a computer program)
+The first problem to be solved with a computer program was a calculation of the Bernoulli sequence (by Ada Lovelace in 1842, a hundred years before the first electronic computer).  However, the PFA library (currently) does not have any specification for generating Bernoulli numbers, so if a particular application requires one, the PFA author would have to write it herself.
 
-{% include engine1.html %}
-5
-25
-{% include engine2.html %}
-input: int
-output: {type: array, items: double}
-action:
-  - let:
-      BN:
-        new: [1, -0.5]
-        type: {type: array, items: double}
-  - for: {M: 2}
-    while: {"<=": [M, input]}
-    step: {M: {+: [M, 1]}}
-    do:
-      - let:
-          S: {u-: {-: [{/: [1, {+: [M, 1]}]}, 0.5]}}
-      - for: {K: 2}
-        while: {"!=": [K, M]}
-        step: {K: {+: [K, 1]}}
-        do:
-          - let: {R: 1.0}
-          - for: {J: 2}
-            while: {"<=": [J, K]}
-            step: {J: {+: [J, 1]}}
-            do:
-              - set:
-                  R:
-                    "*":
-                      - R
-                      - {/: [{-: [{+: [J, M]}, K]}, J]}
-          - set:
-              S: {-: [S, {"*": [R, {attr: BN, path: [K]}]}]}
-      - set:
-          BN: {a.append: [BN, S]}
-  - for: {M: 3}
-    while: {"<=": [M, input]}
-    step:
-      M: {+: [M, 2]}
-    do:
-      - set: {BN: {a.replace: [BN, M, 0]}}
-  - BN
-{% include engine3.html %}
-
-(Normally would be auto-generated, either from a nice-syntax language if written by hand or from an automated tool, such as automated code translation).  This example was translated from the following Fortran code:
+Algorithms like this are often found in old libraries, ported from language to language as needed.  I found the following implementation in Fortran:
 
 ~~~~~~
         SUBROUTINE BERNOA(N,BN)
@@ -640,34 +600,96 @@ action:
 ~~~~~~
 {: .language-fortran}
 
+and converted it to PFA like this:
+
+{% include engine1.html %}
+5
+25
+{% include engine2.html %}
+input: int
+output: {type: array, items: double}
+action:
+  - u.bernoulli: input
+fcns:
+  bernoulli:
+    params: [{N: int}]
+    ret: {type: array, items: double}
+    do:
+      - let:
+          BN:
+            new: [1, -0.5]
+            type: {type: array, items: double}
+      - for: {M: 2}
+        while: {"<=": [M, N]}
+        step: {M: {+: [M, 1]}}
+        do:
+          - let:
+              S: {u-: {-: [{/: [1, {+: [M, 1]}]}, 0.5]}}
+          - for: {K: 2}
+            while: {"!=": [K, M]}
+            step: {K: {+: [K, 1]}}
+            do:
+              - let: {R: 1.0}
+              - for: {J: 2}
+                while: {"<=": [J, K]}
+                step: {J: {+: [J, 1]}}
+                do:
+                  - set:
+                      R:
+                        "*":
+                          - R
+                          - {/: [{-: [{+: [J, M]}, K]}, J]}
+              - set:
+                  S: {-: [S, {"*": [R, {attr: BN, path: [K]}]}]}
+          - set:
+              BN: {a.append: [BN, S]}
+      - for: {M: 3}
+        while: {"<=": [M, N]}
+        step:
+          M: {+: [M, 2]}
+        do:
+          - set: {BN: {a.replace: [BN, M, 0]}}
+      - BN
+{% include engine3.html %}
+
+Admittedly, the PFA is hard to read, even in its YAML form.  Embedding an entire language in JSON syntax makes it easier to manipulate programmatically, but harder to manipulate by hand.  In practice, one should rarely need to write something this complex by hand, since conventional languages can be easily converted into PFA.
+
+Most languages have parsers that build abstract syntax trees (AST), and we can convert these trees into PFA fairly easily because PFA is itself a tree.  Below is an example of a conversion from Javascript into PFA, performed by your browser.  Edit the Javascript code, and the PFA will follow suit (whenever the Javascript becomes valid).
+
+In a real application, user-defined functions would probably come from a language converter like this; the language choice depends on the audience.  New programmers might find it easiest to write Python, statisticians would probably prefer to write R code, etc.
+
 <script src="/public/js/esprima.js"></script>
 <script src="/public/js/jsToPfa.js"></script>
 <script src="/public/js/codemirror-4.1/mode/javascript/javascript.js"></script>
 
-<div>
+<div style="margin-bottom: 20px;">
   <div style="border: 2px solid #dddddd;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">Javascript syntax</div></div><textarea id="jsin">input = "int";
 output = {type: "array", items: "double"};
 
-action = function (input) {
-    var BN = new Array([1, -0.5],
-                       {type: "array", items: "double"});
-    for (var M = 2;  M <= input;  M++) {
-        var S = -(1/(M + 1) - 0.5);
-        for (var K = 2;  K != M;  K++) {
-            var R = 1;
-            for (var J = 2;  J <= K;  J++)
-                R = R*(J + M - K)/J;
-            S = S - R*BN[K];
-        }
-        BN[M] = S;
-    }
+action = function (input) { u.bernoulli(input); }
 
-    for (var M = 3;  M <= input;  M += 2)
-        BN = a.replace(BN, M, 0);
-    BN
-};</textarea><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; bottom: 55px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">
+fcns = {
+    bernoulli: function (N = "int") {
+        var BN = new Array([1, -0.5], {type: "array", items: "double"});
+        for (var M = 2;  M <= N;  M++) {
+            var S = -(1/(M + 1) - 0.5);
+            for (var K = 2;  K != M;  K++) {
+                var R = 1;
+                for (var J = 2;  J <= K;  J++)
+                    R = R*(J + M - K)/J;
+                S = S - R*BN[K];
+            }
+            BN[M] = S;
+        }
+
+        for (var M = 3;  M <= N;  M += 2)
+            BN = a.replace(BN, M, 0);
+        BN
+    } >> {type: "array", items: "double"}
+};</textarea><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; bottom: 80px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">
     <label><input id="debuggingInfo" type="checkbox" name="debuggingInfo" value="toggle" onChange="updatePfa();"></input> debugging info</label><br>
-    <label><input id="prettyPrint" type="checkbox" name="prettyPrint" value="toggle" onChange="updatePfa();"></input> pretty-print</label>
+    <label><input id="prettyPrint" type="checkbox" name="prettyPrint" value="toggle" onChange="updatePfa();"></input> pretty-print</label><br>
+    <label><input id="showErrors" type="checkbox" name="showErrors" value="toggle" onChange="updatePfa();" checked></input> show errors</label>
   </div></div></div>
   <div style="border: 2px solid #dddddd; border-top: none;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">Generated PFA (JSON)</div></div><textarea id="pfaout"></textarea></div>
 </div>
@@ -702,7 +724,10 @@ function updatePfa() {
             stringy = JSON.stringify(result);
         document.getElementById("pfaout").cm.setValue(stringy);
     }
-    catch (err) { }
+    catch (err) {
+        if (document.getElementById("showErrors").checked)
+            document.getElementById("pfaout").cm.setValue(err + "");
+    }
 }
 
 document.getElementById("jsin").cm.on("change", updatePfa);
@@ -710,17 +735,32 @@ document.getElementById("jsin").cm.on("change", updatePfa);
 $(document).ready(updatePfa);
 </script>
 
+If you're familiar with Javascript, you may have noticed that the above would not run as a standard Javascript program.  Syntax is easy to convert among languages, but semantics is more difficult.  For example,
 
+  * PFA is statically typed for safety and speed, but Javascript checks types at runtime.  To support this, I added type annotations in the function parameter list ("`N = "int"`" rather than simply "`N`") and the function return value ("`>> {type: "array", items: "double"}`").
+  * A new array can be constructed in Javascript with "`[1, -0.5]`", but I require it to be wrapped in a constructor to provide a slot for the type annotation.
+  * Javascript allows functions to have multiple return points (with the "`return`" keyword) but instead I assumed PFA's convention of letting the last expression be a return value.
+  * The library functions are taken from PFA's library, rather than Javascript's.  For instance, "`a.replace`" is from PFA's array library.
 
+Other than these semantic reinterpretations, this is a complete mapping of the Javascript language onto the PFA language (in 760 [lines of code](/public/js/jsToPfa.js)).  More elaborate converters could attempt to preserve semantics as well.
 
+A programming language is a user interface, which should be optimized for human efficiency.  PFA, on the other hand, is an intermediate representation for encoding what is essential to an analytic and deploying it anywhere.
 
-## To-do
+## Beginning and end of the scoring run
 
-  * creating local variables, if statements, while/for loops
-  * user-defined functions and callbacks
-  * persistent storage
-  * begin, action, end and flowTime.png
-  * errors and logs
+HERE
+
+{% include figure.html url="flowTime.png" caption="" %}
+
+## Persistent storage
+
+HERE
+
+{% include figure.html url="flowData.png" caption="" %}
+
+## Alternate output streams: exceptions and logs
+
+HERE
 
 <!-- The execution of a scoring engine has two or three phases: begin, action, and possibly end.  Some real-time pipelines (such as [Storm](https://storm.incubator.apache.org/){:target="_blank"}) do not have a concept of an end to the data flow.  The begin routine is called once before encountering any data, action is called once for every datum of the same type in the dataset, and end is called after all data (like [awk](http://www.gnu.org/software/gawk/manual/gawk.html){:target="_blank"}). -->
 
