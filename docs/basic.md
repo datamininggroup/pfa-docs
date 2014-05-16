@@ -316,13 +316,260 @@ For a more realistic example of input types and missing value casting, see the [
 
 ## Programming constructs
 
-The PFA documents we seen so far have single-expression actions.  Though these examples were considered for simplicity's sake, it would not be unusual for a complex statistical model to also be a single expression, if it is served by a library function.  For instance, the function `model.tree.simpleWalk` evaluates a conventional decision tree or regression tree in one expression, though the tree may have many nodes and input predictors.  Even workflows with pre-processing and post-processing might be composed of only three expressions.  PFA is not intended for general-purpose programming.
+The PFA documents we seen so far have single-expression actions.  Though these examples were considered for simplicity's sake, it would not be unusual for a complex statistical model to also be a single expression, if it is served by a library function.  For instance, the function `model.tree.simpleWalk` evaluates a conventional decision tree or regression tree in only one expression, though the tree may have many nodes and input predictors.  Even workflows with pre-processing and post-processing might be composed of only three expressions.  Most PFA engines are more like configuration files than programs.
 
-However, it does have a suite of standard programming constructs for flexibility.  If a desired function is not available in the standard library, it can implemented.
+But sometimes a particular algorithm cannot be expressed in one library function call, so PFA provides standard programming constructs to give the PFA author some flexibility.  These include local variables, conditionals, loops, and user-defined functions.  Many library functions accept user-defined callback functions, so a common route to implementing non-standard algorithms is to combine a standard function with a small user-defined function.
 
+### Local variables
 
+Local variables are declared with `let` and reassigned with `set`.  The scope is block-level: the variable is accessible everywhere between its declaration and the end of the enclosing block.
 
+{% include engine1.html %}
+1
+2
+3
+4
+5
+{% include engine2.html %}
+input: double
+output: double
+action:
+  - let: {x: input}
+  - let: {y: {"*": [{+: [input, 1]}, input]}}
+  - set: {y: {"/": [y, input]}}
+  - {"-": [y, 1]}
+{% include engine3.html %}
 
+Notice that `let` and `set` take JSON objects mapping from names to expressions.  If you have several expressions to assign that don't depend on each other, they can be assigned in the same JSON object.  Since the PFA semantics require that they don't depend on one another (the keys of a JSON object might come in any order), a PFA host that supports parallelization might run them in parallel.
+
+{% include figure.html url="letTime.png" caption="" %}
+
+{% include engine1.html %}
+1
+2
+3
+4
+5
+{% include engine2.html %}
+input: int
+output: double
+action:
+  - let:
+      x: {+: [input, 1]}
+      y: {+: [input, 2]}
+      z: {+: [input, 3]}
+  - let:
+      a: {"-": [{"+": [x, y]}, z]}
+      b: {"/": [{"*": [x, y]}, z]}
+  - {/: [a, b]}
+{% include engine3.html %}
+
+Of course, a PFA host doesn't need to run them in parallel if it's not advantageous to do so in a particular environment.  This feature also allows closure compilers to optimize a PFA document by identifying the independent blocks and rearranging them into concurrent `let` expressions.
+
+### Conditionals
+
+If-then-else expressions work as statements:
+
+{% include engine1.html %}
+1
+2
+3
+4
+5
+{% include engine2.html %}
+input: int
+output: int
+method: emit
+action:
+  - if: {==: [{"%": [input, 2]}, 0]}
+    then:
+      - emit: input
+{% include engine3.html %}
+
+and as expressions:
+
+{% include engine1.html %}
+1
+2
+3
+4
+5
+{% include engine2.html %}
+input: int
+output: string
+action:
+  - let:
+      result:
+        if: {==: [{"%": [input, 2]}, 0]}
+        then: {string: "even"}
+        else: {string: "odd"}
+  - result
+{% include engine3.html %}
+
+If there is more than one predicate, the expression is flattened into a `cond` block, rather than chaining (and deeply nesting) else-ifs:
+
+{% include engine1.html %}
+0
+1
+2
+3
+4
+5
+{% include engine2.html %}
+input: int
+output: string
+action:
+  - cond:
+      - if: {==: [{"%": [input, 3]}, 0]}
+        then: {string: "off"}
+      - if: {==: [{"%": [input, 3]}, 1]}
+        then: {string: "on"}
+    else:
+      {string: "high impedance"}
+{% include engine3.html %}
+
+### While loops
+
+PFA has the standard pre-test and post-test loops:
+
+{% include engine1.html %}
+null
+{% include engine2.html %}
+input: "null"
+output: int
+method: emit
+action:
+  - let: {i: 0}
+  - while: {"<": [i, 10]}
+    do:
+      - set: {i: {+: [i, 1]}}
+      - emit: i
+{% include engine3.html %}
+
+{% include engine1.html %}
+null
+{% include engine2.html %}
+input: "null"
+output: int
+method: emit
+action:
+  - let: {i: 0}
+  - do:
+      - set: {i: {+: [i, 1]}}
+      - emit: i
+    until: {==: [i, 10]}
+{% include engine3.html %}
+
+While loops expose the PFA host to the possibility that a user's algorithm won't halt.  This would be bad in production, since a misconfigured PFA document could cause the system to hang.  PFA hosts have several ways to protect themselves:
+
+  * they can refuse to execute PFA documents containing `while`, `do-until`, `for`, or recursive loops among user functions, or
+  * they can stop a long-running `action` call with a timeout.
+
+The Google App Engine PFA host behind these online examples applies a timeout of 1 second.  This method has the advantage that it also excludes long-running, but finite, calculations.  If you're thinking of testing it by running a `while` loop without incrementing the dummy variable, be forewarned: you'll get thousands of results back and your browser will be swamped trying to display them all.
+
+### For loops
+
+There are also three types of `for` loops.  The first is equivalent to a `while` loop (with a dummy variable in encapsulated scope), and the other two loop over arrays and maps.
+
+{% include engine1.html %}
+["hello", "my", "ragtime", "gal"]
+{% include engine2.html %}
+input: {type: array, items: string}
+output: string
+method: emit
+action:
+  - for: {i: 0}
+    while: {"<": [i, 4]}
+    step: {i: {+: [i, 1]}}
+    do:
+      - emit: {attr: input, path: [i]}
+
+  - foreach: x
+    in: input
+    do:
+      - emit: x
+
+  - forkey: k
+    forval: v
+    in: {new: {one: 1, two: 2, three: 3}, type: {type: map, values: int}}
+    do:
+      - emit: k
+{% include engine3.html %}
+
+### Functions and callbacks
+
+User-defined functions encapsulate logic in named, reusable units and they provide a way to deliver units of logic to a library function as a callback.  Here's a simple example:
+
+{% include engine1.html %}
+1
+2
+3
+4
+5
+{% include engine2.html %}
+input: int
+output: int
+action:
+  - {u.squared: {u.cubed: input}}
+fcns:
+  squared:
+    params: [{x: int}]
+    ret: int
+    do:
+      - {"*": [x, x]}
+  cubed:
+    params: [{x: int}]
+    ret: int
+    do:
+      - {"*": [x, {u.squared: x}]}
+{% include engine3.html %}
+
+Functions must declare the types of their parameters and their return type.  User-defined functions enter the global function namespace prefixed by "`u.`" so that they can't conflict with any library functions.  Other than that, they can be used in the same way.
+
+Some library functions accept functions as arguments.  The two most useful examples of this are sorting and finding extreme values of arrays:
+
+{% include engine1.html %}
+["hello", "my", "darling", "hello", "my", "honey", "hello", "my", "ragtime", "gal"]
+{% include engine2.html %}
+input: {type: array, items: string}
+output: string
+action:
+  - a.maxLT: [input, {fcnref: u.customLessThan}]
+fcns:
+  customLessThan:
+    params: [{x: string}, {y: string}]
+    ret: boolean
+    do:
+      - {"<": [{s.len: x}, {s.len: y}]}
+{% include engine3.html %}
+
+You can also provide a function definition in-place, which is convenient for making closures.
+
+{% include engine1.html %}
+true
+false
+{% include engine2.html %}
+input: boolean
+output: {type: array, items: int}
+action:
+  - let:
+      sortme:
+        value: [23, 55, 18, 62, 4, 99]
+        type: {type: array, items: int}
+
+  - a.sortLT:
+      - sortme
+      - params: [{x: int}, {y: int}]
+        ret: boolean
+        do:
+          - if: input
+            then: {"<": [x, y]}
+            else: {">": [x, y]}
+{% include engine3.html %}
+
+FIXME: more about closures
+
+### Another section
 
 Bernoulli numbers (the first problem to be solved with a computer program)
 
@@ -463,15 +710,6 @@ document.getElementById("jsin").cm.on("change", updatePfa);
 $(document).ready(updatePfa);
 </script>
 
-
-
-### Local variable assignment
-
-
-### Flow control
-
-
-### Functions and callbacks
 
 
 
