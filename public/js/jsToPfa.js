@@ -1,5 +1,5 @@
-function location(loc) {
-    return "JS lines " + loc.start.line + " to " + loc.end.line;
+function loc(x) {
+    return "JS lines " + x.start.line + " to " + x.end.line;
 }
 
 function jsAstToLiteralObject(ast) {
@@ -12,7 +12,7 @@ function jsAstToLiteralObject(ast) {
         return out;
     }
     else if (ast.type == "ObjectExpression") {
-        var out = {"@": location(ast.loc)};
+        var out = {"@": loc(ast.loc)};
         for (var k in ast.properties) {
             var key;
             if (ast.properties[k].type == "Property"  &&
@@ -51,7 +51,7 @@ function jsAstToAttrPath(ast) {
     var walk = ast;
     while (walk.type == "MemberExpression") {
         if (!walk.computed  &&  walk.property.type == "Identifier")
-            reversedPath.push({"@": location(walk.property.loc), "string": walk.property.name});
+            reversedPath.push({"@": loc(walk.property.loc), "string": walk.property.name});
         else if (walk.computed)
             reversedPath.push(jsAstToExpression(walk.property));
         else
@@ -59,7 +59,7 @@ function jsAstToAttrPath(ast) {
         walk = walk.object;
     }
 
-    return {"@": location(ast.loc), "attr": jsAstToExpression(walk), "path": reversedPath.reverse()};
+    return {"@": loc(ast.loc), "attr": jsAstToExpression(walk), "path": reversedPath.reverse()};
 }
 
 function jsAstToFcnDef(ast) {
@@ -84,7 +84,7 @@ function jsAstToFcnDef(ast) {
         var ret = jsAstToLiteralObject(ast.right);
         var body = jsAstToExpressions(ast.left.body.body);
 
-        return {"@": location(ast.loc), "params": params, "ret": ret, "do": body};
+        return {"@": loc(ast.loc), "params": params, "ret": ret, "do": body};
     }
     else
         throw new Error("function does not have the right form");
@@ -117,7 +117,7 @@ function jsAstToExpression(ast, allowFcn) {
 
     if (ast.type == "Literal") {
         if (typeof ast.value == "string")
-            return {"@": location(ast.loc), "string": ast.value};
+            return {"@": loc(ast.loc), "string": ast.value};
         else
             return ast.value;
     }
@@ -138,7 +138,7 @@ function jsAstToExpression(ast, allowFcn) {
         if (["u-", "not", "~"].indexOf(fcnName) == -1)
             throw new Error("Javascript's \"" + fcnName + "\" unary operator has no PFA translation (yet)");
 
-        var out = {"@": location(ast.loc)};
+        var out = {"@": loc(ast.loc)};
         out[fcnName] = [jsAstToExpression(ast.argument)];
         return out;
     }
@@ -155,7 +155,7 @@ function jsAstToExpression(ast, allowFcn) {
         if (["+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "and", "or", "&", "^", "|"].indexOf(fcnName) == -1)
             throw new Error("Javascript's \"" + fcnName + "\" binary operator has no PFA translation (yet)");
 
-        var out = {"@": location(ast.loc)};
+        var out = {"@": loc(ast.loc)};
         out[fcnName] = [jsAstToExpression(ast.left), jsAstToExpression(ast.right)];
         return out;
     }
@@ -164,7 +164,7 @@ function jsAstToExpression(ast, allowFcn) {
         var test = jsAstToExpression(ast.test);
         var consequent = jsAstToExpression(ast.consequent);
         var alternate = jsAstToExpression(ast.alternate);
-        return {"@": location(ast.loc), "if": test, "then": consequent, "else": alternate};
+        return {"@": loc(ast.loc), "if": test, "then": consequent, "else": alternate};
     }
 
     else if (ast.type == "CallExpression") {
@@ -174,7 +174,7 @@ function jsAstToExpression(ast, allowFcn) {
         for (var i in ast.arguments)
             args.push(jsAstToExpression(ast.arguments[i], true));
 
-        var out = {"@": location(ast.loc)};
+        var out = {"@": loc(ast.loc)};
 
         if (fcnName == "cell") {
             if (args.length >= 1)
@@ -256,7 +256,7 @@ function jsAstToExpression(ast, allowFcn) {
 
         var type = jsAstToLiteralObject(ast.arguments[1]);
 
-        return {"@": location(ast.loc), "new": value, "type": type};
+        return {"@": loc(ast.loc), "new": value, "type": type};
     }
 
     else if (ast.type == "VariableDeclaration") {
@@ -271,23 +271,53 @@ function jsAstToExpression(ast, allowFcn) {
                 throw new Error("unrecognized variable declaration l-value");
         }
 
-        return {"@": location(ast.loc), "let": pairs};
+        return {"@": loc(ast.loc), "let": pairs};
+    }
+
+    else if (ast.type == "UpdateExpression"  &&  ast.argument.type == "Identifier"  &&  (ast.operator == "++"  ||  ast.operator == "--")) {
+        var n = ast.argument.name;
+        var inc = {};
+        inc[ast.operator[0]] = [n, 1];
+        var upd = {};
+        upd[n] = inc;
+        return {"@": loc(ast.loc), "set": upd};
     }
 
     else if (ast.type == "AssignmentExpression") {
-        if (ast.operator != "=")
-            throw new Error("assignment with \"" + ast.expressions[i].operator + "\" rather than \"=\"");
+        var lvalue;
+        var rvalue;
+        if (ast.left.type == "Identifier") {
+            lvalue = ast.left.name;
+            rvalue = jsAstToExpression(ast.right);
+        }
+        else if (ast.left.type == "MemberExpression") {
+            lvalue = jsAstToAttrPath(ast.left);
+            rvalue = jsAstToExpression(ast.right, true);
+        }
+
+        if (ast.operator != "="  &&  rvalue["params"] != undefined  &&  rvalue["ret"] != undefined)
+            throw new Error("can't mix function-updates with " + ast.operator);
+
+        if (ast.operator == "=") { }
+        else if (ast.operator == "+=")
+            rvalue = {"+": [JSON.parse(JSON.stringify(lvalue)), JSON.parse(JSON.stringify(rvalue))]};
+        else if (ast.operator == "-=")
+            rvalue = {"-": [JSON.parse(JSON.stringify(lvalue)), JSON.parse(JSON.stringify(rvalue))]};
+        else if (ast.operator == "*=")
+            rvalue = {"*": [JSON.parse(JSON.stringify(lvalue)), JSON.parse(JSON.stringify(rvalue))]};
+        else if (ast.operator == "/=")
+            rvalue = {"/": [JSON.parse(JSON.stringify(lvalue)), JSON.parse(JSON.stringify(rvalue))]};
+        else
+            throw new Error("assignment with \"" + ast.expressions[i].operator + "\" is not handled (yet)");
 
         if (ast.left.type == "Identifier") {
             var pairs = {};
-            pairs[ast.left.name] = jsAstToExpression(ast.right);
-            return {"@": location(ast.loc), "set": pairs};
+            pairs[lvalue] = rvalue;
+            return {"@": loc(ast.loc), "set": pairs};
         }
         else if (ast.left.type == "MemberExpression") {
-            var attr = jsAstToAttrPath(ast.left);
-            var value = jsAstToExpression(ast.right, true);
-            attr["to"] = value;
-            return attr;
+            lvalue["to"] = rvalue;
+            return lvalue;
         }
     }
 
@@ -303,11 +333,11 @@ function jsAstToExpression(ast, allowFcn) {
             pairs[ast.expressions[i].left.name] = jsAstToExpression(ast.expressions[i].right);
         }
 
-        return {"@": location(ast.loc), "set": pairs};
+        return {"@": loc(ast.loc), "set": pairs};
     }
 
     else if (ast.type == "BlockStatement")
-        return {"@": location(ast.loc), "do": jsAstToExpressions(ast.body)};
+        return {"@": loc(ast.loc), "do": jsAstToExpressions(ast.body)};
 
     else
         throw new Error("Javascript's \"" + ast.type + "\" construct has no PFA translation (yet)");
@@ -321,7 +351,7 @@ function unravelIf(ast) {
     else
         consequent = jsAstToExpressions([ast.consequent]);
 
-    var ifthen = {"@": location(ast.loc), "if": test, "then": consequent};
+    var ifthen = {"@": loc(ast.loc), "if": test, "then": consequent};
 
     if (ast.alternate == null)
         return [ifthen];
@@ -352,9 +382,9 @@ function jsAstToExpressions(ast) {
                 out.push(ifthens[0]);
             }
             else if (elseClause != null)
-                out.push({"@": location(ast[i].loc), "cond": ifthens, "else": elseClause});
+                out.push({"@": loc(ast[i].loc), "cond": ifthens, "else": elseClause});
             else
-                out.push({"@": location(ast[i].loc), "cond": ifthens});
+                out.push({"@": loc(ast[i].loc), "cond": ifthens});
         }
 
         else if (ast[i].type == "WhileStatement") {
@@ -365,7 +395,7 @@ function jsAstToExpressions(ast) {
             else
                 body = jsAstToExpressions([ast[i].body]);
 
-            out.push({"@": location(ast[i].loc), "while": test, "do": body});
+            out.push({"@": loc(ast[i].loc), "while": test, "do": body});
         }
 
         else if (ast[i].type == "DoWhileStatement") {
@@ -376,7 +406,7 @@ function jsAstToExpressions(ast) {
             else
                 body = jsAstToExpressions([ast[i].body]);
 
-            out.push({"@": location(ast[i].loc), "do": body, "until": {"not": test}});
+            out.push({"@": loc(ast[i].loc), "do": body, "until": {"not": test}});
         }
 
         else if (ast[i].type == "ForStatement") {
@@ -396,7 +426,7 @@ function jsAstToExpressions(ast) {
             else
                 body = jsAstToExpressions([ast[i].body]);
 
-            out.push({"@": location(ast[i].loc), "for": init["let"], "while": test, "step": update["set"], "do": body});
+            out.push({"@": loc(ast[i].loc), "for": init["let"], "while": test, "step": update["set"], "do": body});
         }
 
         else if (ast[i].type == "ForInStatement") {
@@ -415,7 +445,7 @@ function jsAstToExpressions(ast) {
                 else
                     body = jsAstToExpressions([ast[i].body]);
 
-                out.push({"@": location(ast[i].loc), "foreach": varName, "in": obj, "do": body});
+                out.push({"@": loc(ast[i].loc), "foreach": varName, "in": obj, "do": body});
             }
             else
                 throw new Error("initialization of for..in loop must be a variable declaration (with \"var\")");
@@ -424,7 +454,7 @@ function jsAstToExpressions(ast) {
         else if (ast[i].type == "ThrowStatement") {
             if (ast[i].argument.type == "Literal"  &&
                 typeof ast[i].argument.value == "string")
-                out.push({"@": location(ast[i].loc), "error": ast[i].argument.value});
+                out.push({"@": loc(ast[i].loc), "error": ast[i].argument.value});
             else
                 throw new Error("error form must be simply throw \"string\"");
         }
@@ -445,7 +475,7 @@ function jsAstToExpressions(ast) {
 
 function jsAstToCellsOrPools(ast, isCell) {
     if (ast.type == "ObjectExpression") {
-        var out = {"@": location(ast.loc)};
+        var out = {"@": loc(ast.loc)};
         for (var k in ast.properties) {
             var key;
             if (ast.properties[k].type == "Property"  &&
@@ -462,7 +492,7 @@ function jsAstToCellsOrPools(ast, isCell) {
 
             var hasType = false;
             var hasInit = false;
-            var value = {"@": location(ast.properties[k].value.loc)};
+            var value = {"@": loc(ast.properties[k].value.loc)};
             if (ast.properties[k].value.type == "ObjectExpression") {
                 for (var kk in ast.properties[k].value.properties) {
                     var keykey;
@@ -629,7 +659,7 @@ function jsToPfa(doc, debug) {
 
             else if (ast.body[i].expression.left.name == "fcns") {
                 if (ast.body[i].expression.right.type == "ObjectExpression") {
-                    var pairs = {"@": location(ast.body[i].expression.right.loc)};
+                    var pairs = {"@": loc(ast.body[i].expression.right.loc)};
                     for (var k in ast.body[i].expression.right.properties) {
                         var key;
                         if (ast.body[i].expression.right.properties[k].type == "Property"  &&
@@ -682,7 +712,7 @@ function jsToPfa(doc, debug) {
 
             else if (ast.body[i].expression.left.name == "options"){
                 if (ast.body[i].expression.right.type == "ObjectExpression") {
-                    var pairs = {"@": location(ast.body[i].expression.right.loc)};
+                    var pairs = {"@": loc(ast.body[i].expression.right.loc)};
                     for (var k in ast.body[i].expression.right.properties) {
                         var key;
                         if (ast.body[i].expression.right.properties[k].type == "Property"  &&
