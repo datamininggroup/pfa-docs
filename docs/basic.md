@@ -260,7 +260,7 @@ The `x`, `y`, `z` coordinates are numerical, and thus we can add them in quadrat
 
 In the above example, the type of `mag` is a tagged union of `double` with `null`.  Null values are used to represent missing data, but a symbol cannot have a `null` value unless its type includes `null` as a union option.  Thus, types must be explicitly labeled as nullable.
 
-The union of `double` and `null` is a different type than `double` by itself, so `mag` cannot be passed to a function that expects a `double`, such as addition.  It must be type-cast as a `double`, and thus every case in which missing values are possible must be handled.  This is known as a "type-safe null," since the type check verifies that null pointer exceptions will not occur at run-time.
+The union of `double` and `null` is a different type than `double` by itself, so `mag` cannot be passed to a function that expects a `double`, such as addition.  It must be type-cast as a `double`, and thus every case in which missing values are possible must be handled.  This is known as a "type-safe null," since the type check verifies that null pointer exceptions will not occur at runtime.
 
 This filter only selects stars that have a non-null `mag` and returns its value.  Note that the return type is simply `double`; return values won't ever be `null` because we have ensured this with the type-cast.
 
@@ -318,11 +318,11 @@ For a more realistic example of input types and missing value casting, see the [
 
 The PFA documents we seen so far have single-expression actions.  Though these examples were considered for simplicity's sake, it would not be unusual for a complex statistical model to also be a single expression, if it is served by a library function.  For instance, the function `model.tree.simpleWalk` evaluates a conventional decision tree or regression tree in only one expression, though the tree may have many nodes and input predictors.  Even workflows with pre-processing and post-processing might be composed of only three expressions.  Most PFA engines are more like configuration files than programs.
 
-But sometimes a particular algorithm cannot be expressed in one library function call, so PFA provides standard programming constructs to give the PFA author some flexibility.  These include local variables, conditionals, loops, and user-defined functions.  Many library functions accept user-defined callback functions, so a common route to implementing non-standard algorithms is to combine a standard function with a small user-defined function.
+But sometimes a particular algorithm cannot be expressed in one library function call, so PFA provides standard programming constructs to give the PFA author some flexibility.  These include local symbols (variables), conditionals, loops, and user-defined functions.  Many library functions accept user-defined callback functions, so a common route to implementing non-standard algorithms is to combine a standard function with a small user-defined function.
 
-### Local variables
+### Local symbols
 
-Local variables are declared with `let` and reassigned with `set`.  The scope is block-level: the variable is accessible everywhere between its declaration and the end of the enclosing block.
+Local symbols are declared with `let` and reassigned with `set`.  The scope is block-level: the symbol is accessible everywhere between its declaration and the end of the enclosing block.
 
 {% include engine1.html %}
 1
@@ -571,11 +571,11 @@ action:
             else: {">": [x, y]}
 {% include engine3.html %}
 
-These features are common in high-level languages, in which functions are first-class citizens that can be passed around as though they were values.  Low-level languages and limited environments (such as GPUs) don't allow first-class functions.  To support these environments, PFA functions are not first-class: they cannot be referred to by symbols or returned from a function, but they can appear in (and only in) function argument lists.  In a low-level environment, this translates to an explicit reference to a function, or even as inlined code.  Free variables in a closure (such as `input` in the anonymous function above) would be implemented as additional parameters passed to the function (which is why `input` can be accessed but not modified in the example above).
+These features are common in high-level languages, in which functions are first-class citizens that can be passed around as though they were values.  Low-level languages and limited environments (such as GPUs) don't allow first-class functions.  To support these environments, PFA functions are not first-class: they cannot be referred to by symbols or returned from a function, but they can appear in (and only in) function argument lists.  In a low-level environment, this translates to an explicit reference to a function, or even as inlined code.  Free symbols in a closure (such as `input` in the anonymous function above) would be implemented as additional parameters passed to the function (which is why `input` can be accessed but not modified in the example above).
 
 ### Realistic example
 
-The first problem to be solved with a computer program was a calculation of the Bernoulli sequence (by Ada Lovelace in 1842, a hundred years before the first electronic computer).  However, the PFA library (currently) does not have any specification for generating Bernoulli numbers, so if a particular application requires one, the PFA author would have to write it herself.
+The first problem to be solved with a computer program was a calculation of the Bernoulli sequence (by [Ada Lovelace in 1842](http://people.maths.ox.ac.uk/kar/AdaLovelace.html){:target="_blank"}, a hundred years before the first electronic computer).  However, the PFA library (currently) does not have any specification for generating Bernoulli numbers, so if a particular application requires one, the PFA author would have to write it herself.
 
 Algorithms like this are often found in old libraries, ported from language to language as needed.  I found the following implementation in Fortran:
 
@@ -656,7 +656,7 @@ Admittedly, the PFA is hard to read, even in its YAML form.  Embedding an entire
 
 Most languages have parsers that build abstract syntax trees (AST), and we can convert these trees into PFA fairly easily because PFA is itself a tree.  Below is an example of a conversion from Javascript into PFA, performed by your browser.  Edit the Javascript code, and the PFA will follow suit (whenever the Javascript becomes valid).
 
-In a real application, user-defined functions would probably come from a language converter like this; the language choice depends on the audience.  New programmers might find it easiest to write Python, statisticians would probably prefer to write R code, etc.
+In a real application, user-defined functions would probably come from a language converter like this; the language choice depends on the audience.  New programmers might find it easiest to write Python, statisticians would probably prefer to write R code, engineers might like Matlab syntax, etc.
 
 <script src="/public/js/esprima.js"></script>
 <script src="/public/js/jsToPfa.js"></script>
@@ -742,21 +742,103 @@ If you're familiar with Javascript, you may have noticed that the above would no
   * Javascript allows functions to have multiple return points (with the "`return`" keyword) but instead I assumed PFA's convention of letting the last expression be a return value.
   * The library functions are taken from PFA's library, rather than Javascript's.  For instance, "`a.replace`" is from PFA's array library.
 
-Other than these semantic reinterpretations, this is a complete mapping of the Javascript language onto the PFA language (in 760 [lines of code](/public/js/jsToPfa.js)).  More elaborate converters could attempt to preserve semantics as well.
+Other than these semantic reinterpretations, this is a complete mapping of the Javascript language onto the PFA language (in 760 [lines of code](/public/js/jsToPfa.js){:target="_blank"}).  More elaborate converters could attempt to preserve semantics as well.
 
 A programming language is a user interface, which should be optimized for human efficiency.  PFA, on the other hand, is an intermediate representation for encoding what is essential to an analytic and deploying it anywhere.
 
-## Beginning and end of the scoring run
+## Data flow
 
-HERE
+### Begin, action, end
+
+A PFA scoring engine processes a linear stream of data that has a beginning and possibly an end.  Each datum has the same type and comes from the same source, so if you want to combine data of different types from different sources, create two or more scoring engines and connect them in a pipeline system.
+
+In some cases, you may want to perform special actions at the beginning and end of a data stream.  PFA has `begin` and `end` routines for this purpose (like [awk](http://www.gnu.org/software/gawk/manual/gawk.html){:target="_blank"}).
 
 {% include figure.html url="flowTime.png" caption="" %}
 
-## Persistent storage
+The `begin` and `end` routines do not accept input and do not return output; they only manipulate persistent storage.
+
+### Persistent storage
+
+A PFA scoring engine has four types of persistent storage: cells and pools, which may be private or shared.  These storage areas are like local symbols in that they store Avro-typed data, but they are unlike local symbols in that they have global scope and are remembered between `action` invocations, as well as between `begin` and `end`.  They are also accessed with different syntax, so that it is easy for a PFA host to statically analyze how they are used.
+
+{% include figure.html url="flowData.png" caption="" %}
+
+Cells store single, named values of a specific type.  The scoring engine below reproduces the fold-method example by storing the tally in a cell of type string.  It is somewhat more cumbersome to use a persistent cell rather than the fold method, but a few interacting cells can perform more complex tasks than the fold method alone.
+
+{% include engine1.html %}
+"hello"
+"my"
+"darling"
+"hello"
+"my"
+"honey"
+"hello"
+"my"
+"ragtime"
+"gal"
+{% include engine2.html %}
+input: string
+output: string
+cells:
+  longest: {type: string, init: ""}
+action:
+  - if:
+      ">":
+        - {s.len: input}
+        - {s.len: {cell: longest}}
+    then:
+      - {cell: longest, to: input}
+      - input
+    else:
+      - {cell: longest}
+{% include engine3.html %}
+
+Cells cannot be created or destroyed at runtime, and they must be initialized before the `begin` method.  (In the case above, the empty string is the initial value.)  Pools are persistent storage elements without this restriction.  They can be used to gather data into tables.
+
+{% include engine1.html %}
+"hello"
+"my"
+"darling"
+"hello"
+"my"
+"honey"
+"hello"
+"my"
+"ragtime"
+"gal"
+{% include engine2.html %}
+input: string
+output: int
+pools:
+  wordCount: {type: int}
+action:
+  - pool: wordCount
+    path: [input]
+    to:
+      params: [{x: int}]
+      ret: int
+      do: {+: [x, 1]}
+    init:
+      0
+  - {pool: wordCount, path: [{string: "hello"}]}
+{% include engine3.html %}
+
+The engine above creates a new entry in the `wordCount` table with value `0` when it encounters a new word and it increments the count when it encounters an old word, then it outputs the number of occurrences of `"hello"`.  (There are library functions to manage count tables; it was done manually for illustration.)
+
+A pool of type `X` is like a cell of type `{"type": "map", "values": X}` except for how they are updated.  Like local symbols, the value of a cell is entirely replaced in one atomic action, but only one element of a pool is replaced atomically, not the whole pool.  For private data (accessed by a single scoring engine), this difference is only seen in the runtime speed of very large pools.  Updating one pool-element at a time is faster than updating an entire cell with a single map element changed.  But it is especially relevant for shared data, since the granularity of atomic updates changes the behavior of the system.
+
+### Concurrent access of shared data
 
 HERE
 
-{% include figure.html url="flowData.png" caption="" %}
+
+
+### Model parameters
+
+HERE
+
+
 
 ## Alternate output streams: exceptions and logs
 
