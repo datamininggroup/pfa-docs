@@ -395,8 +395,73 @@ action:
 
 <script src="/public/js/esprima.js"></script>
 <script src="/public/js/jsToPfa.js"></script>
+<script src="/public/js/codemirror-4.1/mode/javascript/javascript.js"></script>
 
+<div>
+  <div style="border: 2px solid #dddddd;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">Javascript syntax</div></div><textarea id="jsin">input = "int";
+output = {type: "array", items: "double"};
 
+action = function (input) {
+    var BN = new Array([1, -0.5],
+                       {type: "array", items: "double"});
+    for (var M = 2;  M <= input;  M++) {
+        var S = -(1/(M + 1) - 0.5);
+        for (var K = 2;  K != M;  K++) {
+            var R = 1;
+            for (var J = 2;  J <= K;  J++)
+                R = R*(J + M - K)/J;
+            S = S - R*BN[K];
+        }
+        BN[M] = S;
+    }
+
+    for (var M = 3;  M <= input;  M += 2)
+        BN = a.replace(BN, M, 0);
+    BN
+};</textarea><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; bottom: 55px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">
+    <label><input id="debuggingInfo" type="checkbox" name="debuggingInfo" value="toggle" onChange="updatePfa();"></input> debugging info</label><br>
+    <label><input id="prettyPrint" type="checkbox" name="prettyPrint" value="toggle" onChange="updatePfa();"></input> pretty-print</label>
+  </div></div></div>
+  <div style="border: 2px solid #dddddd; border-top: none;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">Generated PFA (JSON)</div></div><textarea id="pfaout"></textarea></div>
+</div>
+
+<script type="text/javascript">
+$("#jsin, #pfaout").each(function (i, x) {
+    var y = CodeMirror.fromTextArea(x,
+                {mode: "javascript",
+                 lineNumbers: true,
+                 smartIndent: true,
+                 tabSize: 2,
+                 indentUnit: 2,
+                 indentWithTabs: false,
+                 electricChars: false,
+                 lineWrapping: true,
+                 readOnly: (x.id == "pfaout"),
+                 showCursorWhenSelecting: true,
+                 viewPortMargin: Infinity,
+                 keyMap: "custom"
+                });
+    x.cm = y;
+});
+
+function updatePfa() {
+    var cm = document.getElementById("jsin").cm;
+    try {
+        var result = jsToPfa(cm.getValue(), document.getElementById("debuggingInfo").checked);
+        var stringy;
+        if (document.getElementById("prettyPrint").checked)
+            stringy = JSON.stringify(result, undefined, 2);
+        else
+            stringy = JSON.stringify(result);
+        document.getElementById("pfaout").cm.setValue(stringy);
+    }
+    catch (err) { }
+}
+
+document.getElementById("jsin").cm.on("change", updatePfa);
+
+$(document).ready(updatePfa);
+</script>
 
 
 
