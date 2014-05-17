@@ -1,7 +1,7 @@
 ---
 layout: page
 type: tutorial
-title: Tutorial 1
+title: "Tutorial 1: Scoring engines"
 order: 20
 ---
 
@@ -92,7 +92,7 @@ action:
         - 100
 {% include engine3.html %}
 
-## Scoring methods
+## Methods of output
 
 The simple engines presented above are mathematical functions in that they transform one input into one output.  Sometimes, though, you need to filter data (one input to zero or one outputs) or aggregate data (an entire dataset to one output).  To handle these cases, PFA has three methods: map, emit, and fold.
 

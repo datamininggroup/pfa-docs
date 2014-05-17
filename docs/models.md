@@ -5,4 +5,6 @@ title: Statistical models
 order: 50
 ---
 
-Stuff.
+## Not written yet
+
+FIXME: write a tutorial on statistical models in PFA.
