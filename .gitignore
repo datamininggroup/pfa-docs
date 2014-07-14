@@ -9,3 +9,4 @@ build/
 *.toc
 _site/
 OLD/
+google*.html
