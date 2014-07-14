@@ -1,4 +1,4 @@
-.engine {
+engine {
     margin-top: 4px;
     margin-bottom: 24px;
     border: 2px solid #dddddd;
@@ -29,6 +29,8 @@
     position: relative;
     top: -3px;
     z-index: 100;
+    text-align: right;
+    pointer-events: none;
 }
 
 .big-engine .label-document {

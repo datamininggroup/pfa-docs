@@ -244,7 +244,7 @@ It is easier to pragmatically add or remove cases if the `if-then` pairs are a f
 
 ### While loops
 
-PFA has the standard pre-test and post-test loops:
+PFA has the standard pre-test loops:
 
 {% include engine1.html %}
 null
@@ -260,6 +260,8 @@ action:
       - emit: i
 {% include engine3.html %}
 
+And post-test loops:
+
 {% include engine1.html %}
 null
 {% include engine2.html %}
@@ -274,7 +276,7 @@ action:
     until: {==: [i, 10]}
 {% include engine3.html %}
 
-While loops expose the PFA host to the possibility that a user's algorithm will enter an infinite loop.  This would be bad in production, since a misconfigured PFA document could cause the system to hang.  PFA hosts have several ways to protect themselves:
+Unconditional loops expose the PFA host to the possibility that a user's algorithm will run indefinitely.  This would be bad in production, since a misconfigured PFA document could cause the system to hang.  PFA hosts have several ways to protect themselves:
 
   * they can refuse to execute PFA documents containing `while`, `do-until`, a generic `for`, or recursive cycles among user functions, or
   * they can stop a long-running `action` call with a timeout.
@@ -475,7 +477,7 @@ In a real application, user-defined functions would probably come from a languag
 <script src="/public/js/codemirror-4.1/mode/javascript/javascript.js"></script>
 
 <div style="margin-bottom: 20px;">
-  <div style="border: 2px solid #dddddd;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">Javascript syntax</div></div><textarea id="jsin">input = "int";
+  <div style="border: 2px solid #dddddd;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;" class="label">Javascript syntax</div></div><textarea id="jsin">input = "int";
 output = {type: "array", items: "double"};
 
 action = function (input) { u.bernoulli(input); }
@@ -498,12 +500,12 @@ fcns = {
             BN = a.replace(BN, M, 0);
         BN
     } >> {type: "array", items: "double"}
-};</textarea><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; bottom: 80px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">
+};</textarea><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; bottom: 80px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;" class="label">
     <label><input id="debuggingInfo" type="checkbox" name="debuggingInfo" value="toggle" onChange="updatePfa();"></input> debugging info</label><br>
     <label><input id="prettyPrint" type="checkbox" name="prettyPrint" value="toggle" onChange="updatePfa();"></input> pretty-print</label><br>
     <label><input id="showErrors" type="checkbox" name="showErrors" value="toggle" onChange="updatePfa();" checked></input> show errors</label>
   </div></div></div>
-  <div style="border: 2px solid #dddddd; border-top: none;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;">Generated PFA (JSON)</div></div><textarea id="pfaout"></textarea></div>
+  <div style="border: 2px solid #dddddd; border-top: none;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;" class="label">Generated PFA (JSON)</div></div><textarea id="pfaout"></textarea></div>
 </div>
 
 <script type="text/javascript">

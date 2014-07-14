@@ -29,7 +29,7 @@ The default executable is a fold-type scoring engine that only produces output f
 }
 </style>
 
-<div class="engine big-engine" dataset="exoplanets">
+<div class="engine big-engine" dataset="exoplanets" style="margin-bottom: 300px;">
   <textarea class="document"># Since this scoring engine is used in a data pipeline, its input is fixed.  Changing it would cause an error.
 input:
   type: record
@@ -103,4 +103,3 @@ action:
 </textarea>
   <div class="output"></div><div class="output-plot" style="position: relative; height: 400px;"><div class="theplot"></div><pre class="output-error"></pre></div>
 </div>
-

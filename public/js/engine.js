@@ -1,8 +1,3 @@
-// function useSpace() {
-//     var engines = $(".engine");
-//     engines.width($(window).width() - engines.offset().left - 20);
-// }
-
 function setupEngines() {
     $(".input, .document, .output").each(function (i, x) {
         x.innerHTML = x.innerHTML.trim();
@@ -108,8 +103,7 @@ function setupEngines() {
         x.appendChild(cover);
     });
 
-    // useSpace();
-    // window.addEventListener("resize", useSpace);
+    $(".engine").css("border", "solid 2px #dddddd");
 }
 
 function run(cm) {
@@ -158,46 +152,47 @@ function run(cm) {
             payload = {data: input.getValue(), format: "yaml", document: doc.getValue()};
         }
 
-        $.ajax({url: "http://pfa-gae.appspot.com/run",
-                type: "POST",
-                data: JSON.stringify(payload),
-                contentType: "application/json; charset=utf-8",
-                success: function (data, textStatus, jqXHR) {
-                    if (data.slice(0, 14) == "COMPILER-ERROR") {
-                        var lines = data.trim().split("\n");
-                        var errorClass = lines[1];
-                        var errorMessage = lines.splice(2, lines.length).join("\n");
-                        coverIcon.attr("src", "/public/playbutton.gif");
-                        coverIcon.css("visibility", "hidden");
-                        cover.css("visibility", "visible");
-                        if (output != undefined) {
-                            cmdom.style.color = "red";
-                            output.setValue(errorClass + ":\n" + errorMessage);
-                        }
-                        else {
-                            outputError.innerHTML = "";
-                            outputError.appendChild(document.createTextNode(errorClass + ":\n" + errorMessage));
-                            outputThePlot.innerHTML = "";
-                        }
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4  &&  xmlhttp.status == 200) {
+                var data = xmlhttp.responseText;
+                if (data.slice(0, 14) == "COMPILER-ERROR") {
+                    var lines = data.trim().split("\n");
+                    var errorClass = lines[1];
+                    var errorMessage = lines.splice(2, lines.length).join("\n");
+                    coverIcon.attr("src", "/public/playbutton.gif");
+                    coverIcon.css("visibility", "hidden");
+                    cover.css("visibility", "visible");
+                    if (output != undefined) {
+                        cmdom.style.color = "red";
+                        output.setValue(errorClass + ":\n" + errorMessage);
                     }
                     else {
-                        coverIcon.attr("src", "/public/playbutton.gif");
-                        coverIcon.css("visibility", "hidden");
-                        cover.css("visibility", "hidden");
-                        if (output != undefined) {
-                            cmdom.style.color = "black";
-                            output.setValue(data.trim());
-                        }
-                        else {
-                            outputError.innerHTML = "";
-                            outputThePlot.innerHTML = "";
-                            makePlot(data, outputThePlot);
-                        }
+                        outputError.innerHTML = "";
+                        outputError.appendChild(document.createTextNode(errorClass + ":\n" + errorMessage));
+                        outputThePlot.innerHTML = "";
                     }
-                    engine[0].running = false;
-                },
-                dataType: "text"
-                });
+                }
+                else {
+                    coverIcon.attr("src", "/public/playbutton.gif");
+                    coverIcon.css("visibility", "hidden");
+                    cover.css("visibility", "hidden");
+                    if (output != undefined) {
+                        cmdom.style.color = "black";
+                        output.setValue(data.trim());
+                    }
+                    else {
+                        outputError.innerHTML = "";
+                        outputThePlot.innerHTML = "";
+                        makePlot(data, outputThePlot);
+                    }
+                }
+                engine[0].running = false;
+            }
+        }
+        xmlhttp.open("POST", "http://hadrian-gae.appspot.com/run", true);
+        xmlhttp.setRequestHeader("Content-type", "text/plain");
+        xmlhttp.send(JSON.stringify(payload));
     }
 }
 
@@ -206,7 +201,7 @@ CodeMirror.commands["run"] = run;
 CodeMirror.commands["newlineAndBack"] = function(cm) {
     cm.replaceSelection("\n", "end", "+input");
     cm.moveH(-1, "char");
-}
+};
 
 CodeMirror.keyMap.custom = {
     "Left": "goCharLeft",
@@ -270,5 +265,4 @@ function makePlot(text, div) {
     svg.append("g").attr("class", "x axis").attr("transform", "translate(0, " + height + ")").call(xAxis);
     svg.append("g").attr("class", "y axis").call(yAxis);
     svg.selectAll(".dot").data(data).enter().append("circle").attr("class", "dot").attr("r", function (d) { return d.radius; }).attr("cx", function (d) { return x(d.x); }).attr("cy", function (d) { return y(d.y); }).style("fill", function (d) { return "hsla(" + d.color*360.0 + ", 100%, 50%, " + d.opacity + ")" });
-
 }

@@ -179,7 +179,11 @@ cells:
       type: record
       name: TreeNode
       fields:
-        - {name: field, type: string}
+        - name: field
+          type:
+            type: enum
+            name: TreeFields
+            symbols: [one, two, three]
         - {name: operator, type: string}
         - {name: value, type: [double, string]}
         - {name: pass, type: [string, TreeNode]}
@@ -204,7 +208,12 @@ cells:
           fail: {string: "no-no"}
 
 action:
-  - model.tree.simpleWalk: [input, {cell: tree}]
+  - model.tree.simpleWalk:
+      - input
+      - cell: tree
+      - params: [{d: Datum}, {t: TreeNode}]
+        ret: boolean
+        do: {model.tree.simpleTest: [d, t]}
 {% include engine3.html %}
 
 This PFA document has a one-line `action` that simply applies the tree to the data.  Although `model.tree.simpleWalk` performs type-checks, its signature is generic, only requiring the record fields that are necessary to walk through a tree and placing minimal constraints on their types.
