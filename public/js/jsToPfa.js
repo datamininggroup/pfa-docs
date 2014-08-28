@@ -101,18 +101,18 @@ function jsAstToExpression(ast, allowFcn) {
 
         else if (ast.type == "CallExpression"  &&
                  ast.callee.type == "Identifier"  &&
-                 ast.callee.name == "fcnref"  &&
+                 ast.callee.name == "fcn"  &&
                  ast.arguments.length == 1  &&
                  ast.arguments[0].type == "Literal"  &&
                  typeof ast.arguments[0].value == "string")
-            return {"fcnref": ast.arguments[0].value};
+            return {"fcn": ast.arguments[0].value};
 
         else if (ast.type == "CallExpression"  &&
                  ast.callee.type == "Identifier"  &&
-                 ast.callee.name == "fcnref"  &&
+                 ast.callee.name == "fcn"  &&
                  ast.arguments.length == 1  &&
                  ast.arguments[0].type == "Identifier")
-            return {"fcnref": ast.arguments[0].name};
+            return {"fcn": ast.arguments[0].name};
     }
 
     if (ast.type == "Literal") {

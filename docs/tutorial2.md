@@ -350,7 +350,7 @@ Some library functions accept functions as arguments.  The two most useful examp
 input: {type: array, items: string}
 output: string
 action:
-  - a.maxLT: [input, {fcnref: u.customLessThan}]
+  - a.maxLT: [input, {fcn: u.customLessThan}]
 fcns:
   customLessThan:
     params: [{x: string}, {y: string}]

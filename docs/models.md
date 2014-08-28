@@ -61,7 +61,7 @@ action:
         ret: double
         do:
           metric.euclidean:
-            - fcnref: metric.absDiff
+            - fcn: metric.absDiff
             - x
             - y
   path: [[id]]
@@ -81,7 +81,7 @@ In the above example, the metric is a inline function--- a special form with thr
 
 {% include figure-frame.html url="metric_euclidean.png" caption="" %}
 
-with a reference (`fcnref`) to absolute difference similarity:
+with a reference (`fcn`) to absolute difference similarity:
 
 {% include figure-frame.html url="metric_absDiff.png" caption="" %}
 

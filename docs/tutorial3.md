@@ -101,14 +101,14 @@ Although the Google App Engine PFA host does not actually implement sharing, it 
 null
 {% include engine2.html %}
 input: "null"
-output: "null"
+output: int
 cells:
   one: {type: int, init: 1}
   two: {type: int, init: 2}
 action:
-  - {cell: one, to: {fcnref: u.changeOne}}
-fcns:
+  - {cell: one, to: {fcn: u.changeOne}}
 
+fcns:
   changeOne:
     params: [{x: int}]
     ret: int
@@ -119,7 +119,7 @@ fcns:
     params: []
     ret: int
     do:
-      - {cell: two, to: {fcnref: u.changeTwo}}
+      - {cell: two, to: {fcn: u.changeTwo}}
       - 1
 
   changeTwo:
