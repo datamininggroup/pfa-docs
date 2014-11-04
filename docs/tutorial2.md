@@ -493,7 +493,7 @@ fcns = {
                     R = R*(J + M - K)/J;
                 S = S - R*BN[K];
             }
-            BN[M] = S;
+            BN = a.append(BN, S);
         }
 
         for (var M = 3;  M <= N;  M += 2)
