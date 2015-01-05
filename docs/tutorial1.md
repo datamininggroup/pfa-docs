@@ -118,6 +118,8 @@ action:
   - {m.sqrt: input}
 {% include engine3.html %}
 
+The map method is simply a mathematical function: one input yields one output.
+
 ### Emit
 
 The emit method is a generalization that supplies a function named `emit` and ignores the result of the last expression.  The scoring engine must call `emit` to yield results.
@@ -141,6 +143,8 @@ action:
       emit: {/: [input, 2]}
 {% include engine3.html %}
 
+Emit methods can be used to construct filters (emit zero or one outputs for every input) or table-generating functions (such as UDTFs for SQL lateral view clauses).
+
 ### Fold
 
 The fold method is for aggregation--- use it to reduce a dataset to a single quantity.  Rather than wait for the end of the (potentially infinite) dataset, folding engines return a partial result with each call.  The previous partial result becomes available to the next action as a symbol `tally`.  If you are only interested in the total, ignore all but the last output.
@@ -162,33 +166,31 @@ method: fold
 zero: 0
 action:
   - {+: [input, tally]}
+merge:
+  - {+: [tallyOne, tallyTwo]}
 {% include engine3.html %}
 
-Although the nomenclature suggests sums, any kind of incremental calculation may be performed.  For instance, this one finds the longest string:
+A folding engine must also have two methods for combining data: "action" combines an `input` (of type **input**) with a current running `tally` (of type **output**) and "merge" combines `tallyOne` and `tallyTwo` (both with type **output**).  In both cases, calling the method outputs the sum and replaces the running `tally`.
+
+The two methods are needed so that instances of the scoring engine may be distributed to independent processors, which call "action" on the input data to obtain partial sums, and then these partial sums are returned and combined with "merge" to yield a final result.  This can be applied to any mathematical operation that obeys an associative law (i.e. a monoid).
+
+The most common example of a fold is a sum of numbers, but any data type may be used as long as it obeys an associative law.  For instance, string concatenation is associative (e.g. free monoid over the alphabet).  In this example, we turn input integers into strings and concatenate strings.  This calculation may be distributed over a network because partial sums can be combined with the "merge" method.
 
 {% include engine1.html %}
-"hello"
-"my"
-"darling"
-"hello"
-"my"
-"honey"
-"hello"
-"my"
-"ragtime"
-"gal"
+1
+2
+3
+4
+5
 {% include engine2.html %}
-input: string
+input: int
 output: string
 method: fold
 zero: ""
 action:
-  - if:
-      ">":
-        - {s.len: input}
-        - {s.len: tally}
-    then:
-      input
-    else:
-      tally
+  - {s.concat: [tally, {s.number: input}]}
+merge:
+  - {s.concat: [tallyOne, tallyTwo]}
 {% include engine3.html %}
+
+Note that `input` needs to be converted from an integer to a string (with `s.number`), but `tallyOne` and `tallyTwo` are already strings.
