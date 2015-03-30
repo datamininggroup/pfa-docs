@@ -3,6 +3,7 @@ layout: page
 type: reference
 title: Special forms
 order: 30
+noToc: true
 ---
 
 ## Not written yet

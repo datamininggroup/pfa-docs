@@ -3,6 +3,7 @@ layout: page
 type: tutorial
 title: "Tutorial 1: Scoring engines"
 order: 20
+noToc: true
 ---
 
 ## Running a scoring engine

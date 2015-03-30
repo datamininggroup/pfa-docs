@@ -3,6 +3,7 @@ layout: page
 type: tutorial
 title: "Tutorial 2: Programming"
 order: 21
+noToc: true
 ---
 
 ## Avro types

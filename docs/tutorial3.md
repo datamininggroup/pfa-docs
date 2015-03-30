@@ -3,6 +3,7 @@ layout: page
 type: tutorial
 title: "Tutorial 3: Data flow"
 order: 22
+noToc: true
 ---
 
 ## Begin, action, end

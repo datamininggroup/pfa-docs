@@ -3,6 +3,7 @@ layout: page
 type: tutorial
 title: What is PFA for?
 order: 10
+noToc: true
 ---
 
 ## Hardening a data analysis

@@ -81,7 +81,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 10px;
   font-weight: bold;
   line-height: 1.25;
-  color: #313131;
+  color: #0e5f80;
   text-rendering: optimizeLegibility;
 }
 h1 {
@@ -308,10 +308,11 @@ tbody tr:nth-child(odd) th {
 .page-title,
 .post-title,
 .post-title a {
-  color: #303030;
+  color: #0e5f80;
   font-family: Cardo, serif;
   font-style: italic;
   font-size: 60px;
+  line-height: 100%;
 }
 .page-title,
 .post-title {

@@ -3,6 +3,7 @@ layout: page
 type: reference
 title: Function library
 order: 40
+noToc: true
 ---
 
 ## Not written yet

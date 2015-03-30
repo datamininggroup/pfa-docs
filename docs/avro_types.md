@@ -3,6 +3,7 @@ layout: page
 type: reference
 title: Avro types
 order: 20
+noToc: true
 ---
 
 ## Not written yet

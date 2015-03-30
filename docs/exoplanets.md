@@ -3,6 +3,7 @@ layout: page
 type: tutorial
 title: Exoplanets example
 order: 30
+noToc: true
 ---
 
 ## Explanation
