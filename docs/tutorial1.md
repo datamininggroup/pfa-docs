@@ -24,7 +24,7 @@ In a traditional Hadoop job, the mechanics of data handling and the logic of the
 
 A similar story could be told for a PFA-enabled Storm application, or a PFA-enabled Spark application, or any other.  The point of PFA is that it is embedded into many different environments, so it has no single executable.  You may even build one yourself, starting from a [generic PFA library](https://github.com/scoringengine/pfa){:target="_blank"} or from scratch, following the [language specification](https://github.com/scoringengine/pfa/blob/master/doc/spec/PFA.pdf?raw=true).
 
-For these examples, we will use a PFA-enabled servlet running in [Google App Engine](https://developers.google.com/appengine/){:target="_blank"} (see the [hadrian-gae](https://github.com/scoringengine/hadrian-gae){:target="_blank"} GitHub project).  Most examples respond quickly; if it's taking several seconds, Google App Engine is probably launching a new servlet instance for you.  Subsequent calls will be faster.
+For these examples, we will use a PFA-enabled servlet running in [Google App Engine](https://developers.google.com/appengine/){:target="_blank"}.  Most examples respond quickly; if it's taking several seconds, Google App Engine is probably launching a new servlet instance for you.  Subsequent calls will be faster.
 
 ## Input, output, action!
 
