@@ -48,4 +48,11 @@ $(document).ready(function() {
     ga('send', 'pageview');
   </script>
 
+  {% if page.mathjax == true %}
+  <script type="text/javascript"
+          src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+  <link rel="stylesheet" href="/public/css/libfcns.css"/>
+  {% endif %}
+
 </head>

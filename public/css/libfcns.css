@@ -1,0 +1,29 @@
+div.PFAfcndef {
+    border: 1px solid #0e5f80;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+table.PFAwhere, table.PFAparams {
+    width: auto;
+    margin-left: 40px;
+}
+
+table.PFAfields {
+    width: auto;
+    margin-left: -10%;
+    margin-bottom: 0px;
+}
+
+table.PFAwhere td, table.PFAparams td, table.PFAfields td {
+    vertical-align: top;
+}
+
+table.PFAwhere, table.PFAparams, table.PFAfields,
+table.PFAwhere tbody tr td, table.PFAparams tbody tr td, table.PFAfields tbody tr td,
+table.PFAwhere tbody tr th, table.PFAparams tbody tr th, table.PFAfields tbody tr th,
+table.PFAwhere tr td, table.PFAparams tr td, table.PFAfields tr td,
+table.PFAwhere tr th, table.PFAparams tr th, table.PFAfields tr th {
+    background-color: white;
+    border: none;
+}
