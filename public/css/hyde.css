@@ -113,14 +113,12 @@ html {
 }
 
 /* About section */
-.sidebar-about h1 {
-  color: #fff;
-  margin-top: 0px;
+.sidebar-about img {
+  width: 70%
+  height: auto;
+  margin-top: 5px;
   margin-bottom: 0px;
-  padding-bottom: 25px;
-  font-family: "Cardo", serif;
-  font-style: italic;
-  font-size: 80px;
+  margin-left: 2%;
 }
 
 .sidebar-about p {
@@ -138,7 +136,7 @@ html {
   color: #fff;
   margin-top: 0;
   margin-bottom: 5px;
-  margin-left: -20px;
+  margin-left: 5%;
   font-size: 24px;
 }
 
@@ -153,7 +151,7 @@ html {
 
 /* Sidebar nav */
 .sidebar-nav {
-  padding-left: 0px;
+  padding-left: 8%;
   list-style: none;
 }
 .sidebar-nav-item {
