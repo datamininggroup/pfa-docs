@@ -3,7 +3,7 @@
 
   {% include head.html %}
 
-  <body onload="setupEngines();" class="theme-base-bluer" {% if page.title == 'Home' %}style="background-color: #116c91; background-image: url(/public/retweets.jpg); background-repeat: no-repeat; background-position: 300px 120px;"{% endif %}>
+  <body onload="setupEngines();" class="theme-base-bluer" {% if page.title == 'Home' %}style="background-color: #116c91;"{% endif %}>
     <a name="top-of-page"></a>
 
     {% include sidebar.html %}
@@ -11,5 +11,6 @@
     <div class="content container">
       {{ content }}
     </div>
+
   </body>
 </html>

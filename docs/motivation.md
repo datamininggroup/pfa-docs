@@ -1,6 +1,6 @@
 ---
 layout: page
-type: tutorial
+type: documentation
 title: What is PFA for?
 order: 10
 noToc: true

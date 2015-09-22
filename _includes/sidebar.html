@@ -2,10 +2,33 @@
   <div class="container" style="{% if page.title != 'Home' %}background-color: #116c91;{% endif %} direction: ltr; font-size: 16px;">
     <div class="sidebar-about">
       <a href="/"><h1>pfa</h1></a>
-      <div style="display: inline-block; margin-left: auto; margin-right: auto;"><p class="subtitle"><a href="/">Portable Format<br>for Analytics</a></p></div>
+<!--      <div style="display: inline-block; margin-left: auto; margin-right: auto;"><p class="subtitle"><a href="/">Portable Format<br>for Analytics</a></p></div> -->
     </div>
 
-    <h2>Tutorials:</h2>
+
+    <h2>DMG:</h2>
+    <ul class="sidebar-nav" style="line-height: 1.1;">
+      <li class="sidebar-nav-item"><a href="http://dmg.org">Home</a></li>
+    </ul>
+
+    <h2>Motivation:</h2>
+    <ul class="sidebar-nav">
+      {% assign pages_list = site.pages %}
+      {% sorted_for node in pages_list sort_by:order %}
+        {% if node.title != null %}
+          {% if node.layout == "page" %}
+            {% if node.type == "documentation" %}
+              <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
+                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a> {% endif %}
+              </li>
+              {% if page.url == node.url %} <li style="margin-left: 20px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div></li> {% endif %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endsorted_for %}
+    </ul>
+
+    <h2>Interactive Tutorials:</h2>
     <ul class="sidebar-nav">
       {% assign pages_list = site.pages %}
       {% sorted_for node in pages_list sort_by:order %}
@@ -43,14 +66,5 @@
       <li class="sidebar-nav-item"><a href="http://github.com/scoringengine/pfa/blob/master/pfa-specification.pdf?raw=true">PFA version 0.7</a></li>
     </ul>
 
-    <h2>GitHub projects:</h2>
-    <ul class="sidebar-nav" style="line-height: 1.1;">
-
-      <li class="sidebar-nav-item"><a href="http://github.com/scoringengine/pfa">pfa</a> (specification)</li>
-      <li class="sidebar-nav-item"><a href="http://github.com/scoringengine/pfa-docs">pfa-docs</a> (this website)</li>
-      <li class="sidebar-nav-item"><a href="http://github.com/opendatagroup/hadrian">hadrian</a> (JVM implementation)</li>
-      <li class="sidebar-nav-item"><a href="http://github.com/opendatagroup/hadrian/tree/master/titus">titus</a> (Python implementation)</li>
-      <li class="sidebar-nav-item"><a href="http://github.com/opendatagroup/hadrian/tree/master/aurelius">aurelius</a> (R model producer)</li>
-    </ul>
   </div>
 </div>
