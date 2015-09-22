@@ -44,7 +44,7 @@ function setupEngines() {
                 if (!engine.running) {
                     var coverIcon = engine.find(".cover-icon");
                     var cover = engine.find(".cover");
-                    coverIcon.attr("src", "/public/playbutton.gif");
+                    coverIcon.attr("src", "/pfa/public/playbutton.gif");
                     coverIcon.css("visibility", "visible");
                     cover.css("visibility", "visible");
                 }
@@ -75,7 +75,7 @@ function setupEngines() {
         coverDarkness.className = "cover-darkness";
 
         var coverIcon = document.createElement("img");
-        coverIcon.src = "/public/playbutton.gif";
+        coverIcon.src = "/pfa/public/playbutton.gif";
         coverIcon.alt = "Calculate";
         coverIcon.className = "cover-icon";
 
@@ -86,13 +86,13 @@ function setupEngines() {
 
         cover.addEventListener("mouseover", function (evt) {
             if (!evt.currentTarget.parentNode.parentNode.running) {
-                $(evt.currentTarget).find(".cover-icon").attr("src", "/public/playbutton-highlight.gif");
+                $(evt.currentTarget).find(".cover-icon").attr("src", "/pfa/public/playbutton-highlight.gif");
                 $(evt.currentTarget).find(".cover-darkness").css("background", "rgba(0, 0, 0, 0.15)");
             }
         });
         cover.addEventListener("mouseout", function (evt) {
             if (!evt.currentTarget.parentNode.parentNode.running) {
-                $(evt.currentTarget).find(".cover-icon").attr("src", "/public/playbutton.gif");
+                $(evt.currentTarget).find(".cover-icon").attr("src", "/pfa/public/playbutton.gif");
                 $(evt.currentTarget).find(".cover-darkness").css("background", "rgba(0, 0, 0, 0.1)");
             }
         });
@@ -115,7 +115,7 @@ function run(cm) {
         var coverIcon = engine.find(".cover-icon");
         var cover = engine.find(".cover");
 
-        coverIcon.attr("src", "/public/icn_loading_animated.gif");
+        coverIcon.attr("src", "/pfa/public/icn_loading_animated.gif");
         coverIcon.css("visibility", "visible");
         cover.css("visibility", "visible");
 
@@ -160,7 +160,7 @@ function run(cm) {
                     var lines = data.trim().split("\n");
                     var errorClass = lines[1];
                     var errorMessage = lines.splice(2, lines.length).join("\n");
-                    coverIcon.attr("src", "/public/playbutton.gif");
+                    coverIcon.attr("src", "/pfa/public/playbutton.gif");
                     coverIcon.css("visibility", "hidden");
                     cover.css("visibility", "visible");
                     if (output != undefined) {
@@ -174,7 +174,7 @@ function run(cm) {
                     }
                 }
                 else {
-                    coverIcon.attr("src", "/public/playbutton.gif");
+                    coverIcon.attr("src", "/pfa/public/playbutton.gif");
                     coverIcon.css("visibility", "hidden");
                     cover.css("visibility", "hidden");
                     if (output != undefined) {

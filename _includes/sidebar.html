@@ -3,6 +3,7 @@
     <div class="sidebar-about">
       <a href="/"><h1>pfa</h1></a>
 <!--      <div style="display: inline-block; margin-left: auto; margin-right: auto;"><p class="subtitle"><a href="/">Portable Format<br>for Analytics</a></p></div> -->
+      <div style="display: inline-block; margin-left: auto; margin-right: auto;"><p> </p></div> 
     </div>
 
 
@@ -19,7 +20,7 @@
           {% if node.layout == "page" %}
             {% if node.type == "documentation" %}
               <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
-                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a> {% endif %}
+                <a href="/pfa{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a> {% endif %}
               </li>
               {% if page.url == node.url %} <li style="margin-left: 20px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div></li> {% endif %}
             {% endif %}
@@ -36,7 +37,7 @@
           {% if node.layout == "page" %}
             {% if node.type == "tutorial" %}
               <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
-                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a> {% endif %}
+                <a href="/pfa{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a> {% endif %}
               </li>
               {% if page.url == node.url %} <li style="margin-left: 20px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div></li> {% endif %}
             {% endif %}
@@ -53,7 +54,7 @@
           {% if node.layout == "page" %}
             {% if node.type == "reference" %}
               <li class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}">
-                <a href="{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a><br style="margin: none; padding: none; line-height: 0px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div>{% endif %}
+                <a href="/pfa{{ node.url }}">{{ node.title }}</a>{% if page.url == node.url %} <a href="#" style="font-weight: bold; color: white; padding-left: 5px; text-decoration: none;" onclick="$('.toc').toggle('fast'); return false;">+</a><br style="margin: none; padding: none; line-height: 0px;"><div class="toc" style="text-align: left; display: inline-block; width: intrinsic;"></div>{% endif %}
               </li>
             {% endif %}
           {% endif %}
