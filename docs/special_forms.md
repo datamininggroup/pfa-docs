@@ -6,6 +6,10 @@ order: 30
 noToc: true
 ---
 
+<style>
+table td {vertical-align: text-top}
+</style>
+
 ## Overview
 
 PFA has four types of [expressions](../document_structure/#expressions): literal values, symbol references, function calls, and special forms. Special forms could be thought of as function calls with irregular constraints on their arguments and return values. The analogy in ordinary programming languages would be keywords like `if` and `while`.
@@ -472,6 +476,8 @@ The return value of the first form is `null`, so it acts as a statement: its inf
 
 The return value of the second form is either the last expression in the `"then"` clause or the last expression in the `"else"` clause, so it can be used as an inline expression. It can influence the program through its return value, rather than changing variables.
 
+The return type is the [narrowest possible supertype](../avro_types/#subtypes-and-supertypes) of the `"then"` clause and the `"else"` clause.
+
 **Example:** Both of the following set `y` to `"yes"` if `x` is greater than 0 and `"no"` otherwise, but the first uses `"if"` as a statement, while the second uses it as an expression.
 
     {"do": [
@@ -488,37 +494,373 @@ The return value of the second form is either the last expression in the `"then"
 
 ### Conditional with many cases (cond)
 
+Long "else if" chains could be constructed by nesting the simple `"if"` form above, but for flatter PFA files, an explicit chain is provided. Its structure is:
+
+    {"cond": [IF-THEN-1, IF-THEN-2, ...]}
+
+or
+
+    {"cond": [IF-THEN-1, IF-THEN-2, ...],
+     "else": EXPRESSION-OR-EXPRESSIONS}
+
+where the `IF-THEN` are `"if"` forms with no `"else"` clause and the `EXPRESSION-OR-EXPRESSIONS` is either a single [expression](../document_structure/#expressions) or a JSON array of expressions.
+
+Just like the simple `"if"` form, `"cond"` without `"else"` returns `null` and `"cond"` with `"else"` returns the [smallest possible supertype](../avro_types/#subtypes-and-supertypes) of the `"then"` clauses and the `"else"` clause.
+
+**Example:** The following turns small numbers into English words.
+
+    {"cond": [
+        {"if": {"==": ["x", 1]}, "then": {"string": "one"}},
+        {"if": {"==": ["x", 2]}, "then": {"string": "two"}},
+        {"if": {"==": ["x", 3]}, "then": {"string": "three"}},
+        {"if": {"==": ["x", 4]}, "then": {"string": "four"}},
+        {"if": {"==": ["x", 5]}, "then": {"string": "five"}},
+        {"if": {"==": ["x", 6]}, "then": {"string": "six"}},
+        {"if": {"==": ["x", 7]}, "then": {"string": "seven"}},
+        {"if": {"==": ["x", 8]}, "then": {"string": "eight"}},
+        {"if": {"==": ["x", 9]}, "then": {"string": "nine"}},
+        {"if": {"==": ["x", 10]}, "then": {"string": "ten"}}],
+     "else": {"string": "unknown"}}
+
+(For large look-up tables, it's better to fill a cell with a map because data can be arbitrarily large, while code is limited on some systems.)
+
 ## Loops
 
 ### Generic pre-test loop (while)
 
+PFA has an ordinary `"while"` loop, which has the usual danger of not terminating. (The `timeout` option can prevent that, however.) Its structure is:
+
+    {"while": CONDITION, "do": EXPRESSION-OR-EXPRESSIONS}
+
+where `CONDITION` is an [expression](../document_structure/#expressions) that resolves to `"boolean"` and `EXPRESSION-OR-EXPRESSIONS` is either a single expression or a JSON array of expressions.
+
+PFA has no "break", "continue", or "return" statement, so a while loop is often not the best way to do things.
+
+**Example:** An infinite loop.
+
+    {"while": true, "do": {"log": {"string": "Can't stop!"}}}
+
 ### Generic post-test loop (do-until)
+
+The `"while"` loop tests its condition before executing its `"do"` expressions, and sometimes it's necessary to test the condition afterward (especially because there is no "break" statement). Its structure is:
+
+    {"do": EXPRESSION-OR-EXPRESSIONS, "until": CONDITION}
+
+where `CONDITION` is an [expression](../document_structure/#expressions) that resolves to `"boolean"` and `EXPRESSION-OR-EXPRESSIONS` is either a single expression or a JSON array of expressions.
+
+**Example:** An iterative procedure that has a non-trivial stop condition.
+
+    {"do": [
+        {"set": {"state": {"u.doOneIteration": "state"}}},
+        {"let": {
+            "cond1": {"u.checkCondition1": "state"},
+            "cond2": {"u.checkCondition2": "state"}}},
+        ],
+     "until": {"&&": ["cond1", "cond2"]}}
 
 ### Iteration with dummy variables (for)
 
+PFA's `"for"` loop takes a `"let"`-like structure for its initializer and a `"set"`-like structure for its updator, but is otherwise like a for loop in C. Its structure is:
+
+    {"for": {VAR1: EXPR1, VAR2: EXPR2, ...},
+     "while": CONDITION,
+     "step": {VAR1: EXPR1, VAR2: EXPR2, ...},
+     "do": EXPRESSION-OR-EXPRESSIONS}
+
+where the `VAR` are variable names and the `EXPR` are their initial or updated values. The initial values set the type and the updated values have to conform to that type. The `CONDITION` is an [expression](../document_structure/#expressions) that resolves to `"boolean", and `EXPRESSION-OR-EXPRESSIONS` is either a single expression or a JSON array of expressions.
+
+**Example:** A for loop that applies a procedure to numbers from 1 to 10 (inclusive).
+
+    {"for": {"i": 1},
+     "while": {"<=": ["i", 10]},
+     "step": {"i": {"+": ["i", 1]}},
+     "do":
+         {"u.procedure": "i"}}
+
 ### Iteration over arrays (foreach)
 
+PFA has a `"foreach"` loop for iteration over arrays. This version should be familiar to users of Python or R. Its structure is:
+
+    {"foreach": VAR, "in": ARRAY, "do": EXPRESSION-OR-EXPRESSIONS}
+
+or
+
+    {"foreach": VAR, "in": ARRAY, "do": EXPRESSION-OR-EXPRESSIONS,
+     "seq": TRUE-OR-FALSE}
+
+where `VAR` is a new variable name, `ARRAY` is an [expression](../document_structure/#expressions) that resolves to an array type, and `EXPRESSION-OR-EXPRESSIONS` is either a single expression or a JSON array of expressions.
+
+The `"seq"` parameter, if provided must be a JSON `true` or `false` (default of `true`). If `true`, it indicates that the loop must be processed sequentially. If `false`, the PFA implementation may parallelize the loop. The consequence for the PFA author is that variables defined outside the `"foreach"` can only be _changed_ if elements are processed sequentially. If you get an error saying that a variable cannot be modified inside the scope of a `"foreach"` loop, make sure the `"seq"` parameter is `true` (although the cause could be another sealed scope between the `"foreach"` and the variable, such as an inline function declaration.)
+
+**Example:** Apply a procedure to each element of an array.
+
+    {"foreach": "x", "in": "input.myArray", "do":
+        {"u.procedure": "x"}}
+
+Allow the PFA consumer to perform the steps in parallel, which makes it impossible to modify any variables defined outside the `"foreach"`.
+
+    {"foreach": "x", "in": "input.myArray", "do":
+        {"u.procedure": "x"},
+     "seq": false}
+
 ### Iteration over maps (forkey-forval)
+
+PFA's `"forkey-forval"` is an extension of the `"foreach"` idea to iterating over the key-value pairs of a map. Its structure is:
+
+    {"forkey": VAR1, "forval": VAR2, "in": MAP,
+     "do": EXPRESSION-OR-EXPRESSIONS}
+
+where `VAR1` is the name of a new variable for each key of the map, `VAR2` is the name of a new variable for each value of the map, `MAP` is an [expression](../document_structure/#expressions) that resolves to a map type, and `EXPRESSION-OR-EXPRESSIONS` is either a single expression or a JSON array of expressions.
+
+The order of a loop over a map is never guaranteed.
+
+**Example:** Apply a procedure to each key, value pair of a map.
+
+    {"forkey": "k", "forval": "v", "in": "input.myMap", "do":
+        {"u.procedure": ["k", "v"]}
 
 ## Type-safe casting
 
 ### Narrowing a type (cast-cases)
 
+If an expression has a type with subtypes, such as a union, you sometimes need to cast it as one of those subtypes. In most languages, like C and Java, casting bypasses type-safety. Incorrect casts either lead to wrong results or raise exceptions. Some languages, like PFA, provide type-safe casts, which require the author to provide a contingency for every possible subtype. The structure for a type-safe cast in PFA is:
+
+    {"cast": EXPRESSION, "cases": [
+        {"as": TYPE1,
+         "named": VAR1,
+         "do": EXPRESSION-OR-EXPRESSIONS},
+        {"as": TYPE2,
+         "named": VAR2,
+         "do": EXPRESSION-OR-EXPRESSIONS},
+        ...
+     ]}
+
+or
+
+    {"cast": EXPRESSION, "cases": [
+        {"as": TYPE1,
+         "named": VAR1,
+         "do": EXPRESSION-OR-EXPRESSIONS},
+        {"as": TYPE2,
+         "named": VAR2,
+         "do": EXPRESSION-OR-EXPRESSIONS},
+        ...],
+     "partial": TRUE-OR-FALSE}
+
+where `EXPRESSION` is an [expression](../document_structure/#expressions), the `TYPE` are subtypes of the `EXPRESSION` type, the `VAR` are new variable names, and EXPRESSION-OR-EXPRESSIONS is either a single expression or a JSON array of expressions.
+
+If the type of `EXPRESSION` is `TYPE1`, then the first `"do"` block is evaluated with `VAR1` defined as a variable with `TYPE1`. If, instead, it is `TYPE2`, then the second `"do"` block is evaluated.
+
+If `"partial"` is not provided or `"partial"` is `false`, then the `TYPE` subtypes must cover all possibilities and the `"cast"` form returns the last expression of whichever block is evaluated. (The return type is the [narrowest possible supertype](../avro_types/#subtypes-and-supertypes) of the `"do"` blocks.)
+
+If `"partial"` is `true`, then the `TYPE` subtypes do not have to cover all possibilities and the `"cast"` form returns `null`.
+
+**Example:** Given a variable `x` that could be `"double"`, `"string"`, or `"null"`, the following expression returns the name of the type.
+
+    {"cast": "x", "cases": [
+        {"as": "double", "named": "y", "do": {"string": "double"}},
+        {"as": "string", "named": "y", "do": {"string": "string"}},
+        {"as": "null", "named": "y", "do": {"string": "null"}}]}
+
+The following writes a log message for the first two cases, including the value of the variable.
+
+    {"cast": "x", "cases": [
+        {"double", "named": "y": "do":
+             {"log": ["y", {"string": "double"}]}},
+        {"string", "named": "y": "do":
+             {"log": ["y", {"string": "string"}]}}],
+     "partial": true}
+
 ### Widening a type (upcast)
+
+The "cast-cases" form (above) is used for the usual case of casting a supertype to its subtypes. The other direction is rarely needed and always safe. Its structure is simple:
+
+    {"upcast": EXPRESSION, "as": TYPE}
+
+where `EXPRESSION` is an [expression](../document_structure/#expressions) and `TYPE` is a supertype of the `EXPRESSION` type.
+
+**Example:** Casting an integer as a double.
+
+    {"upcast": 3, "as": "double"}
 
 ### Checking for missing values (ifnotnull)
 
+Checking for `null` is a special case of narrowing a type, so the "cast-cases" form could be used to handle it. However, PFA uses `null` to represent missing values, so it is a frequent special case and "cast-cases" is cumbersome. Moreover, "cast-cases" can only cast one expression at a time, and we frequently need to check for `null` in several expressions.
+
+The "ifnotnull" special form handles this case, and its structure is:
+
+    {"ifnotnull": {VAR1: EXPR1, VAR2: EXPR2, ...},
+     "then": EXPRESSION-OR-EXPRESSIONS}
+
+or
+
+    {"ifnotnull": {VAR1: EXPR1, VAR2: EXPR2, ...},
+     "then": EXPRESSION-OR-EXPRESSIONS,
+     "else": EXPRESSION-OR-EXPRESSIONS}
+
+where the `VAR` are new variable names that are in the scope of the `"then"` clause, the `EXPR` are single [expressions](../document_structure/#expressions) or JSON arrays of expressions to check. If all of them are not `null`, the `"then"` clause is evaluated. If any one is `null` and an `"else"` clause is provided, it is evaluated.
+
+If an `"else"` clause is provided, the return value is the last expression of `"then"` or `"else"`. Its type is the [narrowest possible supertype](../avro_types/#subtypes-and-supertypes) of both clauses.
+
+If an `"else"` is not provided, the return value is `null`.
+
+**Example:** The following performs a procedure if all variables are present, and returns a substitute otherwise.
+
+    {"ifnotnull": {"x": "input.x", "y": "input.y", "z": "input.z"},
+     "then": {"u.procedure": ["x", "y", "z"]},
+     "else": 0}
+
 ### Extracting values from binary (unpack)
 
+Sometimes, it is necessary to extract data from a serialized `"bytes"` object. This is done with a special form, rather than a library function, because the return type depends on the interpretation of the `"bytes"` object. It has the following structure.
+
+    {"unpack": BYTES,
+     "format": [{VAR1: FORMAT1}, {VAR1: FORMAT1}, ...],
+     "then": EXPRESSION-OR-EXPRESSIONS}
+
+or
+
+    {"unpack": BYTES,
+     "format": [{VAR1: FORMAT1}, {VAR1: FORMAT1}, ...],
+     "then": EXPRESSION-OR-EXPRESSIONS,
+     "else": EXPRESSION-OR-EXPRESSIONS}
+
+where `BYTES` is an [expression](../document_structure/#expressions) that resolves to `"bytes"` type, the `VAR` are new variable names that are in the scope of the `"then"` clause, the `FORMAT` are format strings (described below), and the `"then"` and optional `"else"` clauses are single expresions or JSON arrays of expressions.
+
+If the `"bytes"` content conforms to the format, the `"then"` clause is evaluated. If not, and if an `"else"` clause is provided, the `"else"` clause is evaluated. With an `"else"` clause, the result is the last expression in either `"then"` or `"else"` whose type is the [narrowest possible supertype](../avro_types/#subtypes-and-supertypes) of the two. Without an `"else"`, the return value is `null`.
+
+The format strings have the following values.
+
+Format | Result | PFA type
+:------|:-------|:--------
+`pad` | skips one byte | `"null"`
+`boolean` | one byte as true if nonzero | `"boolean"`
+`int8` | one byte as signed integer | `"int"`
+`int16` | two bytes as signed integer | `"int"`
+`int32` | four bytes as signed integer | `"int"`
+`int64` | eight bytes as signed integer | `"long"`
+`float32` | four bytes as a floating-point number | `"float"`
+`float64` | eight bytes as a floating-point number | `"double"`
+`raw ##` | extract a fixed number of bytes | `"bytes"`
+`null terminated` | extract bytes until terminated by zero (excluding terminus) | `"bytes"`
+`length prefixed` | interpret first byte as a size, then extract that many bytes (excluding size byte) | `"bytes"`
+
+The `int8`, `int16`, `int32`, and `int64` formats can also be preceded by `unsigned` to interpret the bytes as an unsigned integer.
+
+The `int16`, `int32`, `int64`, `float32`, and `float64` formats can be preceded by `little` to interpret the bytes as little-endian. (The `unsigned` modifier comes first.)
+
+**Example:** Extract three fields and use them to fill a record, with a default if the bytes are corrupted.
+
+    {"unpack": "input", "format": [
+        {"x": "int32"},
+        {"y": "float64"},
+        {"z": "null terminated"}],
+     "then":
+        {"type": {"type": "record",
+                  "name": "MyRecord",
+                  "fields": [
+                      {"name": "one", "type": "int"},
+                      {"name": "two", "type": "double"},
+                      {"name": "three", "type": "string"}]},
+         "new": {
+             "one": "x",
+             "two": "y",
+             "three": {"bytes.decodeUtf8": "z"}}
+        },
+     "else":
+        {"type": "MyRecord",
+         "new": {"one": 0, "two": 0.0, "three": ""}}}
+
 ### Encoding values in binary (pack)
+
+The opposite of the above is "pack", which serializes variables as a `"bytes"` object. Its structure is:
+
+    {"pack": [{FORMAT1: EXPR1}, {FORMAT2: EXPR2}, ...]}
+
+where `FORMAT` are format strings (described below), and `EXPR` are [expressions](../document_structure/#expressions). The return type of this form is a `"bytes"` object.
+
+The format strings are the same as the "unpack" case, with one additional format.
+
+Format | Result | PFA type
+:------|:-------|:--------
+raw | any number of bytes | `"bytes"`
+
+**Example:** This serializes three variables.
+
+    {"pack": [{"int32": "input.x"},
+              {"float64": "input.y"},
+              {"null terminated": "input.z"}]}
 
 ## Miscellaneous special forms
 
 ### Inline documentation (doc)
 
+Since JSON has no comments, PFA provides an inert special form for comments. It takes a string and always returns `null`.
+
+    {"doc": STRING}
+
+where `STRING` is any string.
+
+**Example:** A simple example.
+
+    {"doc": "This is like those REM strings from BASIC."}
+
 ### User-defined exceptions (error)
+
+The following special form raises an exception. It has no return type.
+
+    {"error": STRING}
+
+**Example:** When combined with other types as a [narrowest possible supertype](../avro_types/#subtypes-and-supertypes), the "error" form is ignored. The following has type `"int"`.
+
+    {"if": "condition",
+     "then": 3,
+     "else": {"error": "no good"}}
+
+It can be used to let special forms return a non-null value without constructing unwanted unions.
 
 ### Turning exceptions into missing values (try)
 
+PFA has a "try" special form, but unlike most languages, it does not have a "catch" case. In PFA, "try" is used to turn exceptions into missing values (`null`). Its structure is
+
+    {"try": EXPRESSION-OR-EXPRESSION}
+
+or
+
+    {"try": EXPRESSION-OR-EXPRESSION, "filter": ARRAY-OF-STRINGS}
+
+The `EXPRESSION-OR-EXPRESSIONS` is a single [expression](../document_structure/#expressions) or a JSON array of expressions, and `ARRAY-OF-STRINGS` is a JSON array of simple strings (not expressions). If provided, the `"filter"` selects a subset of exception strings to catch.
+
+The return type is a union of the expression's type and `"null"`. This makes it applicable for any impute function.
+
+**Example:** The following gets the first element from an array or `null` if the array is empty.
+
+    {"try": {"a.head": "input"}}
+
+If the `"input"` array had type `{"type": "array", "items": "int"}`, then the type of the above expression is `["null", "int"]`.
+
+A traditional try-catch block can be formed by combining "try" with "ifnotnull":
+
+    {"ifnotnull": {"x": {"try": {"u.attempt": []}}},
+     "then": {"u.workWithResult": "x"},
+     "else": {"u.dealWithException": []}}
+
 ### Log messages (log)
 
+A PFA scoring engine is connected to an input source, and output sink, and optionally a log file. The nature of this log file is outside the scope of PFA, but if it exists, the following special form writes text to it.
+
+    {"log": EXPRESSION-OR-EXPRESSIONS}
+
+or
+
+    {"log": EXPRESSION-OR-EXPRESSIONS, "namespace": NAME}
+
+where `EXPRESSION-OR-EXPRESSIONS` is a single [expression](../document_structure/#expressions) or a JSON array of expressions, and `NAME` is a string (not an expression).
+
+The output of each call to `"log"` is a line of text, space-delimited JSON representations of the provided expressions. The `"namespace"` is optional; the external system may use it to send logs to different files, prefix the line of text with a marker, or ignore it.
+
+The return value of "log" is `null`.
+
+**Example:** The following writes the values of two variables, a number, and string to the logfile.
+
+    {"log": ["x", "y", 3.14, {"string": "literal string"}]}

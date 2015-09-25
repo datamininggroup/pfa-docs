@@ -25,7 +25,7 @@ Name | Default | Constraints | Description
 `begin` | `[]` | [expressions](#expressions) | Algorithm to be executed before evaluating any data. [See tutorial.](../tutorial3#begin-action-end)
 `action` | _required_ | [expressions](#expressions) | Algorithm to be executed for each input datum. [See tutorial.](../tutorial3#begin-action-end)
 `end` | `[]` | [expressions](#expressions) | Algorithm to be executed after evaluating all data (if such a time exists). [See tutorial.](../tutorial3#begin-action-end)
-`fcns` | `{}` | JSON object of [functions](../special_forms#function-definition) | Named user-defined functions that can be called in any expression (including other functions).
+`fcns` | `{}` | JSON object of [functions](../special_forms/#function-definition-fcndef) | Named user-defined functions that can be called in any expression (including other functions).
 `cells` | `{}` | JSON object of [cells](#cell-and-pool-structure) | Persistent storage containing model parameters, intermediate results, etc. [See tutorial.](../tutorial3#persistent-storage)
 `pools` | `{}` | JSON object of [pools](#cell-and-pool-structure) | Like cells, but items can be created and destroyed at runtime and [concurrent access](../tutorial3#concurrent-access-of-shared-data) extends only to a pool item, not the entire pool. [See tutorial.](../tutorial3#persistent-storage)
 `method` | `"map"` | `"map"`, `"emit"`, or `"fold"` | How results from the scoring engine will be served to the environment. [See tutorial.](../tutorial1#methods-of-output)

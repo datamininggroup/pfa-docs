@@ -228,7 +228,7 @@ Here is an example of such a tree in JSON:
 
     {"children": [{"children": []}, {"children": []}]}
 
-As with all PFA values, records are immutable. To change one field in a record, use the [attr-to special form](../special_forms/#attr-to). To change multiple fields, create a new record with the [new special form](../special_forms/#new).
+As with all PFA values, records are immutable. To change one field in a record, use the [attr-to special form](../special_forms/#creating-a-copy-with-different-nested-values-attr-to). To change multiple fields, create a new record with the [new special form](../special_forms/#creating-arrays-maps-and-records-from-runtime-data-new).
 
 Records have additional features that are primarily relevant for serialization and deserialization. See the [Avro specification](http://avro.apache.org/docs/1.7.7/spec.html#schema_record) for details. Only the sort order property affects processing in PFA (for functions such as `"<"`, `"max"`, and `"=="`).
 
@@ -313,7 +313,7 @@ PFA primarily uses unions to express the possibility of missing data. For instan
 
 The above is invalid because the `"+"` function can only add numbers, not nullable numbers. Even if `xornull` and `yornull` are _usually_ numbers, a PFA consumer will not accept their sum because one of them might, at runtime, be `null`. To add them, you must provide for the null case, which is known as a type-safe null.
 
-For example, the sum could be replaced with the [ifnotnull special form](../special_forms/#ifnotnull):
+For example, the sum could be replaced with the [ifnotnull special form](../special_forms/#checking-for-missing-values-ifnotnull):
 
     {"ifnotnull": {"x": "xornull", "y": "yornull"},
      "then": {"+": ["x", "y"]},
@@ -321,7 +321,7 @@ For example, the sum could be replaced with the [ifnotnull special form](../spec
 
 Some functions, such as the ones in the [impute library](../library/#lib:impute), [three-state logic](../library/#fcn:&&&), and [missing value variants of the tree model](../library/#fcn:model.tree.missingTest), take nullable types directly.
 
-Of course, null is not the only type that can be included in a union, so PFA has the [cast-cases special form](../special_forms/#cast-cases) for unpacking general unions.
+Of course, null is not the only type that can be included in a union, so PFA has the [cast-cases special form](../special_forms/#narrowing-a-type-cast-cases) for unpacking general unions.
 
 ## Subtypes and supertypes
 
@@ -364,7 +364,7 @@ a union of types `T` | either a union of types `T'` such that for all `t'` in `T
 
 ## Function signatures
 
-[Special forms](../special_forms) and [regular functions](../library) impose constraints on the types they are willing to accept. For instance, the [if special form](../special_forms/#if) requires a `"boolean"` predicate. All special forms are unique, but the types accepted by library functions follow prescribed patterns. User-defined functions are even more restrictive: only one explicit combination of types is accepted (along with their subtypes).
+[Special forms](../special_forms) and [regular functions](../library) impose constraints on the types they are willing to accept. For instance, the [if special form](../special_forms/#conditional-if) requires a `"boolean"` predicate. All special forms are unique, but the types accepted by library functions follow prescribed patterns. User-defined functions are even more restrictive: only one explicit combination of types is accepted (along with their subtypes).
 
 Library functions have one or more signatures, and these signatures include explicit types, wildcards, and function references. The explicit types found in type signatures are:
 
@@ -453,7 +453,7 @@ but the [a.len function](../library/#fcn:a.len), which returns the length of an 
                 "ret": "int",
                 "do": {"a.len": "x"}}]}
 
-Wrapping library functions is useful for resolving types, but it isn't needed if you only want to turn a two-argument function into a one-argument function by specifying one of the arguments ([partial application](http://en.wikipedia.org/wiki/Partial_application)). PFA has a [special form for this](../special_forms/#fcn-fill). Below, we apply [m.special.nChooseK](../library/#fcn:m.special.nChooseK) to an array of "k" values with "n" fixed to 100.
+Wrapping library functions is useful for resolving types, but it isn't needed if you only want to turn a two-argument function into a one-argument function by specifying one of the arguments ([partial application](http://en.wikipedia.org/wiki/Partial_application)). PFA has a [special form for this](../special_forms/#function-reference-with-partial-application-fcnref-fill). Below, we apply [m.special.nChooseK](../library/#fcn:m.special.nChooseK) to an array of "k" values with "n" fixed to 100.
 
     {"a.map": ["arrayOfK", {"fcn": "m.special.nChooseK",
                             "fill": {"n": 100}}]}
