@@ -107,6 +107,12 @@ p {
   text-align: justify;
 }
 
+@media (max-width: 800px) {
+  p {
+    text-align: left;
+  }
+}
+
 strong {
   color: #303030;
 }

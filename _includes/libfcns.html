@@ -388,6 +388,61 @@
 <tr><td>Each element \(x_i\) is mapped to \(\tanh(x_i)\).</td></tr>
 </table></p>
 </div>
+<div id="lib:" class="PFAhead"><h2 id="lib:m.kernel">m.kernel</h2></div>
+<div id="fcn:m.kernel.linear" class="PFAfcndef">
+{<b>"m.kernel.linear":</b> [x, y]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of double</td></tr><tr><td><b>y</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<p><b>Description:</b> Linear kernel function.</p>
+<p><b>Parameters:</b><table class="PFAparams">
+<tr><td><b>x</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>y</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+</table></p>
+<p><b>Returns:</b><table class="PFAparams">
+<tr><td>Returns the dot product of <span class="PFAp">x</span> and <span class="PFAp">y</span>, \(\sum_{i=1}^{n} x_{i} y_{j}\).</td></tr>
+</table></p>
+<p><b>Runtime Errors:</b><ul><li>Raises a "arrays must have same length" error if the lengths of <span class="PFAp">x</span> and <span class="PFAp">y</span> are not the same.</li></ul></p>
+</div>
+<div id="fcn:m.kernel.rbf" class="PFAfcndef">
+{<b>"m.kernel.rbf":</b> [x, y, gamma]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of double</td></tr><tr><td><b>y</b></td><td>array of double</td></tr><tr><td><b>gamma</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<p><b>Description:</b> Radial Basis Function (RBF) kernel function.</p>
+<p><b>Parameters:</b><table class="PFAparams">
+<tr><td><b>x</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>y</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>gamma</b></td><td>Gamma coefficient.</td></tr>
+</table></p>
+<p><b>Returns:</b><table class="PFAparams">
+<tr><td>Returns the result of \(\mathrm{exp}(-\gamma || x - y ||^{2})\).</td></tr>
+</table></p>
+<p><b>Runtime Errors:</b><ul><li>Raises a "arrays must have same length" error if the lengths of <span class="PFAp">x</span> and <span class="PFAp">y</span> are not the same.</li></ul></p>
+</div>
+<div id="fcn:m.kernel.poly" class="PFAfcndef">
+{<b>"m.kernel.poly":</b> [x, y, gamma, intercept, degree]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of double</td></tr><tr><td><b>y</b></td><td>array of double</td></tr><tr><td><b>gamma</b></td><td>double</td></tr><tr><td><b>intercept</b></td><td>double</td></tr><tr><td><b>degree</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<p><b>Description:</b> Polynomial kernel function.</p>
+<p><b>Parameters:</b><table class="PFAparams">
+<tr><td><b>x</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>y</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>gamma</b></td><td>Gamma coefficient.</td></tr>
+<tr><td><b>intecept</b></td><td>Intercept constant.</td></tr>
+<tr><td><b>degree</b></td><td>Degree of the polynomial kernel.</td></tr>
+</table></p>
+<p><b>Returns:</b><table class="PFAparams">
+<tr><td>Returns the result of \((\gamma \sum_{i=1}^{n} x_{i} y_{j} + \mathrm{intercept})^{\mathrm{degree}}\).</td></tr>
+</table></p>
+<p><b>Runtime Errors:</b><ul><li>Raises a "arrays must have same length" error if the lengths of <span class="PFAp">x</span> and <span class="PFAp">y</span> are not the same.</li></ul></p>
+</div>
+<div id="fcn:m.kernel.sigmoid" class="PFAfcndef">
+{<b>"m.kernel.sigmoid":</b> [x, y, gamma, intercept]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of double</td></tr><tr><td><b>y</b></td><td>array of double</td></tr><tr><td><b>gamma</b></td><td>double</td></tr><tr><td><b>intercept</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<p><b>Description:</b> Sigmoid kernel function.</p>
+<p><b>Parameters:</b><table class="PFAparams">
+<tr><td><b>x</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>y</b></td><td>Length <span class="PFAp">n</span> vector.</td></tr>
+<tr><td><b>gamma</b></td><td>Gamma coefficient.</td></tr>
+<tr><td><b>intecept</b></td><td>Intercept constant.</td></tr>
+</table></p>
+<p><b>Returns:</b><table class="PFAparams">
+<tr><td>Returns the result of \(\mathrm{tanh}( \mathrm{gamma} \sum_{i=1}^{n} x_{i} y_{j} + \mathrm{intercept})\).</td></tr>
+</table></p>
+<p><b>Runtime Errors:</b><ul><li>Raises a "arrays must have same length" error if the lengths of <span class="PFAp">x</span> and <span class="PFAp">y</span> are not the same.</li></ul></p>
+</div>
 <div id="lib:" class="PFAhead"><h2 id="lib:la">la</h2></div>
 <div id="fcn:la.map" class="PFAfcndef">
 {<b>"la.map":</b> [x, fcn]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of array of double</td></tr><tr><td><b>fcn</b></td><td>function of (double) &rarr; double</td></tr><tr><td><i>(returns)</i></td><td>array of array of double</td></tr></table>
@@ -888,18 +943,18 @@
 <p><b>Description:</b> Return an array containing each string that <span class="PFAp">pattern</span> matched in <span class="PFAp">haystack</span>.</p>
 </div>
 <div id="fcn:re.findfirst" class="PFAfcndef">
-{<b>"re.findfirst":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>union of {string, null}</td></tr></table>
-{<b>"re.findfirst":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>union of {bytes, null}</td></tr></table>
+{<b>"re.findfirst":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>union of {string, null}</td></tr></table>
+{<b>"re.findfirst":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>union of {bytes, null}</td></tr></table>
 <p><b>Description:</b> Return the first occurance of what <span class="PFAp">pattern</span> matched in <span class="PFAp">haystack</span>.</p>
 </div>
 <div id="fcn:re.findgroupsfirst" class="PFAfcndef">
-{<b>"re.findgroupsfirst":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>array of string</td></tr></table>
-{<b>"re.findgroupsfirst":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>array of bytes</td></tr></table>
+{<b>"re.findgroupsfirst":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>array of string</td></tr></table>
+{<b>"re.findgroupsfirst":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>array of bytes</td></tr></table>
 <p><b>Description:</b> Return an array of strings or bytes for each <span class="PFAp">pattern</span> sub-match (group-match) at the first occurance of <span class="PFAp">pattern</span> in <span class="PFAp">haystack</span>.</p>
 </div>
 <div id="fcn:re.findgroupsall" class="PFAfcndef">
-{<b>"re.findgroupsall":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>array of array of string</td></tr></table>
-{<b>"re.findgroupsall":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>array of array of bytes</td></tr></table>
+{<b>"re.findgroupsall":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>array of array of string</td></tr></table>
+{<b>"re.findgroupsall":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>array of array of bytes</td></tr></table>
 <p><b>Description:</b> Return an array of strings or bytes for each <span class="PFAp">pattern</span> sub-match (group-match) at every occurance of <span class="PFAp">pattern</span> in <span class="PFAp">haystack</span>.</p>
 </div>
 <div id="fcn:re.groupsall" class="PFAfcndef">
@@ -908,23 +963,23 @@
 <p><b>Description:</b> Return the location indices of each <span class="PFAp">pattern</span> sub-match (group-match) for each occurance of <span class="PFAp">pattern</span> in <span class="PFAp">haystack</span>.</p>
 </div>
 <div id="fcn:re.replacefirst" class="PFAfcndef">
-{<b>"re.replacefirst":</b> [pattern, haystack, replacement]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>replacement</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
-{<b>"re.replacefirst":</b> [pattern, haystack, replacement]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>replacement</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
+{<b>"re.replacefirst":</b> [haystack, pattern, replacement]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>replacement</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
+{<b>"re.replacefirst":</b> [haystack, pattern, replacement]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>replacement</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
 <p><b>Description:</b> Replace the first <span class="PFAp">pattern</span> match in <span class="PFAp">haystack</span> with <span class="PFAp">replacement</span>.</p>
 </div>
 <div id="fcn:re.replacelast" class="PFAfcndef">
-{<b>"re.replacelast":</b> [pattern, haystack, replacement]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>replacement</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
-{<b>"re.replacelast":</b> [pattern, haystack, replacement]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>replacement</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
+{<b>"re.replacelast":</b> [haystack, pattern, replacement]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>replacement</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
+{<b>"re.replacelast":</b> [haystack, pattern, replacement]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>replacement</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
 <p><b>Description:</b> Replace the last <span class="PFAp">pattern</span> match in <span class="PFAp">haystack</span> with <span class="PFAp">replacement</span>.</p>
 </div>
 <div id="fcn:re.split" class="PFAfcndef">
-{<b>"re.split":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>array of string</td></tr></table>
-{<b>"re.split":</b> [pattern, haystack]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>array of bytes</td></tr></table>
+{<b>"re.split":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>array of string</td></tr></table>
+{<b>"re.split":</b> [haystack, pattern]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>array of bytes</td></tr></table>
 <p><b>Description:</b> Break <span class="PFAp">haystack</span> into an array of strings or bytes on the separator defined by <span class="PFAp">pattern</span>.</p>
 </div>
 <div id="fcn:re.replaceall" class="PFAfcndef">
-{<b>"re.replaceall":</b> [pattern, haystack, replacement]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>replacement</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
-{<b>"re.replaceall":</b> [pattern, haystack, replacement]} <br><table class="PFAwhere"><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>replacement</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
+{<b>"re.replaceall":</b> [haystack, pattern, replacement]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>string</td></tr><tr><td><b>pattern</b></td><td>string</td></tr><tr><td><b>replacement</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
+{<b>"re.replaceall":</b> [haystack, pattern, replacement]} <br><table class="PFAwhere"><tr><td><b>haystack</b></td><td>bytes</td></tr><tr><td><b>pattern</b></td><td>bytes</td></tr><tr><td><b>replacement</b></td><td>bytes</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
 <p><b>Description:</b> Replace the all <span class="PFAp">pattern</span> matches in <span class="PFAp">haystack</span> with <span class="PFAp">replacement</span>.</p>
 </div>
 <div id="lib:" class="PFAhead"><h2 id="lib:parse">parse</h2></div>
@@ -2725,9 +2780,9 @@
 </table></p>
 <p><b>Runtime Errors:</b><ul><li>Raises "invalid parameterization" if \(\mathrm{prob} < 0\) OR if \(\mathrm{prob} > 1\).</li><li>Raises "invalid parameterization" if \(size \leq 0\) OR if \(size\) is not an integer.</li><li>Raises "invalid input" if \(p < 0\) OR if \(p > 1\).</li></ul></p>
 </div>
-<div id="lib:" class="PFAhead"><h2 id="lib:test">test</h2></div>
-<div id="fcn:test.kolmogorov" class="PFAfcndef">
-{<b>"test.kolmogorov":</b> [x, y]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of double</td></tr><tr><td><b>y</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<div id="lib:" class="PFAhead"><h2 id="lib:stat.test">stat.test</h2></div>
+<div id="fcn:stat.test.kolmogorov" class="PFAfcndef">
+{<b>"stat.test.kolmogorov":</b> [x, y]} <br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of double</td></tr><tr><td><b>y</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Compare two datasets using the Kolmogorov-Smirnov test to determine if they might have been drawn from the same parent distribution.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>x</b></td><td>A bag of data.</td></tr>
@@ -2738,10 +2793,10 @@
 </table></p>
 <p><b>Details:</b><ul><li>If both datasets are empty, this function returns 1.0</li></ul></p>
 </div>
-<div id="fcn:test.residual" class="PFAfcndef">
-{<b>"test.residual":</b> [observation, prediciton]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
-{<b>"test.residual":</b> [observation, prediciton]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
-{<b>"test.residual":</b> [observation, prediciton]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
+<div id="fcn:stat.test.residual" class="PFAfcndef">
+{<b>"stat.test.residual":</b> [observation, prediciton]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"stat.test.residual":</b> [observation, prediciton]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
+{<b>"stat.test.residual":</b> [observation, prediciton]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
 <p><b>Description:</b> Compare an observation with its prediction by element-wise subtraction.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>observation</b></td><td>Scalar or vector of observations.</td></tr>
@@ -2752,10 +2807,10 @@
 </table></p>
 <p><b>Runtime Errors:</b><ul><li>Raises a "misaligned prediction" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">observation</span>.</li></ul></p>
 </div>
-<div id="fcn:test.pull" class="PFAfcndef">
-{<b>"test.pull":</b> [observation, prediciton, uncertainty]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><b>uncertainty</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
-{<b>"test.pull":</b> [observation, prediciton, uncertainty]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><b>uncertainty</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
-{<b>"test.pull":</b> [observation, prediciton, uncertainty]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><b>uncertainty</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
+<div id="fcn:stat.test.pull" class="PFAfcndef">
+{<b>"stat.test.pull":</b> [observation, prediciton, uncertainty]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><b>uncertainty</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"stat.test.pull":</b> [observation, prediciton, uncertainty]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><b>uncertainty</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
+{<b>"stat.test.pull":</b> [observation, prediciton, uncertainty]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><b>uncertainty</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
 <p><b>Description:</b> Compare an observation with its prediction by element-wise subtraction, weighted by element-wise uncertainties.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>observation</b></td><td>Scalar or vector of observations.</td></tr>
@@ -2767,9 +2822,9 @@
 </table></p>
 <p><b>Runtime Errors:</b><ul><li>Raises a "misaligned prediction" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">observation</span>.</li><li>Raises a "misaligned uncertainty" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">uncertainty</span>.</li></ul></p>
 </div>
-<div id="fcn:test.mahalanobis" class="PFAfcndef">
-{<b>"test.mahalanobis":</b> [observation, prediction, covariance]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediction</b></td><td>array of double</td></tr><tr><td><b>covariance</b></td><td>array of array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
-{<b>"test.mahalanobis":</b> [observation, prediction, covariance]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediction</b></td><td>map of double</td></tr><tr><td><b>covariance</b></td><td>map of map of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<div id="fcn:stat.test.mahalanobis" class="PFAfcndef">
+{<b>"stat.test.mahalanobis":</b> [observation, prediction, covariance]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediction</b></td><td>array of double</td></tr><tr><td><b>covariance</b></td><td>array of array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"stat.test.mahalanobis":</b> [observation, prediction, covariance]} <br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediction</b></td><td>map of double</td></tr><tr><td><b>covariance</b></td><td>map of map of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Compare an observation with its prediction by computing the Mahalanobis distance for a given covariance matrix.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>observation</b></td><td>Vector of observations \(\vec{o}\).</td></tr>
@@ -2781,25 +2836,25 @@
 </table></p>
 <p><b>Runtime Errors:</b><ul><li>Raises a "too few rows/cols" error if <span class="PFAp">observation</span> has fewer than one element.</li><li>Raises a "misaligned prediction" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">observation</span>.</li><li>Raises a "misaligned covariance" error if <span class="PFAp">covariance</span> does not have the same indexes as <span class="PFAp">observation</span>.</li></ul></p>
 </div>
-<div id="fcn:test.updateChi2" class="PFAfcndef">
-{<b>"test.updateChi2":</b> [pull, state]} <br><table class="PFAwhere"><tr><td><b>pull</b></td><td>double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
-{<b>"test.updateChi2":</b> [pull, state]} <br><table class="PFAwhere"><tr><td><b>pull</b></td><td>array of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
-{<b>"test.updateChi2":</b> [pull, state]} <br><table class="PFAwhere"><tr><td><b>pull</b></td><td>map of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
+<div id="fcn:stat.test.updateChi2" class="PFAfcndef">
+{<b>"stat.test.updateChi2":</b> [pull, state]} <br><table class="PFAwhere"><tr><td><b>pull</b></td><td>double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
+{<b>"stat.test.updateChi2":</b> [pull, state]} <br><table class="PFAwhere"><tr><td><b>pull</b></td><td>array of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
+{<b>"stat.test.updateChi2":</b> [pull, state]} <br><table class="PFAwhere"><tr><td><b>pull</b></td><td>map of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
 <p><b>Description:</b> Update the state of a chi-square calculation.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>pull</b></td><td>Observation minus prediction divided by uncertainty.  If this is a scalar, it will be squared and added to the chi-square.  If a vector, each component will be squared and added to the chi-square.</td></tr>
 <tr><td><b>state</b></td><td>Record of the previous <span class="PFApf">chi2</span> and <span class="PFApf">DOF</span>.</td></tr>
 </table></p>
 </div>
-<div id="fcn:test.reducedChi2" class="PFAfcndef">
-{<b>"test.reducedChi2":</b> [state]} <br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<div id="fcn:stat.test.reducedChi2" class="PFAfcndef">
+{<b>"stat.test.reducedChi2":</b> [state]} <br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Return the reduced chi-square, which is <span class="PFApf">chi2</span>/<span class="PFApf">DOF</span>.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>state</b></td><td>Record of the <span class="PFApf">chi2</span> and <span class="PFApf">DOF</span>.</td></tr>
 </table></p>
 </div>
-<div id="fcn:test.chi2Prob" class="PFAfcndef">
-{<b>"test.chi2Prob":</b> [state]} <br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<div id="fcn:stat.test.chi2Prob" class="PFAfcndef">
+{<b>"stat.test.chi2Prob":</b> [state]} <br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Return the chi-square probability, which is the CDF of the chi-square function.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>state</b></td><td>Record of the <span class="PFApf">chi2</span> and <span class="PFApf">DOF</span>.</td></tr>
@@ -3212,9 +3267,9 @@
 <p><b>Runtime Errors:</b><ul><li>Raises a "misaligned covariance" error if any covariance matrix does not have the same indexes as <span class="PFAp">datum</span> plus the implicit index for a constant (last in array signature, empty string-key in map signature).</li></ul></p>
 </div>
 <div id="fcn:model.reg.residual" class="PFAfcndef">
-{<b>"model.reg.residual":</b> [observation, prediciton]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.residual instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
-{<b>"model.reg.residual":</b> [observation, prediciton]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.residual instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
-{<b>"model.reg.residual":</b> [observation, prediciton]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.residual instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
+{<b>"model.reg.residual":</b> [observation, prediciton]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.residual instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"model.reg.residual":</b> [observation, prediciton]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.residual instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
+{<b>"model.reg.residual":</b> [observation, prediciton]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.residual instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
 <p><b>Description:</b> Compare an observation with its prediction by element-wise subtraction.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>observation</b></td><td>Scalar or vector of observations.</td></tr>
@@ -3226,9 +3281,9 @@
 <p><b>Runtime Errors:</b><ul><li>Raises a "misaligned prediction" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">observation</span>.</li></ul></p>
 </div>
 <div id="fcn:model.reg.pull" class="PFAfcndef">
-{<b>"model.reg.pull":</b> [observation, prediciton, uncertainty]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.pull instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><b>uncertainty</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
-{<b>"model.reg.pull":</b> [observation, prediciton, uncertainty]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.pull instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><b>uncertainty</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
-{<b>"model.reg.pull":</b> [observation, prediciton, uncertainty]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.pull instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><b>uncertainty</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
+{<b>"model.reg.pull":</b> [observation, prediciton, uncertainty]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.pull instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>double</td></tr><tr><td><b>prediciton</b></td><td>double</td></tr><tr><td><b>uncertainty</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"model.reg.pull":</b> [observation, prediciton, uncertainty]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.pull instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediciton</b></td><td>array of double</td></tr><tr><td><b>uncertainty</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
+{<b>"model.reg.pull":</b> [observation, prediciton, uncertainty]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.pull instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediciton</b></td><td>map of double</td></tr><tr><td><b>uncertainty</b></td><td>map of double</td></tr><tr><td><i>(returns)</i></td><td>map of double</td></tr></table>
 <p><b>Description:</b> Compare an observation with its prediction by element-wise subtraction, weighted by element-wise uncertainties.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>observation</b></td><td>Scalar or vector of observations.</td></tr>
@@ -3241,8 +3296,8 @@
 <p><b>Runtime Errors:</b><ul><li>Raises a "misaligned prediction" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">observation</span>.</li><li>Raises a "misaligned uncertainty" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">uncertainty</span>.</li></ul></p>
 </div>
 <div id="fcn:model.reg.mahalanobis" class="PFAfcndef">
-{<b>"model.reg.mahalanobis":</b> [observation, prediction, covariance]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.mahalanobis instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediction</b></td><td>array of double</td></tr><tr><td><b>covariance</b></td><td>array of array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
-{<b>"model.reg.mahalanobis":</b> [observation, prediction, covariance]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.mahalanobis instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediction</b></td><td>map of double</td></tr><tr><td><b>covariance</b></td><td>map of map of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"model.reg.mahalanobis":</b> [observation, prediction, covariance]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.mahalanobis instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>array of double</td></tr><tr><td><b>prediction</b></td><td>array of double</td></tr><tr><td><b>covariance</b></td><td>array of array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"model.reg.mahalanobis":</b> [observation, prediction, covariance]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.mahalanobis instead<br><table class="PFAwhere"><tr><td><b>observation</b></td><td>map of double</td></tr><tr><td><b>prediction</b></td><td>map of double</td></tr><tr><td><b>covariance</b></td><td>map of map of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Compare an observation with its prediction by computing the Mahalanobis distance for a given covariance matrix.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>observation</b></td><td>Vector of observations \(\vec{o}\).</td></tr>
@@ -3255,9 +3310,9 @@
 <p><b>Runtime Errors:</b><ul><li>Raises a "too few rows/cols" error if <span class="PFAp">observation</span> has fewer than one element.</li><li>Raises a "misaligned prediction" error if <span class="PFAp">prediction</span> does not have the same indexes as <span class="PFAp">observation</span>.</li><li>Raises a "misaligned covariance" error if <span class="PFAp">covariance</span> does not have the same indexes as <span class="PFAp">observation</span>.</li></ul></p>
 </div>
 <div id="fcn:model.reg.updateChi2" class="PFAfcndef">
-{<b>"model.reg.updateChi2":</b> [pull, state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.updateChi2 instead<br><table class="PFAwhere"><tr><td><b>pull</b></td><td>double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
-{<b>"model.reg.updateChi2":</b> [pull, state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.updateChi2 instead<br><table class="PFAwhere"><tr><td><b>pull</b></td><td>array of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
-{<b>"model.reg.updateChi2":</b> [pull, state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.updateChi2 instead<br><table class="PFAwhere"><tr><td><b>pull</b></td><td>map of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
+{<b>"model.reg.updateChi2":</b> [pull, state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.updateChi2 instead<br><table class="PFAwhere"><tr><td><b>pull</b></td><td>double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
+{<b>"model.reg.updateChi2":</b> [pull, state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.updateChi2 instead<br><table class="PFAwhere"><tr><td><b>pull</b></td><td>array of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
+{<b>"model.reg.updateChi2":</b> [pull, state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.updateChi2 instead<br><table class="PFAwhere"><tr><td><b>pull</b></td><td>map of double</td></tr><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
 <p><b>Description:</b> Update the state of a chi-square calculation.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>pull</b></td><td>Observation minus prediction divided by uncertainty.  If this is a scalar, it will be squared and added to the chi-square.  If a vector, each component will be squared and added to the chi-square.</td></tr>
@@ -3265,14 +3320,14 @@
 </table></p>
 </div>
 <div id="fcn:model.reg.reducedChi2" class="PFAfcndef">
-{<b>"model.reg.reducedChi2":</b> [state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.reducedChi2 instead<br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"model.reg.reducedChi2":</b> [state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.reducedChi2 instead<br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Return the reduced chi-square, which is <span class="PFApf">chi2</span>/<span class="PFApf">DOF</span>.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>state</b></td><td>Record of the <span class="PFApf">chi2</span> and <span class="PFApf">DOF</span>.</td></tr>
 </table></p>
 </div>
 <div id="fcn:model.reg.chi2Prob" class="PFAfcndef">
-{<b>"model.reg.chi2Prob":</b> [state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use test.chi2Prob instead<br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"model.reg.chi2Prob":</b> [state]} <span style="border: 1px solid #0e5f80; margin-right: 3px; padding: 3px;"><b>deprecated until PFA 0.9.0</b></span>use stat.test.chi2Prob instead<br><table class="PFAwhere"><tr><td><b>state</b></td><td>any record <b>A</b> with fields {<i>chi2</i>: double, <i>DOF</i>: int}</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Return the chi-square probability, which is the CDF of the chi-square function.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>state</b></td><td>Record of the <span class="PFApf">chi2</span> and <span class="PFApf">DOF</span>.</td></tr>
@@ -3418,8 +3473,8 @@
 </div>
 <div id="lib:" class="PFAhead"><h2 id="lib:model.cluster">model.cluster</h2></div>
 <div id="fcn:model.cluster.closest" class="PFAfcndef">
-{<b>"model.cluster.closest":</b> [datum, clusters, metric]} <br><table class="PFAwhere"><tr><td><b>datum</b></td><td>array of any <b>A</b></td></tr><tr><td><b>clusters</b></td><td>array of any record <b>C</b> with fields {<i>center</i>: array of any <b>B</b>}</td></tr><tr><td><b>metric</b></td><td>function of (array of <b>A</b>, array of <b>B</b>) &rarr; double</td></tr><tr><td><i>(returns)</i></td><td><b>C</b></td></tr></table>
 {<b>"model.cluster.closest":</b> [datum, clusters]} <br><table class="PFAwhere"><tr><td><b>datum</b></td><td>array of double</td></tr><tr><td><b>clusters</b></td><td>array of any record <b>C</b> with fields {<i>center</i>: array of double}</td></tr><tr><td><i>(returns)</i></td><td><b>C</b></td></tr></table>
+{<b>"model.cluster.closest":</b> [datum, clusters, metric]} <br><table class="PFAwhere"><tr><td><b>datum</b></td><td>any <b>A</b></td></tr><tr><td><b>clusters</b></td><td>array of any record <b>C</b> with fields {<i>center</i>: any <b>B</b>}</td></tr><tr><td><b>metric</b></td><td>function of (<b>A</b>, <b>B</b>) &rarr; double</td></tr><tr><td><i>(returns)</i></td><td><b>C</b></td></tr></table>
 <p><b>Description:</b> Find the cluster <span class="PFAtp">C</span> whose <span class="PFApf">center</span> is closest to the <span class="PFAp">datum</span>, according to the <span class="PFAp">metric</span>.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>datum</b></td><td>Sample datum.</td></tr>
@@ -3433,8 +3488,8 @@
 <p><b>Runtime Errors:</b><ul><li>Raises a "no clusters" error if <span class="PFAp">clusters</span> is empty.</li></ul></p>
 </div>
 <div id="fcn:model.cluster.closestN" class="PFAfcndef">
-{<b>"model.cluster.closestN":</b> [n, datum, clusters, metric]} <br><table class="PFAwhere"><tr><td><b>n</b></td><td>int</td></tr><tr><td><b>datum</b></td><td>array of any <b>A</b></td></tr><tr><td><b>clusters</b></td><td>array of any record <b>C</b> with fields {<i>center</i>: array of any <b>B</b>}</td></tr><tr><td><b>metric</b></td><td>function of (array of <b>A</b>, array of <b>B</b>) &rarr; double</td></tr><tr><td><i>(returns)</i></td><td>array of <b>C</b></td></tr></table>
 {<b>"model.cluster.closestN":</b> [n, datum, clusters]} <br><table class="PFAwhere"><tr><td><b>n</b></td><td>int</td></tr><tr><td><b>datum</b></td><td>array of double</td></tr><tr><td><b>clusters</b></td><td>array of any record <b>C</b> with fields {<i>center</i>: array of double}</td></tr><tr><td><i>(returns)</i></td><td>array of <b>C</b></td></tr></table>
+{<b>"model.cluster.closestN":</b> [n, datum, clusters, metric]} <br><table class="PFAwhere"><tr><td><b>n</b></td><td>int</td></tr><tr><td><b>datum</b></td><td>any <b>A</b></td></tr><tr><td><b>clusters</b></td><td>array of any record <b>C</b> with fields {<i>center</i>: any <b>B</b>}</td></tr><tr><td><b>metric</b></td><td>function of (<b>A</b>, <b>B</b>) &rarr; double</td></tr><tr><td><i>(returns)</i></td><td>array of <b>C</b></td></tr></table>
 <p><b>Description:</b> Find the <span class="PFAp">n</span> clusters <span class="PFAtp">C</span> whose <span class="PFApf">centers</span> are closest to the <span class="PFAp">datum</span>, according to the <span class="PFAp">metric</span>.</p>
 <p><b>Parameters:</b><table class="PFAparams">
 <tr><td><b>n</b></td><td>Number of clusters to search for.</td></tr>
@@ -3582,4 +3637,18 @@
 <tr><td>Returns an array of network outputs.  For a neural network with a single neuron in the last layer (single output), this is an array of length one.</td></tr>
 </table></p>
 <p><b>Runtime Errors:</b><ul><li>Raises a "no layers" error if the length of model is zero.</li><li>Raises a "weights, bias, or datum misaligned" error if there is any misalignment between inputs and outputs through the layers of the network.</li></ul></p>
+</div>
+<div id="lib:" class="PFAhead"><h2 id="lib:model.svm">model.svm</h2></div>
+<div id="fcn:model.svm.score" class="PFAfcndef">
+{<b>"model.svm.score":</b> [datum, model, kernelFnc]} <br><table class="PFAwhere"><tr><td><b>datum</b></td><td>array of double</td></tr><tr><td><b>model</b></td><td>any record <b>L</b> with fields {<i>const</i>: double, <i>posClass</i>: array of any record <b>M</b> with fields {<i>supVec</i>: array of double, <i>coeff</i>: double}, <i>negClass</i>: array of any record <b>N</b> with fields {<i>supVec</i>: array of double, <i>coeff</i>: double}}</td></tr><tr><td><b>kernelFnc</b></td><td>function of (array of double, array of double) &rarr; double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+<p><b>Description:</b> Score an input <span class="PFAp">datum</span> with a two-class support vector machine classifier given a <span class="PFAp">model</span> and a kernel function <span class="PFAp">kernelFnc</span>.</p>
+<p><b>Parameters:</b><table class="PFAparams">
+<tr><td><b>datum</b></td><td>Length <span class="PFAp">d</span> vector of independent variables.</td></tr>
+<tr><td><b>model</b></td><td>Record containing the support vectors, dual space coefficients and constant needed to score new data.</td></tr>
+<tr><td><b>kernelFnc</b></td><td>Kernel function used to map data and support vectors into the dual space.</td></tr>
+</table></p>
+<p><b>Returns:</b><table class="PFAparams">
+<tr><td>Returns the score.  If positive, datum classified as same group as <span class="PFAp">posClass</span> support vectors.  If negative, datum classified as same group as <span class="PFAp">negClass</span> support vectors.</td></tr>
+</table></p>
+<p><b>Runtime Errors:</b><ul><li>Raises a "no support vectors" error if the length of <span class="PFAp">negClass</span> and length of <span class="PFAp">posClass</span> is zero.</li><li>Raises a "support vectors must have same length as datum" error if the length of the support vectors is not the same as the length of <span class="PFAp">datum</span>.</li></ul></p>
 </div>

@@ -4,6 +4,7 @@ highlighter:      true
 
 # Permalinks
 permalink:        pretty
+baseurl:          /pfa
 
 # Setup
 title:            PFA

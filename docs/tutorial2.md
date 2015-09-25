@@ -473,9 +473,9 @@ Most languages have parsers that build abstract syntax trees (AST), and we can c
 
 In a real application, user-defined functions would probably come from a language converter like this; the language choice depends on the audience.  New programmers might find it easiest to write Python, statisticians would probably prefer to write R code, engineers might like Matlab syntax, etc.
 
-<script src="/public/js/esprima.js"></script>
-<script src="/public/js/jsToPfa.js"></script>
-<script src="/public/js/codemirror-4.1/mode/javascript/javascript.js"></script>
+<script src="/pfa/public/js/esprima.js"></script>
+<script src="/pfa/public/js/jsToPfa.js"></script>
+<script src="/pfa/public/js/codemirror-4.1/mode/javascript/javascript.js"></script>
 
 <div style="margin-bottom: 20px;">
   <div style="border: 2px solid #dddddd;"><div style="height: 0px;"><div style="padding-top: 4px; margin-left: auto; width: intrinsic; padding-left: 3px; padding-right: 3px; position: relative; top: -3px; z-index: 100; font-family: 'PT Sans', Helvetica, Arial, sans-serif; font-weight: bold;" class="label">Javascript syntax</div></div><textarea id="jsin">input = "int";
