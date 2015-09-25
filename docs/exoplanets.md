@@ -20,7 +20,7 @@ The dataset is hosted on [Google App Engine](https://developers.google.com/appen
 
 The default executable is a fold-type scoring engine that only produces output for planets when `planet.radius`, `planet.mass`, `star.age`, `star.temp`, and `star.dist` are all non-null.  This is not required for the example to work; any `action` will do, as long as the `input` and `output` types are unchanged.  (The `input` must match the exoplanets dataset and the `output` must be correctly interpreted by your browser.)
 
-<script src="/public/js/d3.min.js"></script>
+<script src="/pfa/public/js/d3.min.js"></script>
 <style>
 .axis path, .axis line {
     fill: none;

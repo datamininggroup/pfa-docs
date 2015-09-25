@@ -557,6 +557,6 @@ If you're familiar with Javascript, you may have noticed that the above would no
   * Javascript allows functions to have multiple return points (with the "`return`" keyword) but instead I assumed PFA's convention of letting the last expression be a return value.
   * The library functions are taken from PFA's library, rather than Javascript's.  For instance, "`a.replace`" is from PFA's array library.
 
-Other than these semantic reinterpretations, this is a complete mapping of the Javascript language onto the PFA language (in 760 [lines of code](/public/js/jsToPfa.js){:target="_blank"}).  More elaborate converters could attempt to preserve semantics as well.
+Other than these semantic reinterpretations, this is a complete mapping of the Javascript language onto the PFA language (in 760 [lines of code](/pfa/public/js/jsToPfa.js){:target="_blank"}).  More elaborate converters could attempt to preserve semantics as well.
 
 A programming language is a user interface, which should be optimized for human efficiency.  PFA, on the other hand, is an intermediate representation for encoding what is essential to an analytic and deploying it anywhere.
