@@ -68,4 +68,4 @@ The following contribute to PFA's _safety:_
 * The callbacks that generalize PFA's statistical models are not first-class functions.  This means that the set of functions that a PFA document might call can be predicted before it runs.  A PFA host may choose to only allow certain functions.
 * The semantics of shared data guarantee that data are never corrupted by concurrent access and scoring engines do not enter deadlock.  The host can also statically determine which shared variables may be modified by a scoring engine, rather than at run-time.
 
-To learn more, read the tutorials (which have interactive examples, so that you can see PFA in action) or the complete reference, which are linked in the sidebar or at the <a href="#top-of-page" onclick="$('body').animate({scrollTop: 0}, 1000); return false;">top of this page</a>.
+To learn more, read the tutorials (which have interactive examples, so that you can see PFA in action) or the complete reference, which are linked in the sidebar or at the top of this page.
