@@ -1,1 +1,1 @@
-Repository for the PFA documentation site http://scoringengine.org/.
+Repository for the PFA documentation on the Data Mining Group's website, http://dmg.org
