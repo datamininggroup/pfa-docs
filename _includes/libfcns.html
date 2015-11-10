@@ -495,7 +495,7 @@
 {<b>"la.dot":</b> [x, y]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>map of map of double</td></tr><tr><td><b>y</b></td><td>map of map of double</td></tr><tr><td><i>(returns)</i></td><td>map of map of double</td></tr></table>
 <p><b>Description:</b> Multiply two matrices or a matrix and a vector, which may be represented as dense arrays or potentially sparse maps.</p>
 <p><b>Details:</b><ul><li>Like most functions that deal with matrices, this function has an array signature and a map signature.  In the array signature, the number of columns of <span class="PFAp">x</span> must be equal to the number of rows (or the number of elements) of <span class="PFAp">y</span> (dense matrix).  In the map signature, missing values are assumed to be zero (sparse matrix).</li><li>Matrices supplied as maps may be computed using sparse methods.</li></ul></p>
-<p><b>Runtime Errors:</b><ul><li><b>#24050:</b> In the array signature, if the dimensions of <span class="PFAp">x</span> do not correspond to the dimension(s) of <span class="PFAp">y</span>, this function raises a "misaligned matrices" error.</li><li><b>#24051:</b> If <span class="PFAp">x</span> or <span class="PFAp">y</span> has fewer than 1 row or fewer than 1 column, this function raises a "too few rows/cols" error.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#24050:</b> In the array signature, if the dimensions of <span class="PFAp">x</span> do not correspond to the dimension(s) of <span class="PFAp">y</span>, this function raises a "misaligned matrices" error.</li><li><b>#24051:</b> If <span class="PFAp">x</span> or <span class="PFAp">y</span> has fewer than 1 row or fewer than 1 column, this function raises a "too few rows/cols" error.</li><li><b>#24052:</b> If <span class="PFAp">x</span> or <span class="PFAp">y</span> contains any non-finite values, this function raises a "contains non-finite value" error.</li></ul></p>
 </div>
 <div id="fcn:la.transpose" class="PFAfcndef">
 {<b>"la.transpose":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of array of double</td></tr><tr><td><i>(returns)</i></td><td>array of array of double</td></tr></table>
@@ -537,7 +537,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>A matrix in which each row (first level of array or map hierarchy) is a normalized eigenvector of <span class="PFAp">x</span> divided by the square root of the corresponding eigenvalue (The sign is chosen such that the first component is positive.).  If provided as an array, the rows are in decreasing order of eigenvalue (increasing order of inverse square root eigenvalue).  If provided as a map, the rows are keyed by string representations of integers starting with <span class="PFAc">"0"</span>, and increasing row keys are in decreasing order of eigenvalue.</td></tr>
 </table></p>
-<p><b>Details:</b><ul><li>If <span class="PFAp">x</span> is the covariance matrix of a zero-mean dataset, the matrix that this function returns would transform the dataset to one with unit variances and zero covariances.</li><li>If <span class="PFAp">x</span> is not symmetric or not exactly symmetric, it will first be symmetrized (\((x + x^T)/2\)).  For example, a matrix represented by only the upper triangle (other elements are zero or missing from the map) becomes a symmetric matrix with the upper triangle unchanged.</li></ul></p>
+<p><b>Details:</b><ul><li>If <span class="PFAp">x</span> is the covariance matrix of a zero-mean dataset, the matrix that this function returns would transform the dataset to one with unit variances and zero covariances.</li><li>If <span class="PFAp">x</span> is not symmetric or not exactly symmetric, it will first be symmetrized (\((x + x^T)/2\)).  For example, a matrix represented by only the upper triangle (other elements are zero or missing from the map) becomes a symmetric matrix with the upper triangle unchanged.</li><li><b>Nondeterministic: unstable.</b> This function gives the same results every time it is executed, but those results may not be exactly the same on all systems.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#24110:</b> If the matrix has fewer than 1 row or fewer than 1 column, this function raises a "too few rows/cols" error.</li><li><b>#24111:</b> If <span class="PFAp">x</span> is an array with ragged columns (arrays of different lengths), this function raises a "ragged columns" error.</li><li><b>#24112:</b> If <span class="PFAp">x</span> is not a square matrix, this function raises a "non-square matrix" error.</li><li><b>#24113:</b> If <span class="PFAp">x</span> contains non-finite values, this function raises a "non-finite matrix" error.</li></ul></p>
 </div>
 <div id="fcn:la.truncate" class="PFAfcndef">
@@ -649,8 +649,8 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(I(x_i,y_i)\) = 0 if component \(i\) of <span class="PFAp">x</span> or <span class="PFAp">y</span> is missing, 1 otherwise, this function returns \(((\sum_i I(x_i,y_i) \mbox{similarity}(x_i,y_i)^p)(\sum_i q_i)/(\sum_i I(x_i,y_i) q_i))^{1/p}\) where \(q_i\) are components of the missing-value weights.  Without missing values, it is \((\sum_i \mbox{similarity}(x_i,y_i)^p)^{1/p}\).</td></tr>
 </table></p>
-<p><b>Details:</b><ul><li>If all values are missing, the function returns <span class="PFAc">NaN</span>.</li></ul></p>
-<p><b>Runtime Errors:</b><ul><li><b>#28070:</b> Raises "dimensions of vectors do not match" if all vectors do not have the same dimension.</li></ul></p>
+<p><b>Details:</b><ul><li>If all values are missing, the function returns <span class="PFAc">NaN</span>.</li><li>If <span class="PFAp">p</span> is positive infinity, this function is equivalent to <span class="PFAf">metric.chebyshev</span>.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#28070:</b> Raises "dimensions of vectors do not match" if all vectors do not have the same dimension.</li><li><b>#28071:</b> Raises "Minkowski parameter p must be positive" if <span class="PFAp">p</span> is less than or equal to zero.</li></ul></p>
 </div>
 <div id="fcn:metric.simpleMatching" class="PFAfcndef">
 {<b>"metric.simpleMatching":</b> [x, y]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>array of boolean</td></tr><tr><td><b>y</b></td><td>array of boolean</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -705,44 +705,51 @@
 {<b>"rand.int":</b> []}<br><table class="PFAwhere"><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 {<b>"rand.int":</b> [low, high]}<br><table class="PFAwhere"><tr><td><b>low</b></td><td>int</td></tr><tr><td><b>high</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Return a random integer, either on the entire entire 32-bit range or between <span class="PFAp">low</span> (inclusive) and <span class="PFAp">high</span> (exclusive).</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34000:</b> Raises a "high must be greater than low" error if <span class="PFAp">high</span> is less than or equal to <span class="PFAp">low</span>.</li></ul></p>
 </div>
 <div id="fcn:rand.long" class="PFAfcndef">
 {<b>"rand.long":</b> []}<br><table class="PFAwhere"><tr><td><i>(returns)</i></td><td>long</td></tr></table>
 {<b>"rand.long":</b> [low, high]}<br><table class="PFAwhere"><tr><td><b>low</b></td><td>long</td></tr><tr><td><b>high</b></td><td>long</td></tr><tr><td><i>(returns)</i></td><td>long</td></tr></table>
 <p><b>Description:</b> Return a random long integer, either on the entire 64-bit range or between <span class="PFAp">low</span> (inclusive) and <span class="PFAp">high</span> (exclusive).</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34010:</b> Raises a "high must be greater than low" error if <span class="PFAp">high</span> is less than or equal to <span class="PFAp">low</span>.</li></ul></p>
 </div>
 <div id="fcn:rand.float" class="PFAfcndef">
 {<b>"rand.float":</b> [low, high]}<br><table class="PFAwhere"><tr><td><b>low</b></td><td>float</td></tr><tr><td><b>high</b></td><td>float</td></tr><tr><td><i>(returns)</i></td><td>float</td></tr></table>
 <p><b>Description:</b> Return a random float between <span class="PFAp">low</span> and <span class="PFAp">high</span>.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34020:</b> Raises a "high must be greater than low" error if <span class="PFAp">high</span> is less than or equal to <span class="PFAp">low</span>.</li></ul></p>
 </div>
 <div id="fcn:rand.double" class="PFAfcndef">
 {<b>"rand.double":</b> [low, high]}<br><table class="PFAwhere"><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Return a random double between <span class="PFAp">low</span> and <span class="PFAp">high</span>.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34030:</b> Raises a "high must be greater than low" error if <span class="PFAp">high</span> is less than or equal to <span class="PFAp">low</span>.</li></ul></p>
 </div>
 <div id="fcn:rand.choice" class="PFAfcndef">
 {<b>"rand.choice":</b> [population]}<br><table class="PFAwhere"><tr><td><b>population</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
 <p><b>Description:</b> Return a random item from a bag of items.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34040:</b> Raises a "population must not be empty" error if <span class="PFAp">population</span> is empty.</li></ul></p>
 </div>
 <div id="fcn:rand.choices" class="PFAfcndef">
 {<b>"rand.choices":</b> [size, population]}<br><table class="PFAwhere"><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>population</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array of random items (with replacement) from a bag of items.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34050:</b> Raises a "population must not be empty" error if <span class="PFAp">population</span> is empty.</li></ul></p>
 </div>
 <div id="fcn:rand.sample" class="PFAfcndef">
 {<b>"rand.sample":</b> [size, population]}<br><table class="PFAwhere"><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>population</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array of random items (without replacement) from a bag of items.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34060:</b> Raises a "population must not be empty" error if <span class="PFAp">population</span> is empty.</li><li><b>#34061:</b> Raises a "population smaller than requested subsample" error if the size of <span class="PFAp">population</span> is less than <span class="PFAp">size</span>.</li></ul></p>
 </div>
 <div id="fcn:rand.histogram" class="PFAfcndef">
 {<b>"rand.histogram":</b> [distribution]}<br><table class="PFAwhere"><tr><td><b>distribution</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 {<b>"rand.histogram":</b> [distribution]}<br><table class="PFAwhere"><tr><td><b>distribution</b></td><td>array of any record <b>A</b> with fields {<i>prob</i>: double}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
 <p><b>Description:</b> Return a random index of <span class="PFAp">distribution</span> with probability proportional to the value of that index or a random item from <span class="PFAp">distribution</span> with probability proportional to the <span class="PFApf">prob</span> field.</p>
-<p><b>Details:</b><ul><li>If the probabilities do not sum to 1.0, they will be normalized first.</li></ul></p>
+<p><b>Details:</b><ul><li>If the probabilities do not sum to 1.0, they will be normalized first.</li><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34070:</b> Raises a "distribution must be non-empty" error if no items of <span class="PFAp">distribution</span> are non-zero.</li><li><b>#34071:</b> Raises a "distribution must be finite" error if any items of <span class="PFAp">distribution</span> are infinite or <span class="PFAc">NaN</span>.</li><li><b>#34072:</b> Raises a "distribution must be non-negative" error if any items of <span class="PFAp">distribution</span> are negative.</li></ul></p>
 </div>
 <div id="fcn:rand.string" class="PFAfcndef">
@@ -756,7 +763,7 @@
 <tr><td><b>low</b></td><td>Minimum code-point to sample (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum code-point to sample (exclusive).</td></tr>
 </table></p>
-<p><b>Details:</b><ul><li>Without a range, this function samples the entire Unicode table up to and including <span class="PFAc">0xD800</span>; ASCII characters are rare.</li><li>The ASCII printable range is <span class="PFAp">low</span> = 33, <span class="PFAp">high</span> = 127.</li></ul></p>
+<p><b>Details:</b><ul><li>Without a range, this function samples the entire Unicode table up to and including <span class="PFAc">0xD800</span>; ASCII characters are rare.</li><li>The ASCII printable range is <span class="PFAp">low</span> = 33, <span class="PFAp">high</span> = 127.</li><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34080:</b> Raises a "size must be positive" error if <span class="PFAp">size</span> is less than or equal to zero.</li><li><b>#34081:</b> Raises a "high must be greater than low" error if <span class="PFAp">high</span> is less than or equal to <span class="PFAp">low</span>.</li><li><b>#34082:</b> Raises an "invalid char" error if <span class="PFAp">low</span> is less than 1 or greater than <span class="PFAc">0xD800</span> or if <span class="PFAp">high</span> is less than 1 or greater than <span class="PFAc">0xD800</span>.</li><li><b>#34083:</b> Raises an "population must be non-empty" error if <span class="PFAp">population</span> is empty.</li></ul></p>
 </div>
 <div id="fcn:rand.bytes" class="PFAfcndef">
@@ -770,6 +777,7 @@
 <tr><td><b>low</b></td><td>Minimum byte value to sample (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum byte value to sample (exclusive).</td></tr>
 </table></p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#34090:</b> Raises a "size must be positive" error if <span class="PFAp">size</span> is less than or equal to zero.</li><li><b>#34091:</b> Raises a "high must be greater than low" error if <span class="PFAp">high</span> is less than or equal to <span class="PFAp">low</span>.</li><li><b>#34092:</b> Raises an "invalid byte" error if <span class="PFAp">low</span> is less than 0 or greater than 255 or if <span class="PFAp">high</span> is less than 0 or greater than 256.</li><li><b>#34093:</b> Raises an "population must be non-empty" error if <span class="PFAp">population</span> is empty.</li></ul></p>
 </div>
 <div id="fcn:rand.uuid" class="PFAfcndef">
@@ -778,6 +786,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>The return value is a string with the form <span class="PFAc">xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx</span> where <span class="PFAc">x</span> are random, lowercase hexidecimal digits (0-9a-f), 4 is the version, and 8 is the IETF variant.</td></tr>
 </table></p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 </div>
 <div id="fcn:rand.uuid4" class="PFAfcndef">
 {<b>"rand.uuid4":</b> []}<br><table class="PFAwhere"><tr><td><i>(returns)</i></td><td>string</td></tr></table>
@@ -785,10 +794,12 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>The return value is a string with the form <span class="PFAc">xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx</span> where <span class="PFAc">x</span> are random, lowercase hexidecimal digits (0-9a-f), 4 is the version, and 8 is the IETF variant.</td></tr>
 </table></p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 </div>
 <div id="fcn:rand.gaussian" class="PFAfcndef">
 {<b>"rand.gaussian":</b> [mu, sigma]}<br><table class="PFAwhere"><tr><td><b>mu</b></td><td>double</td></tr><tr><td><b>sigma</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Return a random number from a Gaussian (normal) distribution with mean <span class="PFAp">mu</span> and standard deviation <span class="PFAp">sigma</span>.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 </div>
 <div id="lib:" class="PFAhead"><h2 id="lib:s">s</h2></div>
 <div id="fcn:s.len" class="PFAfcndef">
@@ -851,9 +862,20 @@
 <p><b>Details:</b><ul><li>If the <span class="PFAp">precision</span> requires more space than <span class="PFAp">width</span>, the string will be wide enough to accommodate the <span class="PFAp">precision</span>.</li><li>Digits "a" (decimal 10) through "f" (decimal 15) are represented by lowercase letters.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#39110:</b> If <span class="PFAp">width</span> is negative and <span class="PFAp">zeroPad</span> is <span class="PFAc">true</span>, a "negative width cannot be used with zero-padding" error is raised.</li><li><b>#39111:</b> If <span class="PFAp">x</span> is negative, a "negative number" error is raised.</li></ul></p>
 </div>
+<div id="fcn:s.int" class="PFAfcndef">
+{<b>"s.int":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>long</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
+{<b>"s.int":</b> [x, width, zeroPad]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>long</td></tr><tr><td><b>width</b></td><td>int</td></tr><tr><td><b>zeroPad</b></td><td>boolean</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
+<p><b>Description:</b> Format an integer as a decimal string.</p>
+<p><b>Parameters:</b><table class="PFAparams">
+<tr><td><b>x</b></td><td>The integer.</td></tr>
+<tr><td><b>width</b></td><td>Width of the string.  If negative, left-justify.  If omitted, the string will be as wide as it needs to be to provide enough precision.</td></tr>
+<tr><td><b>zeroPad</b></td><td>If true, pad the integer with zeros to fill up to <span class="PFAp">width</span>.</td></tr>
+</table></p>
+<p><b>Runtime Errors:</b><ul><li><b>#39240:</b> If <span class="PFAp">width</span> is negative and <span class="PFAp">zeroPad</span> is <span class="PFAc">true</span>, a "negative width cannot be used with zero-padding" error is raised.</li></ul></p>
+</div>
 <div id="fcn:s.number" class="PFAfcndef">
-{<b>"s.number":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>long</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
-{<b>"s.number":</b> [x, width, zeroPad]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>long</td></tr><tr><td><b>width</b></td><td>int</td></tr><tr><td><b>zeroPad</b></td><td>boolean</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
+{<b>"s.number":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>long</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table><div style="margin-top: -20px; margin-bottom: 20px"><span style="border: 1px solid #0e5f80; padding: 3px;"><b>Deprecated; exists until PFA 0.9.0: use s.int for integers.</b></span></div>
+{<b>"s.number":</b> [x, width, zeroPad]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>long</td></tr><tr><td><b>width</b></td><td>int</td></tr><tr><td><b>zeroPad</b></td><td>boolean</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table><div style="margin-top: -20px; margin-bottom: 20px"><span style="border: 1px solid #0e5f80; padding: 3px;"><b>Deprecated; exists until PFA 0.9.0: use s.int for integers.</b></span></div>
 {<b>"s.number":</b> [x, width, precision]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>width</b></td><td>union of {int, null}</td></tr><tr><td><b>precision</b></td><td>union of {int, null}</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
 {<b>"s.number":</b> [x, width, precision, minNoExp, maxNoExp]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>width</b></td><td>union of {int, null}</td></tr><tr><td><b>precision</b></td><td>union of {int, null}</td></tr><tr><td><b>minNoExp</b></td><td>double</td></tr><tr><td><b>maxNoExp</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
 <p><b>Description:</b> Format a number as a decimal string.</p>
@@ -865,7 +887,7 @@
 <tr><td><b>minNoExp</b></td><td>Minimum absolute value that is not presented in scientific notation; 0.0001 if omitted.</td></tr>
 <tr><td><b>maxNoExp</b></td><td>Maxiumum absolute value that is not presented in scientific notation; 100000 if omitted.</td></tr>
 </table></p>
-<p><b>Details:</b><ul><li>If the <span class="PFAp">precision</span> requires more space than <span class="PFAp">width</span>, the string will be wide enough to accommodate the <span class="PFAp">precision</span>.</li><li>Floating point numbers always have a decimal point with at least one digit after the decimal, even if it is zero.</li><li>Exponents are represented by a lowercase "e" which is always followed by a sign, whether positive or negative, and an exponent of two or more digits (single-digit exponents are zero-padded).</li><li>The base of a number is preceded by a "-" if negative, but not a "+" if positive.</li><li>Special floating point values are represented in the following ways: negative zero as zero (no negative sign), not a number as "nan", positive infinity as "inf", and negative infinity as "-inf" (lowercase).  They follow the same precision and width rules as normal numbers, where applicable.</li></ul></p>
+<p><b>Details:</b><ul><li>If the <span class="PFAp">precision</span> requires more space than <span class="PFAp">width</span>, the string will be wide enough to accommodate the <span class="PFAp">precision</span>.</li><li>Floating point numbers always have a decimal point with at least one digit after the decimal, even if it is zero.</li><li>Exponents are represented by a lowercase "e" which is always followed by a sign, whether positive or negative, and an exponent of two or more digits (single-digit exponents are zero-padded).</li><li>The base of a number is preceded by a "-" if negative, but not a "+" if positive.</li><li>Special floating point values are represented in the following ways: negative zero as zero (no negative sign), not a number as "nan", positive infinity as "inf", and negative infinity as "-inf" (lowercase).  They follow the same precision and width rules as normal numbers, where applicable.</li><li><b>Nondeterministic: unstable.</b> This function gives the same results every time it is executed, but those results may not be exactly the same on all systems.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#39120:</b> If <span class="PFAp">width</span> is negative and <span class="PFAp">zeroPad</span> is <span class="PFAc">true</span>, a "negative width cannot be used with zero-padding" error is raised.</li><li><b>#39121:</b> If <span class="PFAp">precision</span> is provided and is less than zero, a "negative precision" error is raised.</li></ul></p>
 </div>
 <div id="fcn:s.concat" class="PFAfcndef">
@@ -1088,6 +1110,7 @@
 <tr><td><b>maximum</b></td><td>Excluded maximum value of <span class="PFAp">x</span>.</td></tr>
 <tr><td><b>outOfRange</b></td><td>If <span class="PFAc">true</span>, include an extra item in the output to represent values of <span class="PFAp">x</span> that are outside of the specified range.</td></tr>
 </table></p>
+<p><b>Runtime Errors:</b><ul><li><b>#17060:</b> If not all values in <span class="PFAp">dictionary</span> are unique, this function raises a "non-distinct values in dictionary" runtime error.</li></ul></p>
 </div>
 <div id="fcn:cast.fanoutInt" class="PFAfcndef">
 {<b>"cast.fanoutInt":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>any enum <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of int</td></tr></table>
@@ -1101,6 +1124,7 @@
 <tr><td><b>maximum</b></td><td>Excluded maximum value of <span class="PFAp">x</span>.</td></tr>
 <tr><td><b>outOfRange</b></td><td>If <span class="PFAc">true</span>, include an extra item in the output to represent values of <span class="PFAp">x</span> that are outside of the specified range.</td></tr>
 </table></p>
+<p><b>Runtime Errors:</b><ul><li><b>#17070:</b> If not all values in <span class="PFAp">dictionary</span> are unique, this function raises a "non-distinct values in dictionary" runtime error.</li></ul></p>
 </div>
 <div id="fcn:cast.fanoutLong" class="PFAfcndef">
 {<b>"cast.fanoutLong":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>any enum <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of long</td></tr></table>
@@ -1114,6 +1138,7 @@
 <tr><td><b>maximum</b></td><td>Excluded maximum value of <span class="PFAp">x</span>.</td></tr>
 <tr><td><b>outOfRange</b></td><td>If <span class="PFAc">true</span>, include an extra item in the output to represent values of <span class="PFAp">x</span> that are outside of the specified range.</td></tr>
 </table></p>
+<p><b>Runtime Errors:</b><ul><li><b>#17080:</b> If not all values in <span class="PFAp">dictionary</span> are unique, this function raises a "non-distinct values in dictionary" runtime error.</li></ul></p>
 </div>
 <div id="fcn:cast.fanoutFloat" class="PFAfcndef">
 {<b>"cast.fanoutFloat":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>any enum <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of float</td></tr></table>
@@ -1127,6 +1152,7 @@
 <tr><td><b>maximum</b></td><td>Excluded maximum value of <span class="PFAp">x</span>.</td></tr>
 <tr><td><b>outOfRange</b></td><td>If <span class="PFAc">true</span>, include an extra item in the output to represent values of <span class="PFAp">x</span> that are outside of the specified range.</td></tr>
 </table></p>
+<p><b>Runtime Errors:</b><ul><li><b>#17090:</b> If not all values in <span class="PFAp">dictionary</span> are unique, this function raises a "non-distinct values in dictionary" runtime error.</li></ul></p>
 </div>
 <div id="fcn:cast.fanoutDouble" class="PFAfcndef">
 {<b>"cast.fanoutDouble":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>any enum <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of double</td></tr></table>
@@ -1140,6 +1166,7 @@
 <tr><td><b>maximum</b></td><td>Excluded maximum value of <span class="PFAp">x</span>.</td></tr>
 <tr><td><b>outOfRange</b></td><td>If <span class="PFAc">true</span>, include an extra item in the output to represent values of <span class="PFAp">x</span> that are outside of the specified range.</td></tr>
 </table></p>
+<p><b>Runtime Errors:</b><ul><li><b>#17100:</b> If not all values in <span class="PFAp">dictionary</span> are unique, this function raises a "non-distinct values in dictionary" runtime error.</li></ul></p>
 </div>
 <div id="fcn:cast.avro" class="PFAfcndef">
 {<b>"cast.avro":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
@@ -1149,7 +1176,7 @@
 <div id="fcn:cast.json" class="PFAfcndef">
 {<b>"cast.json":</b> [x]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>string</td></tr></table>
 <p><b>Description:</b> Encode an arbitrary object as a JSON string.</p>
-<p><b>Details:</b><ul><li>The form of this JSON string (spacing, order of keys in objects, etc.) is not guaranteed from one system to another.</li><li>Useful for building human-readable map keys.</li></ul></p>
+<p><b>Details:</b><ul><li>The form of this JSON string (spacing, order of keys in objects, etc.) is not guaranteed from one system to another.</li><li>Should exclude unnecessary whitespace.</li><li><b>Nondeterministic: unstable.</b> This function gives the same results every time it is executed, but those results may not be exactly the same on all systems.</li></ul></p>
 </div>
 <div id="lib:" class="PFAhead"><h2 id="lib:a">a</h2></div>
 <div id="fcn:a.len" class="PFAfcndef">
@@ -1274,7 +1301,7 @@
 <div id="fcn:a.shuffle" class="PFAfcndef">
 {<b>"a.shuffle":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array with the same elements as <span class="PFAp">a</span> but in a random order.</p>
-<p><b>Details:</b><ul><li>Note: <span class="PFAp">a</span> is not changed in-place; this is a side-effect-free function (except for updating the random number generator).</li></ul></p>
+<p><b>Details:</b><ul><li>Note: <span class="PFAp">a</span> is not changed in-place; this is a side-effect-free function (except for updating the random number generator).</li><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 </div>
 <div id="fcn:a.reverse" class="PFAfcndef">
 {<b>"a.reverse":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
@@ -1372,11 +1399,13 @@
 {<b>"a.sum":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b> of {int, long, float, double}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
 <p><b>Description:</b> Return the sum of numbers in <span class="PFAp">a</span>.</p>
 <p><b>Details:</b><ul><li>Returns zero if the array is empty.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#15400:</b> If the array items have integer type and the final result is too large or small to be represented as an integer, an "int overflow" error is raised.</li><li><b>#15401:</b> If the array items have long integer type and the final result is too large or small to be represented as a long integer, an "long overflow" error is raised.</li></ul></p>
 </div>
 <div id="fcn:a.product" class="PFAfcndef">
 {<b>"a.product":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b> of {int, long, float, double}</td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
 <p><b>Description:</b> Return the product of numbers in <span class="PFAp">a</span>.</p>
 <p><b>Details:</b><ul><li>Returns one if the array is empty.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#15410:</b> If the array items have integer type and the final result is too large or small to be represented as an integer, an "int overflow" error is raised.</li><li><b>#15411:</b> If the array items have long integer type and the final result is too large or small to be represented as a long integer, an "long overflow" error is raised.</li></ul></p>
 </div>
 <div id="fcn:a.lnsum" class="PFAfcndef">
 {<b>"a.lnsum":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -1407,7 +1436,7 @@
 <tr><td><b>p</b></td><td>A double between 0 and 1.</td></tr>
 </table></p>
 <p><b>Details:</b><ul><li>If <span class="PFAp">a</span> has an even number of elements and is a <span class="PFAc">float</span> or <span class="PFAc">double</span>, this function will take the average of the two elements closest to the center of the sorted array.  For any other type, it returns the left (first) of the two elements closest to the center of the sorted array.  If <span class="PFAp">p</span> is exactly one (or greater), the max of the array is returned.  If <span class="PFAp">p</span> is zero (or less), the min of the array is returned.</li></ul></p>
-<p><b>Runtime Errors:</b><ul><li><b>#15460:</b> If <span class="PFAp">a</span> is empty, an "empty array" runtime error is raised.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#15460:</b> If <span class="PFAp">a</span> is empty, an "empty array" runtime error is raised.</li><li><b>#15461:</b> If <span class="PFAp">p</span> is NaN, this function raises a "p not a number" error.</li></ul></p>
 </div>
 <div id="fcn:a.mode" class="PFAfcndef">
 {<b>"a.mode":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td><b>A</b></td></tr></table>
@@ -1416,13 +1445,14 @@
 <p><b>Runtime Errors:</b><ul><li><b>#15470:</b> If <span class="PFAp">a</span> is empty, an "empty array" runtime error is raised.</li></ul></p>
 </div>
 <div id="fcn:a.logsumexp" class="PFAfcndef">
-{<b>"a.logsumexp":</b> [datum]}<br><table class="PFAwhere"><tr><td><b>datum</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
+{<b>"a.logsumexp":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Compute \(z = \\log(\\sum_{n = 1}^{N} e^{x_n})\) in a numerically stable way.</p>
 <p><b>Details:</b><ul><li>Returns <span class="PFAc">NaN</span> if the array is empty.</li></ul></p>
 </div>
 <div id="fcn:a.distinct" class="PFAfcndef">
 {<b>"a.distinct":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array with the same contents as <span class="PFAp">a</span> but with duplicates removed.</p>
+<p><b>Details:</b><ul><li>The order of the original array is preserved.</li></ul></p>
 </div>
 <div id="fcn:a.seteq" class="PFAfcndef">
 {<b>"a.seteq":</b> [a, b]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>b</b></td><td>array of <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
@@ -1431,19 +1461,22 @@
 <div id="fcn:a.union" class="PFAfcndef">
 {<b>"a.union":</b> [a, b]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>b</b></td><td>array of <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array that represents the union of <span class="PFAp">a</span> and <span class="PFAp">b</span>, treated as sets (ignoring order and duplicates).</p>
+<p><b>Details:</b><ul><li>The order of the original arrays is preserved.</li></ul></p>
 </div>
 <div id="fcn:a.intersection" class="PFAfcndef">
 {<b>"a.intersection":</b> [a, b]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>b</b></td><td>array of <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array that represents the intersection of <span class="PFAp">a</span> and <span class="PFAp">b</span>, treated as sets (ignoring order and duplicates).</p>
+<p><b>Details:</b><ul><li>The order of the original arrays is preserved.</li></ul></p>
 </div>
 <div id="fcn:a.diff" class="PFAfcndef">
 {<b>"a.diff":</b> [a, b]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>b</b></td><td>array of <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array that represents the difference of <span class="PFAp">a</span> and <span class="PFAp">b</span>, treated as sets (ignoring order and duplicates).</p>
+<p><b>Details:</b><ul><li>The order of the original arrays is preserved.</li></ul></p>
 </div>
 <div id="fcn:a.symdiff" class="PFAfcndef">
 {<b>"a.symdiff":</b> [a, b]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>b</b></td><td>array of <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array that represents the symmetric difference of <span class="PFAp">a</span> and <span class="PFAp">b</span>, treated as sets (ignoring order and duplicates).</p>
-<p><b>Details:</b><ul><li>The symmetric difference is (<span class="PFAp">a</span> diff <span class="PFAp">b</span>) union (<span class="PFAp">b</span> diff <span class="PFAp">a</span>).</li></ul></p>
+<p><b>Details:</b><ul><li>The symmetric difference is (<span class="PFAp">a</span> diff <span class="PFAp">b</span>) union (<span class="PFAp">b</span> diff <span class="PFAp">a</span>).</li><li>The order of the original arrays is preserved.</li></ul></p>
 </div>
 <div id="fcn:a.subset" class="PFAfcndef">
 {<b>"a.subset":</b> [little, big]}<br><table class="PFAwhere"><tr><td><b>little</b></td><td>array of any <b>A</b></td></tr><tr><td><b>big</b></td><td>array of <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
@@ -1560,19 +1593,18 @@
 <p><b>Details:</b><ul><li>The number of <span class="PFAp">fcn</span> calls is not guaranteed.</li><li>If the lengths of <span class="PFAp">a</span> and <span class="PFAp">b</span> are not equal, this function returns <span class="PFAc">false</span>.</li></ul></p>
 </div>
 <div id="fcn:a.slidingWindow" class="PFAfcndef">
-{<b>"a.slidingWindow":</b> [a, size, step, allowIncomplete]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>step</b></td><td>int</td></tr><tr><td><b>allowIncomplete</b></td><td>boolean</td></tr><tr><td><i>(returns)</i></td><td>array of array of <b>A</b></td></tr></table>
+{<b>"a.slidingWindow":</b> [a, size, step]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>step</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>array of array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return an array of subsequences of <span class="PFAp">a</span> with length <span class="PFAp">size</span> that slide through <span class="PFAp">a</span> in steps of length <span class="PFAp">step</span> from left to right.</p>
-<p><b>Details:</b><ul><li>If <span class="PFAp">allowIncomplete</span> is <span class="PFAc">true</span>, the last window may be smaller than <span class="PFAp">size</span>.  If <span class="PFAc">false</span>, the last window may be skipped.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#15770:</b> If <span class="PFAp">size</span> is non-positive, a "size &lt; 1" runtime error is raised.</li><li><b>#15771:</b> If <span class="PFAp">step</span> is non-positive, a "step &lt; 1" runtime error is raised.</li></ul></p>
 </div>
 <div id="fcn:a.combinations" class="PFAfcndef">
 {<b>"a.combinations":</b> [a, size]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>array of array of <b>A</b></td></tr></table>
-<p><b>Description:</b> Return the unique combinations of <span class="PFAp">a</span> with length <span class="PFAp">size</span>.</p>
+<p><b>Description:</b> Return all combinations of elements of <span class="PFAp">a</span> with length <span class="PFAp">size</span>.</p>
 <p><b>Runtime Errors:</b><ul><li><b>#15780:</b> If <span class="PFAp">size</span> is non-positive, a "size &lt; 1" runtime error is raised.</li></ul></p>
 </div>
 <div id="fcn:a.permutations" class="PFAfcndef">
 {<b>"a.permutations":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of array of <b>A</b></td></tr></table>
-<p><b>Description:</b> Return the permutations of <span class="PFAp">a</span>.</p>
+<p><b>Description:</b> Return all permutations of elements of <span class="PFAp">a</span>.</p>
 <p><b>Details:</b><ul><li>This function scales rapidly with the length of the array.  For reasonably large arrays, it will result in timeout exceptions.</li></ul></p>
 </div>
 <div id="fcn:a.flatten" class="PFAfcndef">
@@ -1591,10 +1623,12 @@
 <div id="fcn:map.keys" class="PFAfcndef">
 {<b>"map.keys":</b> [m]}<br><table class="PFAwhere"><tr><td><b>m</b></td><td>map of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of string</td></tr></table>
 <p><b>Description:</b> Return the keys of a map (in no particular order).</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: unordered.</b> This function gives the same set of values every time it is executed on all systems, but the values may have a different order.</li></ul></p>
 </div>
 <div id="fcn:map.values" class="PFAfcndef">
 {<b>"map.values":</b> [m]}<br><table class="PFAwhere"><tr><td><b>m</b></td><td>map of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
 <p><b>Description:</b> Return the values of a map (in no particular order).</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: unordered.</b> This function gives the same set of values every time it is executed on all systems, but the values may have a different order.</li></ul></p>
 </div>
 <div id="fcn:map.containsKey" class="PFAfcndef">
 {<b>"map.containsKey":</b> [m, key]}<br><table class="PFAwhere"><tr><td><b>m</b></td><td>map of any <b>A</b></td></tr><tr><td><b>key</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
@@ -1634,7 +1668,8 @@
 </div>
 <div id="fcn:map.split" class="PFAfcndef">
 {<b>"map.split":</b> [m]}<br><table class="PFAwhere"><tr><td><b>m</b></td><td>map of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of map of <b>A</b></td></tr></table>
-<p><b>Description:</b> Split the map into an array of maps, each containing only one key-value pair.</p>
+<p><b>Description:</b> Split the map into an array of maps, each containing only one key-value pair (in no particular order).</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: unordered.</b> This function gives the same set of values every time it is executed on all systems, but the values may have a different order.</li></ul></p>
 </div>
 <div id="fcn:map.join" class="PFAfcndef">
 {<b>"map.join":</b> [a]}<br><table class="PFAwhere"><tr><td><b>a</b></td><td>array of map of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>map of <b>A</b></td></tr></table>
@@ -1695,8 +1730,8 @@
 </div>
 <div id="fcn:map.fromset" class="PFAfcndef">
 {<b>"map.fromset":</b> [s]}<br><table class="PFAwhere"><tr><td><b>s</b></td><td>map of any <b>A</b></td></tr><tr><td><i>(returns)</i></td><td>array of <b>A</b></td></tr></table>
-<p><b>Description:</b> Convert a set of objects into an array of objects, where a set is represented as a map from serialized objects to objects.</p>
-<p><b>Details:</b><ul><li>The serialization format is base64-encoded Avro.</li><li>This function does not verify that the serialized objects (keys) and objects (values) match: it considers only values, not keys.</li></ul></p>
+<p><b>Description:</b> Convert a set of objects into an array of objects (in no particular order), where a set is represented as a map from serialized objects to objects.</p>
+<p><b>Details:</b><ul><li>The serialization format is base64-encoded Avro.</li><li>This function does not verify that the serialized objects (keys) and objects (values) match: it considers only values, not keys.</li><li><b>Nondeterministic: unordered.</b> This function gives the same set of values every time it is executed on all systems, but the values may have a different order.</li></ul></p>
 </div>
 <div id="fcn:map.in" class="PFAfcndef">
 {<b>"map.in":</b> [s, x]}<br><table class="PFAwhere"><tr><td><b>s</b></td><td>map of any <b>A</b></td></tr><tr><td><b>x</b></td><td><b>A</b></td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
@@ -1890,6 +1925,7 @@
 <div id="fcn:bytes.encodeUtf16" class="PFAfcndef">
 {<b>"bytes.encodeUtf16":</b> [s]}<br><table class="PFAwhere"><tr><td><b>s</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>bytes</td></tr></table>
 <p><b>Description:</b> Encode a string as utf-16 (byte order identified by optional byte-order mark) bytes.</p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: unstable.</b> This function gives the same results every time it is executed, but those results may not be exactly the same on all systems.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#16180:</b> Raises an "invalid string" error if the string cannot be converted.</li></ul></p>
 </div>
 <div id="fcn:bytes.encodeUtf16be" class="PFAfcndef">
@@ -1939,79 +1975,87 @@
 {<b>"time.year":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the four-digit year that the timestamp falls within.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40000:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40000:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40001:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.monthOfYear" class="PFAfcndef">
 {<b>"time.monthOfYear":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the month that the timestamp falls within, with 1 being January and 12 being December.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40010:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40010:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40011:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.dayOfYear" class="PFAfcndef">
 {<b>"time.dayOfYear":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the day of the year that the timestamp falls within, from 1 to 365 or 366 inclusive, depending on leap year.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40020:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40020:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40021:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.dayOfMonth" class="PFAfcndef">
 {<b>"time.dayOfMonth":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the day of the month that the timestamp falls within, a number from 1 to 28, 29, 30, or 31, inclusive, depending on month.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40030:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40030:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40031:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.dayOfWeek" class="PFAfcndef">
 {<b>"time.dayOfWeek":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the day of the week that the timestamp falls within, with 0 being Monday and 6 being Sunday.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40040:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40040:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40041:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.hourOfDay" class="PFAfcndef">
 {<b>"time.hourOfDay":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the hour of the day that the timestamp falls within, from 0 to 23 inclusive.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40050:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40050:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40051:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.minuteOfHour" class="PFAfcndef">
 {<b>"time.minuteOfHour":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the minute of the hour that the timestamp falls within, from 0 to 59 inclusive.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40060:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40060:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40061:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.secondOfMinute" class="PFAfcndef">
 {<b>"time.secondOfMinute":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Get the second of the minute that the timestamp falls within, from 0 to 59 inclusive.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40070:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40070:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40071:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.makeTimestamp" class="PFAfcndef">
 {<b>"time.makeTimestamp":</b> [year, month, day, hour, minute, second, millisecond, zone]}<br><table class="PFAwhere"><tr><td><b>year</b></td><td>int</td></tr><tr><td><b>month</b></td><td>int</td></tr><tr><td><b>day</b></td><td>int</td></tr><tr><td><b>hour</b></td><td>int</td></tr><tr><td><b>minute</b></td><td>int</td></tr><tr><td><b>second</b></td><td>int</td></tr><tr><td><b>millisecond</b></td><td>int</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
 <p><b>Description:</b> Given the date and time that this time occurs in, return the timestamp.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>year</b></td><td>The four-digit year.</td></tr>
+<tr><td><b>year</b></td><td>The four-digit year, from 1 to 9999 inclusive.</td></tr>
 <tr><td><b>month</b></td><td>The month of the year, from 1 to 12 inclusive.</td></tr>
 <tr><td><b>day</b></td><td>The day of the month, from 1 to 28, 29, 30, or 31 inclusive, depending on month.</td></tr>
 <tr><td><b>hour</b></td><td>The hour of the day, from 0 to 23 inclusive.</td></tr>
@@ -2021,104 +2065,114 @@
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
 <p><b>Returns:</b><table class="PFAparams">
-<tr><td>The number of seconds since 1970 in UTC.</td></tr>
+<tr><td>The number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 </table></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#40080:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40081:</b> Raises "timestamp undefined for given parameters" if any one (or more) of the inputs have impossible values.</li></ul></p>
 </div>
 <div id="fcn:time.isSecondOfMinute" class="PFAfcndef">
 {<b>"time.isSecondOfMinute":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified number of seconds in any minute.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum number of seconds (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum number of seconds (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40090:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40091:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40090:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40091:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40092:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isMinuteOfHour" class="PFAfcndef">
 {<b>"time.isMinuteOfHour":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified number of minutes in any hour.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum number of minutes (inclusive)</td></tr>
 <tr><td><b>high</b></td><td>Maximum number of minutes (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40100:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40101:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40100:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40101:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40102:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isHourOfDay" class="PFAfcndef">
 {<b>"time.isHourOfDay":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified number of hours in any day.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum number of hours (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum number of hours (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40110:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40111:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40110:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40111:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40112:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isDayOfWeek" class="PFAfcndef">
 {<b>"time.isDayOfWeek":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified day of week range, with 0 being Monday and 6 being Sunday.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum day of the week (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum day of the week (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40120:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40121:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40120:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40121:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40122:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isDayOfMonth" class="PFAfcndef">
 {<b>"time.isDayOfMonth":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified day of month range, with 1 being the first of the month..</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum day of the month (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum day of the month (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40130:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40131:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40130:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40131:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40132:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isMonthOfYear" class="PFAfcndef">
 {<b>"time.isMonthOfYear":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified month of year range, with 1 being January and 12 being December.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum month of the year (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum month of the year (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40140:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40141:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40140:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40141:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40142:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isDayOfYear" class="PFAfcndef">
 {<b>"time.isDayOfYear":</b> [ts, zone, low, high]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><b>low</b></td><td>double</td></tr><tr><td><b>high</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Determines if a timestamp falls within a specified day of year range, with 1 being the first of the year.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 <tr><td><b>low</b></td><td>Minimum day of year (inclusive).</td></tr>
 <tr><td><b>high</b></td><td>Maximum day of year (exclusive).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40150:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40151:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40150:</b> Raises "bad time range" if low \(\mathrm{low} \geq \mathrm{high}\).</li><li><b>#40151:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40152:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isWeekend" class="PFAfcndef">
 {<b>"time.isWeekend":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Returns <span class="PFAc">true</span> if the timestamp falls on a Saturday or Sunday, <span class="PFAc">false</span> otherwise.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40160:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40160:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40161:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="fcn:time.isWorkHours" class="PFAfcndef">
 {<b>"time.isWorkHours":</b> [ts, zone]}<br><table class="PFAwhere"><tr><td><b>ts</b></td><td>double</td></tr><tr><td><b>zone</b></td><td>string</td></tr><tr><td><i>(returns)</i></td><td>boolean</td></tr></table>
 <p><b>Description:</b> Returns <span class="PFAc">true</span> if the timestamp falls between 9 am (inclusive) and 5 pm (exclusive) on Monday through Friday, otherwise <span class="PFAc">false</span>.</p>
 <p><b>Parameters:</b><table class="PFAparams">
-<tr><td><b>ts</b></td><td>Number of seconds since 1970 in UTC.</td></tr>
+<tr><td><b>ts</b></td><td>Number of seconds since the beginning (just after midnight) of Jan 1, 1970 C.E. in UTC.</td></tr>
 <tr><td><b>zone</b></td><td>Timezone name from the Olson timezone database, version 2015f (UTC if blank).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#40170:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li></ul></p>
+<p><b>Details:</b><ul><li>The earliest expressible date is the beginning (just after midnight) of Jan 1, 1 C.E. in UTC on the proleptic Gregorian calendar, which is a timestamp of -62135596800. The latest expressible date is the end (just before midnight) of Dec 31, 9999 C.E. in UTC on the Gregorian calendar, which is a timestamp of 253402300799.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#40170:</b> Raises "unrecognized timezone string" if <span class="PFAp">zone</span> is not in the Olson 2015f database.</li><li><b>#40171:</b> Raises "timestamp out of range" if <span class="PFAp">ts</span> less than -62135596800 or greater than 253402300799.</li></ul></p>
 </div>
 <div id="lib:" class="PFAhead"><h2 id="lib:impute">impute</h2></div>
 <div id="fcn:impute.errorOnNull" class="PFAfcndef">
@@ -2162,7 +2216,7 @@
 {<b>"interp.bin":</b> [x, origin, width]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>origin</b></td><td>double</td></tr><tr><td><b>width</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>int</td></tr></table>
 <p><b>Description:</b> Finds the bin that contains <span class="PFAp">x</span>, declared either as <span class="PFAp">numbins</span> between two endpoints or a bin <span class="PFAp">width</span> starting at some <span class="PFAp">origin</span>.</p>
 <p><b>Details:</b><ul><li>Bins are inclusive on the low end and exclusive on the high end, so if <span class="PFAp">x</span> equal <span class="PFAp">low</span> or <span class="PFAp">origin</span>, the resulting bin is <span class="PFAc">0</span>, but if <span class="PFAp">x</span> is equal to <span class="PFAp">high</span>, it is out of range.</li><li>If the first signature is used, the resulting bin must be between <span class="PFAc">0</span> (inclusive) and <span class="PFAp">numbins</span> (exclusive). If the second signature is used, the resulting bin may be any integer, including negative numbers.</li></ul></p>
-<p><b>Runtime Errors:</b><ul><li><b>#22000:</b> If <span class="PFAp">low</span> is greater or equal to <span class="PFAp">high</span>, raises "bad histogram range"</li><li><b>#22001:</b> If <span class="PFAp">numbins</span> is less than <span class="PFAc">1</span> or <span class="PFAp">width</span> is less or equal to <span class="PFAc">0</span>, raises "bad histogram scale"</li><li><b>#22002:</b> If the first signature is used, raises "x out of range" if <span class="PFAp">x</span> is less than <span class="PFAp">low</span> or greater or equal to <span class="PFAp">high</span>.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#22000:</b> If <span class="PFAp">low</span> is greater or equal to <span class="PFAp">high</span> or <span class="PFAp">origin</span> is not finite, raises "bad histogram range"</li><li><b>#22001:</b> If <span class="PFAp">numbins</span> is less than <span class="PFAc">1</span> or <span class="PFAp">width</span> is less or equal to <span class="PFAc">0</span>, raises "bad histogram scale"</li><li><b>#22002:</b> Raises "x out of range" if <span class="PFAp">x</span> is less than <span class="PFAp">low</span> or greater or equal to <span class="PFAp">high</span>.</li></ul></p>
 </div>
 <div id="fcn:interp.nearest" class="PFAfcndef">
 {<b>"interp.nearest":</b> [x, table]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>table</b></td><td>array of any record <b>R</b> with fields {<i>x</i>: double, <i>to</i>: any <b>T</b>}</td></tr><tr><td><i>(returns)</i></td><td><b>T</b></td></tr></table>
@@ -2207,7 +2261,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(\mu\) = <span class="PFAp">mu</span> or <span class="PFApf">mean</span> and \(\sigma\) = <span class="PFAp">sigma</span> or the square root of <span class="PFApf">variance</span>, this function returns \(-(x - \mu)^2/(2 \sigma^2) - \log(\sigma \sqrt{2\pi})\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13000:</b> Raises an "invalid parameterization" error if <span class="PFAp">sigma</span> or <span class="PFApf">variance</span> is negative or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13000:</b> Raises an "invalid parameterization" error if <span class="PFAp">sigma</span> or <span class="PFApf">variance</span> is negative or any argument is not finite.</li><li><b>#13001:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.gaussianCDF" class="PFAfcndef">
 {<b>"prob.dist.gaussianCDF":</b> [x, mu, sigma]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>mu</b></td><td>double</td></tr><tr><td><b>sigma</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2222,7 +2276,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(\mu\) = <span class="PFAp">mu</span> or <span class="PFApf">mean</span> and \(\sigma\) = <span class="PFAp">sigma</span> or the square root of <span class="PFApf">variance</span>, this function returns \(0.5 * ( 1.0 + \mathrm{Erf}(\frac{x - \mu}{\sigma \sqrt{2}}))\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13010:</b> Raises an "invalid parameterization" error if <span class="PFAp">sigma</span> or <span class="PFApf">variance</span> is negative or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13010:</b> Raises an "invalid parameterization" error if <span class="PFAp">sigma</span> or <span class="PFApf">variance</span> is negative or any argument is not finite.</li><li><b>#13011:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.gaussianQF" class="PFAfcndef">
 {<b>"prob.dist.gaussianQF":</b> [p, mu, sigma]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>mu</b></td><td>double</td></tr><tr><td><b>sigma</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2249,7 +2303,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(lambda\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\lambda \mathrm{e}^{- \lambda x}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13030:</b> Raises "invalid parameterization" if \(lambda < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13030:</b> Raises "invalid parameterization" if \(lambda < 0\) or any argument is not finite.</li><li><b>#13031:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.exponentialCDF" class="PFAfcndef">
 {<b>"prob.dist.exponentialCDF":</b> [x, lambda]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>lambda</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2261,7 +2315,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(lambda\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13040:</b> Raises "invalid parameterization" if \(lambda < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13040:</b> Raises "invalid parameterization" if \(lambda < 0\) or any argument is not finite.</li><li><b>#13041:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.exponentialQF" class="PFAfcndef">
 {<b>"prob.dist.exponentialQF":</b> [p, lambda]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>lambda</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2285,7 +2339,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(dof\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{1}{2^{\frac{\mathrm{df}}{2}} \Gamma(\frac{\mathrm{df}}{2})} x^{\frac{\mathrm{df}}{2}-1}\mathrm{e}^{-\frac{x}{2}}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13060:</b> Raises "invalid parameterization" if <span class="PFAp">dof</span> &lt; 0 or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13060:</b> Raises "invalid parameterization" if <span class="PFAp">dof</span> &lt; 0 or any argument is not finite.</li><li><b>#13061:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.chi2CDF" class="PFAfcndef">
 {<b>"prob.dist.chi2CDF":</b> [x, dof]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>dof</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2297,7 +2351,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(x1\), \(x1\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13070:</b> Raises "invalid parameterization" if <span class="PFAp">dof</span> &lt; 0 or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13070:</b> Raises "invalid parameterization" if <span class="PFAp">dof</span> &lt; 0 or any argument is not finite.</li><li><b>#13071:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.chi2QF" class="PFAfcndef">
 {<b>"prob.dist.chi2QF":</b> [p, dof]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>dof</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2333,7 +2387,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(lambda\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13100:</b> Raises "invalid parameterization" if \(lambda < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13100:</b> Raises "invalid parameterization" if \(lambda < 0\) or any argument is not finite.</li><li><b>#13101:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.poissonQF" class="PFAfcndef">
 {<b>"prob.dist.poissonQF":</b> [p, lambda]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>lambda</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2358,7 +2412,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(shape\), \(scale\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{1}{s^{a} \Gamma(a)} x^{a - 1} \mathrm{e}^{-\frac{x}{s}}  \).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13120:</b> Raises "invalid parameterization" if the \(shape < 0\) OR if \(scale < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13120:</b> Raises "invalid parameterization" if the \(shape < 0\) OR if \(scale < 0\) or any argument is not finite.</li><li><b>#13121:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.gammaCDF" class="PFAfcndef">
 {<b>"prob.dist.gammaCDF":</b> [x, shape, scale]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>shape</b></td><td>double</td></tr><tr><td><b>scale</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2371,7 +2425,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(shape\), \(scale\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x)~= P(X~\leq~x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13130:</b> Raises "invalid parameterization" if the \(shape < 0\) OR if \(scale < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13130:</b> Raises "invalid parameterization" if the \(shape < 0\) OR if \(scale < 0\) or any argument is not finite.</li><li><b>#13131:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.gammaQF" class="PFAfcndef">
 {<b>"prob.dist.gammaQF":</b> [p, shape, scale]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>shape</b></td><td>double</td></tr><tr><td><b>scale</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2397,7 +2451,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(a\), \(b\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{\Gamma(a + n)}{\Gamma(a)\Gamma(b)} x^{a-1}(1-x)^{b-1}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13150:</b> Raises "invalid parameterization" if \(a \leq 0\) OR if \(b \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13150:</b> Raises "invalid parameterization" if \(a \leq 0\) OR if \(b \leq 0\) or any argument is not finite.</li><li><b>#13151:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.betaCDF" class="PFAfcndef">
 {<b>"prob.dist.betaCDF":</b> [x, a, b]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>a</b></td><td>double</td></tr><tr><td><b>b</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2410,7 +2464,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(a\), \(b\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13160:</b> Raises "invalid parameterization" if \(a \leq 0\) OR if \(b \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13160:</b> Raises "invalid parameterization" if \(a \leq 0\) OR if \(b \leq 0\) or any argument is not finite.</li><li><b>#13161:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.betaQF" class="PFAfcndef">
 {<b>"prob.dist.betaQF":</b> [p, a, b]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>a</b></td><td>double</td></tr><tr><td><b>b</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2436,7 +2490,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(location\), \(scale\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{1}{(\pi s (1 + (\frac{x - l}{s})^{2})) }\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13180:</b> Raises "invalid parameterization" if \(scale \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13180:</b> Raises "invalid parameterization" if \(scale \leq 0\) or any argument is not finite.</li><li><b>#13181:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.cauchyCDF" class="PFAfcndef">
 {<b>"prob.dist.cauchyCDF":</b> [x, location, scale]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>location</b></td><td>double</td></tr><tr><td><b>scale</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2449,7 +2503,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(location\), \(scale\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13190:</b> Raises "invalid parameterization" if \(scale \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13190:</b> Raises "invalid parameterization" if \(scale \leq 0\) or any argument is not finite.</li><li><b>#13191:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.cauchyQF" class="PFAfcndef">
 {<b>"prob.dist.cauchyQF":</b> [p, location, scale]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>location</b></td><td>double</td></tr><tr><td><b>scale</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2475,7 +2529,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(d1\), \(d2\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{\Gamma(\frac{d1 + d2}{2})}{\Gamma(\frac{d1}{2})\Gamma(\frac{d2}{2})} \frac{d1}{d2}^{\frac{d1}{2}-1}(1 + \frac{d1}{d2} x)^{-\frac{d1 + d2}{2}}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13210:</b> Raises "invalid parameterization" if the \(d1 \leq 0\) OR if \(d2 \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13210:</b> Raises "invalid parameterization" if the \(d1 \leq 0\) OR if \(d2 \leq 0\) or any argument is not finite.</li><li><b>#13211:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.fCDF" class="PFAfcndef">
 {<b>"prob.dist.fCDF":</b> [x, d1, d2]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>d1</b></td><td>int</td></tr><tr><td><b>d2</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2488,7 +2542,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(d1\), \(d2\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13220:</b> Raises "invalid parameterization" if the \(d1 \leq 0\) OR if \(d2 \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13220:</b> Raises "invalid parameterization" if the \(d1 \leq 0\) OR if \(d2 \leq 0\) or any argument is not finite.</li><li><b>#13221:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.fQF" class="PFAfcndef">
 {<b>"prob.dist.fQF":</b> [p, d1, d2]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>d1</b></td><td>int</td></tr><tr><td><b>d2</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2514,7 +2568,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(meanlog\), \(sdlog\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{1}{\sqrt{2 \pi} \sigma x} \mathrm{e}^{-\frac{\mathrm{log}(x) - \mu}{2 \sigma^{2}}}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13240:</b> Raises "invalid parameterization" if \(sdlog \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13240:</b> Raises "invalid parameterization" if \(sdlog \leq 0\) or any argument is not finite.</li><li><b>#13241:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.lognormalCDF" class="PFAfcndef">
 {<b>"prob.dist.lognormalCDF":</b> [x, meanlog, sdlog]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>meanlog</b></td><td>double</td></tr><tr><td><b>sdlog</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2527,7 +2581,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(meanlog\), \(sdlog\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13250:</b> Raises "invalid parameterization" if \(sdlog \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13250:</b> Raises "invalid parameterization" if \(sdlog \leq 0\) or any argument is not finite.</li><li><b>#13251:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.lognormalQF" class="PFAfcndef">
 {<b>"prob.dist.lognormalQF":</b> [p, meanlog, sdlog]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>meanlog</b></td><td>double</td></tr><tr><td><b>sdlog</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2552,7 +2606,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(dof\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{\Gamma(\frac{\mathrm{df}+1}{2})}{\sqrt{\mathrm{df}\pi} \Gamma{\frac{\mathrm{df}}{2}}}(1 + x^{\frac{2}{n}})^{-\frac{\mathrm{df} + 1}{2}}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13270:</b> Raises "invalid parameterization" if \(df \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13270:</b> Raises "invalid parameterization" if \(df \leq 0\) or any argument is not finite.</li><li><b>#13271:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.tCDF" class="PFAfcndef">
 {<b>"prob.dist.tCDF":</b> [x, dof]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>dof</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2564,7 +2618,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(dof\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13280:</b> Raises "invalid parameterization" if \(df \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13280:</b> Raises "invalid parameterization" if \(df \leq 0\) or any argument is not finite.</li><li><b>#13281:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.tQF" class="PFAfcndef">
 {<b>"prob.dist.tQF":</b> [p, dof]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>dof</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2589,7 +2643,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(size\), \(prob\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\mathrm{choose}(n, x) p^{x} (1 - p)^{n - x}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13300:</b> Raises "invalid parameterization" if \(size < 0\) OR if \(prob < 0\) OR if \(prob > 1\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13300:</b> Raises "invalid parameterization" if \(size < 0\) OR if \(prob < 0\) OR if \(prob > 1\) or any argument is not finite.</li><li><b>#13301:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.binomialCDF" class="PFAfcndef">
 {<b>"prob.dist.binomialCDF":</b> [x, size, prob]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>prob</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2602,7 +2656,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(size\), \(prob\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13310:</b> Raises "invalid parameterization" if \(size < 0\) OR if \(prob < 0\) OR if \(prob > 1\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13310:</b> Raises "invalid parameterization" if \(size < 0\) OR if \(prob < 0\) OR if \(prob > 1\) or any argument is not finite.</li><li><b>#13311:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.binomialQF" class="PFAfcndef">
 {<b>"prob.dist.binomialQF":</b> [p, size, prob]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>prob</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2628,7 +2682,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(min\), \(max\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{1}{\mathrm{max} - \mathrm{min}}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13330:</b> Raises "invalid parameterization" if \(min \geq max\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13330:</b> Raises "invalid parameterization" if \(min \geq max\) or any argument is not finite.</li><li><b>#13331:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.uniformCDF" class="PFAfcndef">
 {<b>"prob.dist.uniformCDF":</b> [x, min, max]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>min</b></td><td>double</td></tr><tr><td><b>max</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2641,7 +2695,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(min\), \(max\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13340:</b> Raises "invalid parameterization" if \(min \geq max\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13340:</b> Raises "invalid parameterization" if \(min \geq max\) or any argument is not finite.</li><li><b>#13341:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.uniformQF" class="PFAfcndef">
 {<b>"prob.dist.uniformQF":</b> [p, min, max]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>min</b></td><td>double</td></tr><tr><td><b>max</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2666,7 +2720,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(prob\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(p (1 - p)^{x}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13360:</b> Raises "invalid parameterization" if \(\mathrm{prob} \leq 0\) OR if \(\mathrm{prob} > 1\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13360:</b> Raises "invalid parameterization" if \(\mathrm{prob} \leq 0\) OR if \(\mathrm{prob} > 1\) or any argument is not finite.</li><li><b>#13361:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.geometricCDF" class="PFAfcndef">
 {<b>"prob.dist.geometricCDF":</b> [x, prob]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>prob</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2678,7 +2732,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(prob\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13370:</b> Raises "invalid parameterization" if \(\mathrm{prob} \leq 0\) OR if \(\mathrm{prob} > 1\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13370:</b> Raises "invalid parameterization" if \(\mathrm{prob} \leq 0\) OR if \(\mathrm{prob} > 1\) or any argument is not finite.</li><li><b>#13371:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.geometricQF" class="PFAfcndef">
 {<b>"prob.dist.geometricQF":</b> [p, prob]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>prob</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2718,7 +2772,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(m\), \(n\) and \(k\) at \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13400:</b> Raises "invalid parameterization" if \(\mathrm{m} + \mathrm{n} < \mathrm{k}\), \(m < 0\), \(n < 0\), \(m + n = 0\), or \(k < 0\).</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13400:</b> Raises "invalid parameterization" if \(\mathrm{m} + \mathrm{n} < \mathrm{k}\), \(m < 0\), \(n < 0\), \(m + n = 0\), or \(k < 0\).</li><li><b>#13401:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.hypergeometricQF" class="PFAfcndef">
 {<b>"prob.dist.hypergeometricQF":</b> [p, m, n, k]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>m</b></td><td>int</td></tr><tr><td><b>n</b></td><td>int</td></tr><tr><td><b>k</b></td><td>int</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2745,7 +2799,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(shape\), \(scale\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{a}{b}(\frac{x}{b})^{a - 1}\mathrm{e}^{-(\frac{x}{b})^{a}}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13420:</b> Raises "invalid parameterization" if the \(shape \leq 0\) OR if \(scale \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13420:</b> Raises "invalid parameterization" if the \(shape \leq 0\) OR if \(scale \leq 0\) or any argument is not finite.</li><li><b>#13421:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.weibullCDF" class="PFAfcndef">
 {<b>"prob.dist.weibullCDF":</b> [x, shape, scale]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>shape</b></td><td>double</td></tr><tr><td><b>scale</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2758,7 +2812,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(shape\), \(scale\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X~\leq~x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13430:</b> Raises "invalid parameterization" if the \(shape \leq 0\) OR if \(scale \leq 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13430:</b> Raises "invalid parameterization" if the \(shape \leq 0\) OR if \(scale \leq 0\) or any argument is not finite.</li><li><b>#13431:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.weibullQF" class="PFAfcndef">
 {<b>"prob.dist.weibullQF":</b> [p, shape, scale]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>shape</b></td><td>double</td></tr><tr><td><b>scale</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2784,7 +2838,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(size\), \(prob\) and \(x\), this function evaluates the probability density function at \(x\).  The PDF implemented is \(\frac{\Gamma(x+n)}{\Gamma(n) x!} p^{n} (1-p)^{x}\).</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13450:</b> Raises "invalid parameterization" if \(\mathrm{prob} < 0\), if \(\mathrm{prob} > 1\) or if \(size < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13450:</b> Raises "invalid parameterization" if \(\mathrm{prob} < 0\), if \(\mathrm{prob} > 1\) or if \(size < 0\) or any argument is not finite.</li><li><b>#13451:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.negativeBinomialCDF" class="PFAfcndef">
 {<b>"prob.dist.negativeBinomialCDF":</b> [x, size, prob]}<br><table class="PFAwhere"><tr><td><b>x</b></td><td>double</td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>prob</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -2797,7 +2851,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>With \(size\), \(prob\) and \(x\), this function returns the value \(p\) where \(p = F_{X}(x) = P(X \leq x)\). </td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#13460:</b> Raises "invalid parameterization" if \(\mathrm{prob} < 0\), if \(\mathrm{prob} > 1\), or if \(size < 0\) or any argument is not finite.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#13460:</b> Raises "invalid parameterization" if \(\mathrm{prob} < 0\), if \(\mathrm{prob} > 1\), or if \(size < 0\) or any argument is not finite.</li><li><b>#13461:</b> Raises "invalid input" if <span class="PFAp">x</span> is not finite.</li></ul></p>
 </div>
 <div id="fcn:prob.dist.negativeBinomialQF" class="PFAfcndef">
 {<b>"prob.dist.negativeBinomialQF":</b> [p, size, prob]}<br><table class="PFAwhere"><tr><td><b>p</b></td><td>double</td></tr><tr><td><b>size</b></td><td>int</td></tr><tr><td><b>prob</b></td><td>double</td></tr><tr><td><i>(returns)</i></td><td>double</td></tr></table>
@@ -3322,6 +3376,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>Returns a scalar or vector prediction with the same type as <span class="PFApf">to</span>.</td></tr>
 </table></p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: unstable.</b> This function gives the same results every time it is executed, but those results may not be exactly the same on all systems.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#31080:</b> If <span class="PFAp">table</span> is empty, a "table must have at least 1 entry" error is raised.</li><li><b>#31081:</b> If <span class="PFAp">x</span> is an empty array, an "x must have at least 1 feature" error is raised.</li><li><b>#31082:</b> If any <span class="PFApf">x</span> in the <span class="PFAp">table</span> has a different length than the input parameter <span class="PFAp">x</span>, a "table must have the same number of features as x" error is raised.</li><li><b>#31083:</b> If any <span class="PFApf">to</span> in the <span class="PFAp">table</span> is an empty array, a "table outputs must have at least 1 dimension" error is raised.</li><li><b>#31084:</b> If the <span class="PFApf">to</span> fields in <span class="PFAp">table</span> do not all have the same dimensions, a "table outputs must all have the same number of dimensions" error is raised.</li><li><b>#31085:</b> If <span class="PFAp">x</span> or a component of <span class="PFAp">x</span> is not finite, an "x is not finite" error is raised.</li><li><b>#31086:</b> If any value in the <span class="PFAp">table</span> is not finite, a "table value is not finite" error is raised.</li><li><b>#31087:</b> If <span class="PFAp">krigingWeight</span> is a number but is not finite, a "krigingWeight is not finite" error is raised.</li><li><b>#31088:</b> If evaluating <span class="PFAp">kernel</span> on all combinations of <span class="PFAp">table</span> <span class="PFApf">x</span> (with \(1 + (\mbox{sigma}/\mbox{to})^2\) on the diagonal) yields a non-positive definite matrix, a "matrix of kernel results is not positive definite" error is raised.</li></ul></p>
 </div>
 <div id="fcn:model.reg.residual" class="PFAfcndef">
@@ -3572,6 +3627,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>The cluster records created by <span class="PFAp">newCluster</span>.</td></tr>
 </table></p>
+<p><b>Details:</b><ul><li><b>Nondeterministic: pseudorandom.</b> This function intentionally gives different results every time it is executed.</li></ul></p>
 <p><b>Runtime Errors:</b><ul><li><b>#29020:</b> Raises a "k must be greater than zero" error if <span class="PFAp">k</span> is less than or equal to zero.</li><li><b>#29021:</b> Raises a "not enough unique points" error if <span class="PFAp">data</span> has fewer than <span class="PFAp">k</span> unique elements.</li><li><b>#29022:</b> Raises a "dimensions of vectors do not match" error if the elements of <span class="PFAp">data</span> are not all the same size.</li></ul></p>
 </div>
 <div id="fcn:model.cluster.kmeansIteration" class="PFAfcndef">
@@ -3680,7 +3736,7 @@
 <p><b>Returns:</b><table class="PFAparams">
 <tr><td>Returns the unscaled log-likelihood of <span class="PFAp">datum</span> for this class.</td></tr>
 </table></p>
-<p><b>Runtime Errors:</b><ul><li><b>#10020:</b> Raises a "probability in classModel cannot be less than 0 or greater than 1" error if a value in <span class="PFAp">classModel</span> is less than zero or greater than one.</li></ul></p>
+<p><b>Runtime Errors:</b><ul><li><b>#10020:</b> Raises a "probability in classModel must be strictly between 0 and 1" error if a value in <span class="PFAp">classModel</span> is not strictly between zero and one.</li></ul></p>
 </div>
 <div id="lib:" class="PFAhead"><h2 id="lib:model.neural">model.neural</h2></div>
 <div id="fcn:model.neural.simpleLayers" class="PFAfcndef">

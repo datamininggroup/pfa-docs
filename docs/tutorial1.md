@@ -189,9 +189,9 @@ output: string
 method: fold
 zero: ""
 action:
-  - {s.concat: [tally, {s.number: input}]}
+  - {s.concat: [tally, {s.int: input}]}
 merge:
   - {s.concat: [tallyOne, tallyTwo]}
 {% include engine3.html %}
 
-Note that `input` needs to be converted from an integer to a string (with `s.number`), but `tallyOne` and `tallyTwo` are already strings.
+Note that `input` needs to be converted from an integer to a string (with `s.int`), but `tallyOne` and `tallyTwo` are already strings.
