@@ -125,7 +125,7 @@ The type-cast of `input.mag` in the PFA example above has the form of an exhaust
 
 Try removing the second case or putting in a bogus case (assert that `input.mag` is a `string`, for instance).  Also, try adding a "`"partial": true`" key-value pair at the same nesting level as `cast` and `cases` keys.  A partial match can be non-exhaustive (at the price of the expression not returning a value).
 
-For a more realistic example of input types and missing value casting, see the [Exoplanets example](/docs/exoplanets).
+For a more realistic example of input types and missing value casting, see the [Exoplanets example](/pfa/docs/exoplanets).
 
 ## Control flow
 
