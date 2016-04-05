@@ -72,7 +72,7 @@ Try mixing in one of these two-parameter functions: "`+`" (addition), "`-`" (sub
 
 Try mixing in one of these one-parameter functions: `m.sqrt`, `m.sin`, `m.cos`, `m.tan`, `m.exp`, `m.ln` (natural logarithm), `m.log10` (logarithm base 10), `m.floor`, `m.ceil`, `m.round`.  One-parameter functions do not need to enclose arguments in square brackets (`{"m.sin": 3.14}` versus `{"m.sin": [3.14]}`), but they may, for consistency.
 
-Try adding one of these zero-parameter functions, which is to say, constants: `{"m.pi": []}` and `{"m.e": []}`.  (A PFA host doesn't have to implement zero-parameter functions as functions--- it could implement them as inline constants or whatever is most appropriate for the environment it runs in.)  There are many other functions in the [function library](/docs/library/){:target="_blank"}.
+Try adding one of these zero-parameter functions, which is to say, constants: `{"m.pi": []}` and `{"m.e": []}`.  (A PFA host doesn't have to implement zero-parameter functions as functions--- it could implement them as inline constants or whatever is most appropriate for the environment it runs in.)  There are many other functions in the [function library](/pfa/docs/library/){:target="_blank"}.
 
 Alternatively, you could write it in YAML-indentation form to see the nesting level more easily:
 
