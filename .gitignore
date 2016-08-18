@@ -10,3 +10,4 @@ build/
 _site/
 OLD/
 google*.html
+.DS_Store
